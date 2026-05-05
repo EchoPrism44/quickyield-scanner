@@ -1,0 +1,139 @@
+{
+  "project_name": "QuickYield",
+  "theme_and_archetype": {
+    "theme": "Dark",
+    "archetype": "Archetype 4 (Swiss & High-Contrast) blended with Top-Tier SaaS (Linear/Vercel aesthetic)",
+    "vibe": "Authority, precision, clarity, high-end finance. Think Bloomberg Terminal redesigned by an elite architecture studio. No generic crypto-purple-on-black.",
+    "emotional_tone": "Trustworthy, cutting-edge, sophisticated, effortless."
+  },
+  "typography": {
+    "fonts_to_install": [
+      "Cabinet Grotesk (Headings - import via fontshare or CDN)",
+      "Manrope (Body)",
+      "JetBrains Mono (Numbers/Data)"
+    ],
+    "hierarchy": {
+      "h1": "font-sans text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-medium text-white",
+      "h2": "font-sans text-2xl sm:text-3xl lg:text-4xl tracking-tight font-medium text-white",
+      "h3": "font-sans text-xl sm:text-2xl tracking-tight font-medium text-white",
+      "body": "font-sans text-base text-[#A1A1AA] leading-relaxed",
+      "data_numbers": "font-mono text-sm tracking-tight text-white",
+      "overline_labels": "font-sans text-xs uppercase tracking-[0.2em] text-[#71717A] font-semibold"
+    },
+    "rules": [
+      "NEVER use generic fonts for Headings. Use Cabinet Grotesk for its sharp, wide, technical feel.",
+      "ALL numbers, APYs, and metric data MUST use JetBrains Mono or a monospaced font to align vertically in tables.",
+      "Headlines MUST use tracking-tighter. Do not use bold (700+) excessively; rely on medium (500) with tight tracking for a premium feel."
+    ]
+  },
+  "colors": {
+    "background": {
+      "page": "#050505",
+      "surface": "#0A0A0A",
+      "surface_elevated": "#121212",
+      "nav_glass": "rgba(5, 5, 5, 0.7)"
+    },
+    "text": {
+      "primary": "#F4F4F5",
+      "secondary": "#A1A1AA",
+      "muted": "#71717A",
+      "inverse": "#050505"
+    },
+    "border": {
+      "default": "rgba(255, 255, 255, 0.08)",
+      "hover": "rgba(255, 255, 255, 0.2)",
+      "focus": "rgba(255, 69, 0, 0.5)"
+    },
+    "accents": {
+      "brand_primary": "#FF4500",
+      "brand_primary_glow": "rgba(255, 69, 0, 0.2)",
+      "safe_yield": "#00E599",
+      "risk_yield": "#FF3366"
+    },
+    "rules": [
+      "NO PURPLE/TEAL GRADIENTS. Use solid, deep obsidian backgrounds with razor-thin borders.",
+      "The primary accent is Signal Orange (#FF4500). Use it SPARINGLY (e.g., active states, CTA buttons, chart highlights) to create maximum contrast and tension.",
+      "Never use pure black (#000000) or pure white (#FFFFFF) for text/surfaces. Use off-whites (#F4F4F5) and tinted darks (#050505)."
+    ]
+  },
+  "spacing_and_layout": {
+    "landing_page": {
+      "grid_mode": "Bento Grid ('Tetris' mode)",
+      "spacing": "Generous spacing (py-24, gap-8)",
+      "alignment": "Asymmetrical layouts. Break out of generic center-aligned blocks.",
+      "hero_structure": "Left-aligned massive typography, right-side 3D abstract visual or dashboard preview."
+    },
+    "dashboard_app": {
+      "grid_mode": "Control Room Grid",
+      "spacing": "Tight, dense spacing (p-4, gap-4). Every pixel matters.",
+      "alignment": "Optical alignment. Left-align tables and labels.",
+      "structure": "Sidebar navigation + top utility bar. Dashboard area is border-collapsed (grid items share borders)."
+    },
+    "radii": {
+      "landing": "rounded-2xl for main bento cards, rounded-full for buttons",
+      "dashboard": "rounded-lg for widgets, rounded-md for inner elements"
+    }
+  },
+  "surfaces_and_micro_themes": {
+    "navigation": "Crystal Glassmorphism: backdrop-blur-xl bg-[#050505]/70 border-b border-white/5. MUST stay readable.",
+    "cards": "Flat solid background (#0A0A0A) with a sharp 1px inner stroke (ring-1 ring-white/10). NO soft shadows in dark mode. Use subtle glow (drop-shadow) for active items.",
+    "buttons_primary": "bg-[#FF4500] text-white hover:bg-[#E63E00] transition-colors rounded-full px-6 py-2 font-medium",
+    "buttons_secondary": "bg-transparent text-white ring-1 ring-white/20 hover:ring-white/50 hover:bg-white/5 transition-all rounded-full px-6 py-2"
+  },
+  "components_strategy": {
+    "marketing_pages": "Use pure HTML/Tailwind for layouts. Shadcn only for complex forms/inputs. Heavily customize standard patterns.",
+    "dashboard_pages": "Use Shadcn UI (Tables, Badges, Dropdowns, Tabs, Dialogs) but strip out default Vercel aesthetic. Make borders darker, text sharper.",
+    "badges": "For 'Beginner Safe' tags, use ring-1 ring-[#00E599]/30 bg-[#00E599]/10 text-[#00E599]. For Risk Tiers, use appropriate colors (Orange/Red) with the same pattern.",
+    "tables": "Yield opportunities table MUST use monospace fonts for APY and TVL columns. Align numbers to the right. Give the table a sleek, border-collapsed tech look."
+  },
+  "motion_and_interactions": {
+    "libraries": [
+      "framer-motion (Page transitions, list staggering, bento grid reveals)",
+      "@studio-freight/lenis (Smooth scrolling on landing page)"
+    ],
+    "page_transitions": "Fade in and slide up (y: 20 -> 0, opacity: 0 -> 1) with spring physics. Apply to external page navigation.",
+    "hover_states": "Interactive elements MUST have explicit hover text and background colors. Elements should slightly lift (-translate-y-0.5) if they are cards.",
+    "alerts_animation": "When a user adds an alert, use a Sonner toast notification with a subtle entering animation."
+  },
+  "media_and_images": {
+    "rules": [
+      "NEVER use generic placeholder URLs (like via.placeholder.com). ONLY use the URLs provided below.",
+      "If using an image as a background, apply a gradient overlay (e.g., bg-gradient-to-t from-[#050505] to-transparent) so text remains readable."
+    ],
+    "urls": {
+      "hero_background": {
+        "url": "https://images.unsplash.com/photo-1646800186869-95062dd5008c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRhcmslMjBnZW9tZXRyaWMlMjAzZCUyMG5vZGVzfGVufDB8fHx8MTc3ODAxMjM3Mnww&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract dark geometric nodes for hero section background or bento grid visual. Add a heavy dark overlay.",
+        "category": "background"
+      },
+      "dashboard_preview": {
+        "url": "https://images.unsplash.com/photo-1669018134446-4779a64a1366?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMGRhcmslMjBnZW9tZXRyaWMlMjAzZCUyMG5vZGVzfGVufDB8fHx8MTc3ODAxMjM3Mnww&ixlib=rb-4.1.0&q=85",
+        "description": "Dark 3D cube visual to use as a placeholder for a 'How it works' or Data node section.",
+        "category": "abstract"
+      },
+      "social_proof_logos": [
+        "https://images.unsplash.com/photo-1654277040981-82984a49c63a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwyfHx0ZWNoJTIwY29tcGFueSUyMGxvZ28lMjB0cmFuc3BhcmVudHxlbnwwfHx8fDE3NzgwMTIzNTR8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1761044591996-7a05341a3e12?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHw0fHx0ZWNoJTIwY29tcGFueSUyMGxvZ28lMjB0cmFuc3BhcmVudHxlbnwwfHx8fDE3NzgwMTIzNTR8MA&ixlib=rb-4.1.0&q=85"
+      ],
+      "testimonials_avatars": [
+        "https://images.unsplash.com/photo-1762291629616-3e2c044c79a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGZhY2UlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3NzgwMTIzNTR8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1770452603217-89b4f03e8271?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGZhY2UlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3NzgwMTIzNTR8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1758783505014-eb44b02a711a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGZhY2UlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3NzgwMTIzNTR8MA&ixlib=rb-4.1.0&q=85"
+      ]
+    }
+  },
+  "testing_attributes": {
+    "requirement": "CRITICAL: All interactive and key informational elements MUST include a `data-testid` attribute.",
+    "convention": "kebab-case, role-based. e.g., `data-testid='yield-table-row'`, `data-testid='add-alert-button'`, `data-testid='login-submit-button'`."
+  },
+  "instructions_to_main_agent": [
+    "Install required dependencies: `yarn add framer-motion @phosphor-icons/react @studio-freight/lenis clsx tailwind-merge`.",
+    "In tailwind.config.js, extend colors with the specific hex codes provided in the colors section.",
+    "Build the Landing Page in pure HTML/Tailwind. Use Framer Motion for scroll-triggered staggered reveals on the 'How it works' and Feature Bento Grid.",
+    "Build the Dashboard (/dashboard) with a sidebar and top header. The main area should be tightly packed.",
+    "Yield Table: Sortable by APY, filterable by chain/asset. Include 'Beginner Safe' tags prominently.",
+    "Include a 'Watchlist' view and an 'Alerts' management view where users set threshold notifications.",
+    "Wrap page changes in Framer Motion `<AnimatePresence>` for smooth layout transitions.",
+    "Maintain the Top-Tier SaaS look: No clutter, heavy reliance on negative space around groups, stark contrast, and absolute precision."
+  ]
+}
