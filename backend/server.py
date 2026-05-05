@@ -261,6 +261,9 @@ async def fetch_yields() -> list:
     for p in raw:
         if not p.get("apy"):
             continue
+        # Skip extreme outliers (DeFiLlama sometimes returns multi-thousand % APYs)
+        if (p.get("apy") or 0) > 1000:
+            continue
         if (p.get("tvlUsd") or 0) < 1_000_000:
             continue
         risk = classify_risk(p)
@@ -279,7 +282,7 @@ async def fetch_yields() -> list:
             "stable": (p.get("symbol") or "").upper() in STABLE_ASSETS,
         })
     cleaned.sort(key=lambda x: x["apy"], reverse=True)
-    YIELD_CACHE["data"] = cleaned[:500]
+    YIELD_CACHE["data"] = cleaned[:2000]
     YIELD_CACHE["ts"] = now
     return YIELD_CACHE["data"]
 
