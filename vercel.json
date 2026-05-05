@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/scan-yields",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     }
   ],
   "headers": [
