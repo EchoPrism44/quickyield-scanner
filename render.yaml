@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: quickyield-api
+    runtime: python
+    rootDir: backend
+    branch: ui-overhaul
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: quickyield
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@quickyield.io
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: TEST_USER_EMAIL
+        value: demo@quickyield.io
+      - key: TEST_USER_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: FRONTEND_URL
+        sync: false
+
+  - type: web
+    name: quickyield-app
+    runtime: static
+    rootDir: frontend
+    branch: ui-overhaul
+    buildCommand: yarn install && yarn build
+    staticPublishPath: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        sync: false
