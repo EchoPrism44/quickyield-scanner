@@ -94,3 +94,12 @@ credentials.json
 # Allow example/template env files to be committed
 !.env.example
 !**/.env.example
+-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
