@@ -1,0 +1,24 @@
+# Railway service configuration for QuickYield backend
+# Place at repo root. Railway will pick this up when deploying from GitHub.
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "pip install -r backend/requirements.txt"
+
+[deploy]
+startCommand = "cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/api/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# Note: set the following Variables in the Railway dashboard:
+#   MONGO_URL          (reference to MongoDB plugin: ${{ MongoDB.MONGO_URL }})
+#   DB_NAME            quickyield
+#   JWT_SECRET         (generate: openssl rand -hex 32)
+#   ADMIN_EMAIL        admin@quickyield.io
+#   ADMIN_PASSWORD     <strong password>
+#   TEST_USER_EMAIL    demo@quickyield.io
+#   TEST_USER_PASSWORD <strong password>
+#   CORS_ORIGINS       *
+#   FRONTEND_URL       https://<your-cloudflare-pages-domain>.pages.dev

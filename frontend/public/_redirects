@@ -1,0 +1,4 @@
+# Cloudflare Pages: SPA fallback for React Router
+# This redirects all unmatched routes to index.html so client-side routing works
+# (e.g. /app/opportunities, /app/watchlist refresh without 404).
+/*    /index.html   200
