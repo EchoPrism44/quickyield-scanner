@@ -473,6 +473,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-risk-high { color: var(--risk); border: 1px solid rgba(255, 51, 102, 0.3); background: rgba(255, 51, 102, 0.1); }
 .qy-num { font-family: var(--font-mono); font-size: 12px; text-align: right; color: var(--ink-dim); }
 .qy-num.bold { font-size: 14px; font-weight: 500; color: var(--ink); }
+.qy-apy-high { color: #16a34a; }
+.qy-apy-mid { color: #ca8a04; }
+.qy-apy-low { color: var(--ink-mute); }
+.qy-apy-task { color: #1A4A8A; }
 .qy-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
 .qy-icon-btn {
   padding: 7px; border-radius: 6px; background: transparent; border: 0;
@@ -481,6 +485,23 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-icon-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--ink); }
 .qy-icon-btn:disabled { opacity: 0.4; pointer-events: none; }
 .qy-icon-btn.danger:hover { background: rgba(255, 51, 102, 0.1); color: var(--risk); }
+
+.qy-btn-sm { font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.qy-btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink-dim); }
+.qy-btn-outline:hover { border-color: var(--ink-mute); color: var(--ink); }
+.qy-btn-watch { background: transparent; border: 1px solid var(--signal); color: var(--signal); }
+.qy-btn-watch:hover { background: var(--signal-glow); }
+.qy-btn-disabled { background: transparent; border: 1px solid var(--line); color: var(--ink-mute); cursor: default; }
+
+/* Modal overlay */
+.qy-modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.qy-modal { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; max-width: 520px; width: 100%; max-height: 80vh; overflow-y: auto; }
+.qy-modal-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+.qy-modal-header h2 { font-family: var(--font-display); font-size: 18px; color: var(--ink); margin: 0; }
+.qy-modal-body { padding: 24px; }
+.qy-modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.qy-modal-stats > div { display: flex; flex-direction: column; gap: 4px; }
+.qy-modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--line); }
 
 /* Empty state */
 .qy-empty {
@@ -565,5 +586,33 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   border-radius: 16px; border: 1px solid var(--line);
   background: var(--bg-surface); padding: 32px;
 }
+/* Onboarding */
+.qy-onboard-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.qy-onboard-card { background: var(--bg-surface); border: 1px solid var(--line); border-radius: 20px; max-width: 420px; width: 100%; padding: 32px; text-align: center; animation: qy-fadeup 0.4s ease-out; }
+.qy-onboard-steps { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+.qy-onboard-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: all 0.3s; }
+.qy-onboard-dot.active { background: var(--signal); width: 24px; border-radius: 4px; }
+.qy-onboard-dot.done { background: var(--safe); }
+.qy-onboard-icon { color: var(--signal); margin-bottom: 16px; }
+.qy-onboard-card h2 { font-family: var(--font-display); font-size: 20px; color: var(--ink); margin-bottom: 8px; }
+.qy-onboard-card p { color: var(--ink-dim); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+.qy-onboard-highlight { background: rgba(255, 69, 0, 0.08); border: 1px solid rgba(255, 69, 0, 0.15); border-radius: 8px; padding: 8px 16px; font-size: 12px; color: var(--ink-dim); margin-bottom: 24px; font-family: var(--font-mono); }
+.qy-onboard-actions { display: flex; gap: 12px; justify-content: center; }
+
 .qy-auth-card h1 { font-family: var(--font-display); font-size: 28px; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 8px; }
 .qy-auth-card p { color: var(--ink-dim); font-size: 14px; margin-bottom: 24px; }
+
+/* Mobile bottom nav */
+.qy-bottom-nav { display: none; }
+@media (max-width: 640px) {
+  .qy-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: var(--bg-surface); border-top: 1px solid var(--line); padding: 8px 0; justify-content: space-around; }
+  .qy-bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; color: var(--ink-mute); font-size: 10px; cursor: pointer; padding: 4px 12px; transition: color 0.15s; }
+  .qy-bottom-nav-item.active { color: var(--signal); }
+  .qy-bottom-nav-item span { font-family: var(--font-display); }
+  .qy-aside { display: none; }
+  .qy-main { padding-bottom: 64px; }
+  .qy-topbar { padding: 8px 16px; }
+  .qy-filters { flex-wrap: wrap; gap: 6px; }
+  .qy-table-wrap { overflow-x: auto; }
+  .qy-table-head, .qy-table-row { min-width: 600px; }
+}

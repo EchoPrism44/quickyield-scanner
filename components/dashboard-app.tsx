@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { useMemo, useState, useTransition, useEffect } from 'react'
 import {
-  LineChart, Eye, Bell, Settings as SettingsIcon, LogOut, Search,
-  Plus, Trash2, ExternalLink, BellOff, ShieldCheck, Filter, ArrowRight,
+  LineChart, Eye, Bell, Settings as SettingsIcon, LogOut,
+  Trash2, ExternalLink, BellOff, ShieldCheck, Filter,
 } from 'lucide-react'
-import { categories, chains, riskLevels, timeCosts } from '../lib/constants'
-import { money } from '../lib/scoring'
-import type { DashboardData, Opportunity, AlertRule } from '../lib/types'
+import { categories, chains, timeCosts } from '../lib/constants'
+import { formatTvl } from '../lib/scoring'
+import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
+import { Onboarding } from './onboarding'
+import type { DashboardData, Opportunity, AlertRule, UserSettings } from '../lib/types'
 
 type Tab = 'opportunities' | 'watchlist' | 'alerts' | 'settings'
 
@@ -44,6 +46,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   const [category, setCategory] = useState(initialData.settings.category)
   const [query, setQuery] = useState('')
   const [capital, setCapital] = useState(initialData.settings.capital)
+  const [showOnboarding, setShowOnboarding] = useState(() => typeof window !== 'undefined' && !localStorage.getItem('qy_onboarded'))
 
   const watched = useMemo(() => new Set(data.watchlist), [data.watchlist])
   const watchedOps = useMemo(() => data.opportunities.filter((o) => watched.has(o.id)), [data.opportunities, watched])
@@ -135,6 +138,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
 
   return (
     <div className="qy-app">
+      {showOnboarding && <Onboarding onComplete={() => { localStorage.setItem('qy_onboarded', '1'); setShowOnboarding(false) }} />}
       <aside className="qy-aside" data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <Link href="/" className="qy-logo">
@@ -158,7 +162,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
         <div className="qy-aside-foot">
           <div className="qy-aside-user">
             <div className="qy-aside-user-label">Mode</div>
-            <div className="qy-aside-user-email">{process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'Authenticated' : 'Local beta'}</div>
+            <div className="qy-aside-user-email">Authenticated</div>
           </div>
           <Link href="/" className="qy-aside-link" data-testid="logout-btn">
             <LogOut className="qy-aside-icon" /> Back to home
@@ -171,18 +175,8 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
           <div className="qy-topbar-status">
             <span className="qy-pill-dot" />
             <span className="qy-overline">
-              {data.dataStatus === 'live' ? 'Live · DeFiLlama' : 'Curated fallback'}
+              {data.dataStatus === 'live' ? 'Live · updated hourly' : 'Curated fallback'}
             </span>
-          </div>
-          <div className="qy-topbar-mobile-tabs">
-            {navItems.map(({ tab: t, label }) => (
-              <button
-                key={t}
-                type="button"
-                className={`qy-topbar-mobile-tab ${tab === t ? 'active' : ''}`}
-                onClick={() => setTab(t)}
-              >{label.slice(0, 3)}</button>
-            ))}
           </div>
         </header>
 
@@ -201,7 +195,6 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
                 query={query} setQuery={(v: string) => { setQuery(v); refreshOpportunities({ chain, risk, time, category, q: v, capital }) }}
                 watched={watched}
                 onToggleWatch={toggleWatch}
-                onCreateAlert={createAlert}
               />
             )}
             {tab === 'watchlist' && (
@@ -225,6 +218,92 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
           <div key={t.id} className={`qy-toast ${t.type}`}>{t.msg}</div>
         ))}
       </div>
+      <nav className="qy-bottom-nav">
+        {navItems.map(({ tab: t, label, Icon }) => (
+          <button
+            key={t}
+            type="button"
+            className={`qy-bottom-nav-item ${tab === t ? 'active' : ''}`}
+            onClick={() => setTab(t)}
+          >
+            <Icon size={18} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
+    </div>
+  )
+}
+
+/* ---------- Sparkline cell ---------- */
+
+function SparklineCell({ poolId }: { poolId: string }) {
+  const [data, setData] = useState<number[] | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    fetchSparkline(poolId).then((d) => { if (!cancelled) setData(d) })
+    return () => { cancelled = true }
+  }, [poolId])
+  const svg = data ? renderSparklineSvg(data) : null
+  if (!svg) return null
+  return <span dangerouslySetInnerHTML={{ __html: svg }} style={{ display: 'inline-flex', verticalAlign: 'middle', marginLeft: 6 }} />
+}
+
+/* ---------- Pool detail modal ---------- */
+
+function PoolDetailModal({ opportunity, onClose }: { opportunity: Opportunity | null; onClose: () => void }) {
+  const [chartData, setChartData] = useState<number[]>([])
+  useEffect(() => {
+    if (!opportunity || !opportunity.id.startsWith('live-')) return
+    let cancelled = false
+    fetchSparkline(opportunity.id).then((d) => { if (!cancelled) setChartData(d.slice(-30)) })
+    return () => { cancelled = true }
+  }, [opportunity])
+  if (!opportunity) return null
+  return (
+    <div className="qy-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="qy-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="qy-modal-header">
+          <div>
+            <h2>{opportunity.platform}</h2>
+            <p className="qy-asset-meta">{opportunity.chain} · {opportunity.asset} · {opportunity.category}</p>
+          </div>
+          <button onClick={onClose} className="qy-icon-btn" aria-label="Close">&times;</button>
+        </div>
+        <div className="qy-modal-body">
+          <div className="qy-modal-stats">
+            <div><span className="qy-overline">APY</span><span className="qy-num bold" style={{ fontSize: 28, color: 'var(--ink)' }}>{opportunity.apy.toFixed(2)}%</span></div>
+            <div><span className="qy-overline">TVL</span><span className="qy-num bold" style={{ fontSize: 20 }}>{opportunity.tvl}</span></div>
+            <div><span className="qy-overline">Risk</span><span className={`qy-tag-mini qy-risk-${opportunity.risk.toLowerCase()}`}>{opportunity.risk}</span></div>
+            <div><span className="qy-overline">Confidence</span><span className="qy-num bold">{opportunity.confidence}/100</span></div>
+          </div>
+          {chartData.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <div className="qy-overline" style={{ marginBottom: 12 }}>30-day APY history</div>
+              <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 80 }}>
+                <polyline
+                  points={chartData.map((v, i) => `${(i / (chartData.length - 1)) * 300},${100 - ((v - Math.min(...chartData)) / (Math.max(...chartData) - Math.min(...chartData) || 1)) * 80}`).join(' ')}
+                  fill="none" stroke="var(--signal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          )}
+          {opportunity.notes && (
+            <div style={{ marginTop: 24 }}>
+              <div className="qy-overline" style={{ marginBottom: 8 }}>Notes</div>
+              <p style={{ fontSize: 13, color: 'var(--ink-dim)', lineHeight: 1.6 }}>{opportunity.notes}</p>
+            </div>
+          )}
+        </div>
+        <div className="qy-modal-footer">
+          {opportunity.actionUrl && (
+            <a href={opportunity.actionUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-primary">
+              Visit Protocol <ExternalLink size={14} />
+            </a>
+          )}
+          <button onClick={onClose} className="qy-btn qy-btn-secondary">Close</button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -233,9 +312,18 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
 
 function OpportunitiesView({
   data, chain, setChain, risk, setRisk, time, setTime, category, setCategory,
-  query, setQuery, watched, onToggleWatch, onCreateAlert,
-}: any) {
+  query, setQuery, watched, onToggleWatch,
+}: {
+  data: DashboardData; chain: string; setChain: (v: string) => void;
+  risk: string; setRisk: (v: string) => void;
+  time: string; setTime: (v: string) => void;
+  category: string; setCategory: (v: string) => void;
+  query: string; setQuery: (v: string) => void;
+  watched: Set<string>;
+  onToggleWatch: (id: string) => Promise<void>;
+}) {
   const [sortBy, setSortBy] = useState<'apy' | 'tvl'>('apy')
+  const [detail, setDetail] = useState<Opportunity | null>(null)
   const sorted = useMemo(() => {
     const arr = [...data.opportunities]
     arr.sort((a: Opportunity, b: Opportunity) =>
@@ -248,12 +336,42 @@ function OpportunitiesView({
   const totalTvl = data.opportunities.reduce((s: number, o: Opportunity) => s + (o.tvlUsd || 0), 0)
   const avgApy = data.opportunities.length ? (data.opportunities.reduce((s: number, o: Opportunity) => s + o.apy, 0) / data.opportunities.length) : 0
 
+  function apyColor(apy: number): string {
+    if (apy === 0) return 'qy-apy-task'
+    if (apy >= 8) return 'qy-apy-high'
+    if (apy >= 4) return 'qy-apy-mid'
+    return 'qy-apy-low'
+  }
+
+  const protocolColors: Record<string, string> = {
+    'aave': '#E8E0FE', 'jito': '#FFF0E0', 'maple': '#E8F5E9',
+    'lido': '#E3F2FD', 'ether fi': '#E0F4F1', 'rocket pool': '#FFEBEE',
+    'spark': '#FFF8E1', 'kelp': '#F5F5F5', 'binance': '#FFF0E0',
+    'coinbase': '#E3F2FD', 'layer3': '#F5F5F5', 'pendle': '#E8E0FE',
+    'morpho': '#E0F4F1', 'compound': '#E8F5E9', 'curve': '#FFEBEE',
+    'yearn': '#E8E0FE', 'balancer': '#FFF8E1',
+  }
+
+  function protocolInitials(platform: string): string {
+    const parts = platform.split(' ')
+    if (parts.length >= 2) return parts[0].slice(0, 1).toUpperCase() + parts[1].slice(0, 1).toLowerCase()
+    return platform.slice(0, 2).toLowerCase()
+  }
+
+  function protocolColor(platform: string): string {
+    const key = platform.toLowerCase()
+    for (const [name, color] of Object.entries(protocolColors)) {
+      if (key.includes(name)) return color
+    }
+    return '#F0F0F0'
+  }
+
   return (
     <div className="qy-page" data-testid="opportunities-page">
       <div className="qy-page-header">
         <span className="qy-overline qy-overline-signal">Live scanner</span>
         <h1>Opportunities</h1>
-        <p>{data.opportunities.length} matches · {money(totalTvl)} TVL · avg APY {avgApy.toFixed(1)}%</p>
+        <p>{data.opportunities.length} matches · {formatTvl(totalTvl)} TVL · avg APY {avgApy.toFixed(1)}%</p>
       </div>
 
       <div className="qy-filters" data-testid="filters">
@@ -303,11 +421,12 @@ function OpportunitiesView({
           <div
             key={o.id}
             className="qy-table-row qy-row-slide"
-            style={{ animationDelay: `${Math.min(i * 0.015, 0.4)}s` }}
+            style={{ animationDelay: `${Math.min(i * 0.015, 0.4)}s`, cursor: 'pointer' }}
             data-testid="opp-row"
+            onClick={() => setDetail(o)}
           >
             <div className="qy-asset-cell">
-              <div className="qy-asset-icon">{(o.platform || '?').slice(0, 1).toUpperCase()}</div>
+              <div className="qy-asset-icon" style={{ backgroundColor: protocolColor(o.platform) }}>{protocolInitials(o.platform)}</div>
               <div style={{ minWidth: 0 }}>
                 <div className="qy-asset-name">
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.platform}</span>
@@ -319,32 +438,59 @@ function OpportunitiesView({
             <span className="qy-mono" style={{ fontSize: 12, color: 'var(--ink-dim)' }}>{o.chain}</span>
             <span><span className={`qy-tag-mini qy-risk-${o.risk.toLowerCase()}`}>{o.risk}</span></span>
             <span className="qy-num">{o.tvl}</span>
-            <span className="qy-num bold">{o.apy ? `${o.apy.toFixed(2)}%` : 'Task'}</span>
-            <div className="qy-actions">
+            <span className={`qy-num bold ${apyColor(o.apy)}`}>
+              {o.apy ? `${o.apy.toFixed(2)}%` : 'Task'}
+              {o.id.startsWith('live-') && <SparklineCell poolId={o.id} />}
+            </span>
+            <div className="qy-actions" onClick={(e) => e.stopPropagation()}>
               {o.actionUrl && (
-                <a href={o.actionUrl} target="_blank" rel="noreferrer" className="qy-icon-btn" title="Open source">
-                  <ExternalLink size={14} />
+                <a href={o.actionUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-sm qy-btn-outline" title="Visit protocol">
+                  Visit Protocol <ExternalLink size={12} />
                 </a>
               )}
               <button
-                className="qy-icon-btn"
+                className={`qy-btn qy-btn-sm ${watched.has(o.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`}
                 onClick={() => onToggleWatch(o.id)}
                 disabled={watched.has(o.id)}
-                title={watched.has(o.id) ? 'Already in watchlist' : 'Add to watchlist'}
                 data-testid="opp-add-watch"
-              ><Plus size={14} /></button>
-              <button className="qy-icon-btn" onClick={() => onCreateAlert(o)} title="Create alert">
-                <Bell size={14} />
-              </button>
+              >{watched.has(o.id) ? 'Watched' : '+ Watch'}</button>
             </div>
           </div>
         ))}
       </div>
+      <PoolDetailModal opportunity={detail} onClose={() => setDetail(null)} />
     </div>
   )
 }
 
 function WatchlistView({ items, onRemove, onCreateAlert }: { items: Opportunity[]; onRemove: (id: string) => void; onCreateAlert: (o: Opportunity) => void }) {
+  function apyColor(apy: number): string {
+    if (apy === 0) return 'qy-apy-task'
+    if (apy >= 8) return 'qy-apy-high'
+    if (apy >= 4) return 'qy-apy-mid'
+    return 'qy-apy-low'
+  }
+
+  const protocolColors: Record<string, string> = {
+    'aave': '#E8E0FE', 'jito': '#FFF0E0', 'maple': '#E8F5E9',
+    'lido': '#E3F2FD', 'ether fi': '#E0F4F1', 'rocket pool': '#FFEBEE',
+    'spark': '#FFF8E1', 'kelp': '#F5F5F5', 'binance': '#FFF0E0',
+    'coinbase': '#E3F2FD', 'layer3': '#F5F5F5',
+  }
+
+  function protocolInitials(platform: string): string {
+    const parts = platform.split(' ')
+    if (parts.length >= 2) return parts[0].slice(0, 1).toUpperCase() + parts[1].slice(0, 1).toLowerCase()
+    return platform.slice(0, 2).toLowerCase()
+  }
+
+  function protocolColor(platform: string): string {
+    const key = platform.toLowerCase()
+    for (const [name, color] of Object.entries(protocolColors)) {
+      if (key.includes(name)) return color
+    }
+    return '#F0F0F0'
+  }
   return (
     <div className="qy-page" data-testid="watchlist-page">
       <div className="qy-page-header">
@@ -363,14 +509,14 @@ function WatchlistView({ items, onRemove, onCreateAlert }: { items: Opportunity[
           {items.map((o, i) => (
             <div key={o.id} style={{ animationDelay: `${i * 0.04}s` }} className="qy-wl-row qy-row-slide" data-testid="watchlist-row">
               <div className="qy-wl-row-inner">
-                <div className="qy-asset-icon">{(o.platform || '?').slice(0, 1).toUpperCase()}</div>
+                <div className="qy-asset-icon" style={{ backgroundColor: protocolColor(o.platform) }}>{protocolInitials(o.platform)}</div>
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div className="qy-asset-name">{o.platform}</div>
                   <div className="qy-asset-meta">{o.chain} · {o.asset}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div className="qy-overline">APY</div>
-                  <div className="qy-num bold">{o.apy.toFixed(2)}%</div>
+                  <div className={`qy-num bold ${apyColor(o.apy)}`}>{o.apy.toFixed(2)}%</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div className="qy-overline">TVL</div>
@@ -437,7 +583,10 @@ function AlertsView({ alerts, onDelete, onToggle }: { alerts: AlertRule[]; onDel
   )
 }
 
-function SettingsView({ settings, capital, setCapital, onSave }: any) {
+function SettingsView({ settings, capital, setCapital, onSave }: {
+  settings: UserSettings; capital: number; setCapital: (v: number) => void;
+  onSave: (s: Partial<UserSettings>) => Promise<void>;
+}) {
   const [emailOpt, setEmailOpt] = useState(settings.emailOptIn)
   const [freq, setFreq] = useState<'instant' | 'daily' | 'weekly'>('daily')
 

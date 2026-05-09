@@ -15,12 +15,11 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const shell = (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
-    </html>
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   )
-
-  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) return shell
-  return <ClerkProvider>{shell}</ClerkProvider>
 }

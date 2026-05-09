@@ -28,6 +28,31 @@ export function inferCategory(pool: Pick<LlamaPool, 'symbol' | 'stablecoin'>) {
   return 'Stablecoin lending'
 }
 
+const protocolUrls: Record<string, string> = {
+  'aave': 'https://app.aave.com/',
+  'compound': 'https://app.compound.finance/',
+  'morpho': 'https://app.morpho.org/',
+  'lido': 'https://lido.fi/',
+  'rocket pool': 'https://rocketpool.net/',
+  'jito': 'https://www.jito.network/staking/',
+  'maple': 'https://app.maple.finance/',
+  'ether fi': 'https://app.ether.fi/',
+  'spark': 'https://app.spark.fi/',
+  'kelp': 'https://kelpdao.xyz/',
+  'pendle': 'https://app.pendle.finance/',
+  'curve': 'https://curve.fi/',
+  'balancer': 'https://balancer.fi/',
+  'yearn': 'https://yearn.fi/',
+}
+
+function protocolUrl(project: string, poolId: string): string {
+  const key = project.toLowerCase()
+  for (const [name, url] of Object.entries(protocolUrls)) {
+    if (key.includes(name)) return url
+  }
+  return `https://defillama.com/yields/pool/${poolId}`
+}
+
 export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
   const apy = Number(pool.apy ?? pool.apyBase ?? 0)
   const tvl = Number(pool.tvlUsd || 0)
@@ -44,6 +69,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
   const symbol = normalizeSymbol(pool.symbol)
+  const url = protocolUrl(project, pool.pool)
 
   return {
     id: `live-${pool.pool}`,
@@ -66,12 +92,11 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     confidence,
     dailyLow: dailyEstimate * 0.72,
     dailyHigh: dailyEstimate * 1.08,
-    action: 'Open live pool data',
-    actionUrl: `https://defillama.com/yields/pool/${pool.pool}`,
+    action: 'Visit protocol',
+    actionUrl: url,
     source: 'Live',
-    notes: `Live DeFiLlama pool for ${pool.symbol} on ${pool.chain}. Verify protocol details, contract risk, and withdrawal terms before using it.`,
+    notes: `Live yield pool for ${pool.symbol} on ${pool.chain}. Verify details before depositing.`,
     flags: [
-      'Live DeFiLlama data',
       tvl >= 1_000_000 ? 'TVL above $1M' : 'Lower TVL',
       Number(pool.apyMean30d ?? 0) ? '30d APY history present' : 'Limited APY history',
       risk === 'Low' ? 'Lower-risk screen' : 'Needs review',

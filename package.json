@@ -8,6 +8,7 @@
     "build": "next build",
     "lint": "eslint .",
     "start": "next start",
+    "type-check": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"

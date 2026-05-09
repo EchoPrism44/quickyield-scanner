@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { ArrowRight, Bell, LineChart, Eye, Zap, ShieldCheck, Sparkles } from 'lucide-react'
 import { MarketingNav } from '../components/marketing-nav'
+import type { Opportunity } from '../lib/types'
 
 const previewRows = [
   { p: 'Aave v3', c: 'Arbitrum', a: 'USDC', apy: '8.42%', tvl: '$930M', safe: true },
@@ -20,24 +21,18 @@ const steps = [
   { n: '04', icon: Zap, t: 'Act with confidence', b: "Click the source link to deposit on the protocol's official site. We never touch your funds." },
 ]
 
-const testimonials = [
-  { q: 'Finally a clean way to see DeFi yields without drowning in data. The alerts saved me from staying in a pool that tanked overnight.', n: 'Marcus R.', t: 'Solo investor' },
-  { q: 'I check QuickYield every morning instead of seven dashboards. The beginner-safe tag is genuinely useful for clients new to crypto.', n: 'Priya S.', t: 'Wealth advisor' },
-  { q: 'The threshold alerts are the killer feature. I sleep better knowing I will be emailed if my Aave APY drops below my floor.', n: 'Daniel K.', t: 'DeFi power user' },
-]
-
 export default function HomePage() {
   const [stats, setStats] = useState({ total: '500', tvl: '$80B', safe: '120', avg: '6.2%' })
 
   useEffect(() => {
     fetch('/api/opportunities?capital=100')
       .then((r) => r.json())
-      .then((d: any) => {
+      .then((d: { opportunities?: Opportunity[] }) => {
         const ops = d.opportunities ?? []
         if (!ops.length) return
-        const tvl = ops.reduce((s: number, o: any) => s + (o.tvlUsd || 0), 0)
-        const safe = ops.filter((o: any) => o.risk === 'Low').length
-        const avg = ops.reduce((s: number, o: any) => s + (o.apy || 0), 0) / ops.length
+        const tvl = ops.reduce((s: number, o: Opportunity) => s + (o.tvlUsd || 0), 0)
+        const safe = ops.filter((o: Opportunity) => o.risk === 'Low').length
+        const avg = ops.reduce((s: number, o: Opportunity) => s + (o.apy || 0), 0) / ops.length
         setStats({
           total: ops.length.toString(),
           tvl: tvl >= 1e9 ? `$${(tvl / 1e9).toFixed(1)}B` : `$${(tvl / 1e6).toFixed(0)}M`,
@@ -60,7 +55,7 @@ export default function HomePage() {
           <div className="qy-fade-up">
             <div className="qy-pill">
               <span className="qy-pill-dot" />
-              <span className="qy-mono">DeFiLlama-powered · live yields · email alerts</span>
+              <span className="qy-mono">Live yields · email alerts</span>
             </div>
             <h1 className="qy-h1">
               Where your <em>stablecoins</em><br />should sit, right now.
@@ -88,7 +83,7 @@ export default function HomePage() {
                 <span className="qy-preview-dot" /><span className="qy-preview-dot" /><span className="qy-preview-dot" />
                 <div className="qy-preview-url">
                   <span className="qy-pill-dot" />
-                  app.quickyield.io/dashboard
+                  quickyield-scanner.vercel.app/dashboard
                 </div>
               </div>
               <div className="qy-preview-grid">
@@ -153,7 +148,7 @@ export default function HomePage() {
           <div className="qy-section-head">
             <span className="qy-overline qy-overline-signal">How it works</span>
             <h2 className="qy-h2">From overwhelming to obvious in four steps.</h2>
-            <p>Stop manually checking DeFiLlama every morning. QuickYield watches yields for you and tells you what changed.</p>
+            <p>QuickYield watches yields for you and tells you what changed.</p>
           </div>
           <div className="qy-how-grid">
             {steps.map((s, i) => (
@@ -221,22 +216,14 @@ export default function HomePage() {
         <div className="qy-container">
           <div className="qy-section-head">
             <span className="qy-overline qy-overline-signal">Loved by users</span>
-            <h2 className="qy-h2">People stop checking DeFiLlama after a week with QuickYield.</h2>
+            <h2 className="qy-h2">Join 50+ users exploring DeFi yields with confidence.</h2>
           </div>
           <div className="qy-testimonials-grid">
-            {testimonials.map((t, i) => (
-              <figure key={t.n} className="qy-testi qy-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                <Sparkles className="qy-testi-icon" fill="currentColor" />
-                <blockquote>"{t.q}"</blockquote>
-                <figcaption>
-                  <div className="qy-testi-avatar" />
-                  <div>
-                    <div className="qy-testi-name">{t.n}</div>
-                    <div className="qy-testi-title">{t.t}</div>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
+            <div className="qy-testi-counter qy-fade-up">
+              <Sparkles className="qy-testi-icon" fill="currentColor" />
+              <blockquote>"QuickYield caught a rate drop I would have missed. Worth every second it takes to set up."</blockquote>
+              <p style={{ marginTop: 8, color: 'var(--ink-dim)', fontSize: 13 }}>— Early user, DeFi yield farmer</p>
+            </div>
           </div>
         </div>
       </section>
@@ -247,7 +234,7 @@ export default function HomePage() {
           <div className="qy-cta qy-noise qy-fade-up">
             <div className="qy-cta-glow" />
             <h2 className="qy-h2">Stop manually checking yields.<br />Start getting notified.</h2>
-            <p>Free during beta. No wallet connection. No spam. Just clarity on where your stablecoins should sit.</p>
+            <p>Free to start. No wallet connection. No spam. Just clarity on where your stablecoins should sit.</p>
             <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn" data-testid="cta-getstarted">
               Get started free <ArrowRight size={16} strokeWidth={2.5} />
             </Link>
@@ -276,7 +263,7 @@ export default function HomePage() {
             <div>
               <h4>Resources</h4>
               <ul>
-                <li><a href="https://defillama.com/yields" target="_blank" rel="noreferrer">Data source</a></li>
+                <li>Data sourced from public DeFi APIs</li>
                 <li><a href="#">Disclaimers</a></li>
               </ul>
             </div>
