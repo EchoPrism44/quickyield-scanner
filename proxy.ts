@@ -1,12 +1,12 @@
 import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-export default clerkMiddleware((auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
   const { pathname } = req.nextUrl
   const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/api/')
-  
+
   if (isProtectedRoute) {
-    auth().protect()
+    await auth().protect()
   }
 
   return NextResponse.next()
