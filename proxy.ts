@@ -6,8 +6,7 @@ export default clerkMiddleware(async (auth, req) => {
   const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/api/')
 
   if (isProtectedRoute) {
-    const { protect } = await auth()
-    protect()
+    auth.protect()
   }
 
   return NextResponse.next()
