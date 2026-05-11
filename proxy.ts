@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 export default clerkMiddleware(async (auth, req) => {
   const { pathname } = req.nextUrl
-  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/api/')
+  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/analytics') || pathname.startsWith('/api/')
 
   if (isProtectedRoute) {
     auth.protect()
