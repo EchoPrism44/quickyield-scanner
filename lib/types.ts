@@ -3,6 +3,7 @@ export type TimeCost = '5 min' | '15 min' | 'Ongoing'
 export type Trend = 'up' | 'down' | 'flat'
 export type DataStatus = 'live' | 'fallback'
 export type AlertFrequency = 'instant' | 'daily' | 'weekly'
+export type NotificationChannelType = 'email' | 'telegram'
 
 export type Opportunity = {
   id: string
@@ -66,6 +67,38 @@ export type UserSettings = {
   disclosureAccepted: boolean
 }
 
+export type DashboardUser = {
+  id: string
+  name: string
+  email: string
+  imageUrl?: string
+  isLocal: boolean
+}
+
+export type NotificationChannel = {
+  id: string
+  userId: string
+  type: NotificationChannelType
+  destination: string
+  label?: string
+  enabled: boolean
+  verified: boolean
+  createdAt: string
+}
+
+export type NotificationStatus = {
+  email: {
+    enabled: boolean
+    destination?: string
+    verified: boolean
+  }
+  telegram: {
+    enabled: boolean
+    connected: boolean
+    username?: string
+  }
+}
+
 export type AlertRule = {
   id: string
   userId: string
@@ -82,6 +115,7 @@ export type AlertRule = {
 }
 
 export type DashboardData = {
+  user: DashboardUser
   opportunities: Opportunity[]
   dataStatus: DataStatus
   lastUpdated: string
@@ -89,4 +123,5 @@ export type DashboardData = {
   watchlist: string[]
   alerts: AlertRule[]
   settings: UserSettings
+  notifications: NotificationStatus
 }

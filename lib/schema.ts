@@ -58,6 +58,30 @@ export const alertDeliveries = pgTable('alert_deliveries', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+export const notificationChannels = pgTable(
+  'notification_channels',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    type: text('type').notNull(),
+    destination: text('destination').notNull(),
+    label: text('label'),
+    enabled: boolean('enabled').default(true).notNull(),
+    verifiedAt: timestamp('verified_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex('notification_user_type_destination_idx').on(table.userId, table.type, table.destination)],
+)
+
+export const telegramConnectTokens = pgTable('telegram_connect_tokens', {
+  token: text('token').primaryKey(),
+  userId: text('user_id').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  usedAt: timestamp('used_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 export const interactionEvents = pgTable('interaction_events', {
   id: text('id').primaryKey(),
   userId: text('user_id'),

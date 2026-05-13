@@ -1,16 +1,17 @@
 'use client'
 
+import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useMemo, useState, useTransition, useEffect } from 'react'
 import {
-  LineChart, Eye, Bell, Settings as SettingsIcon, LogOut,
+  LineChart, Eye, Bell, Settings as SettingsIcon,
   Trash2, ExternalLink, BellOff, ShieldCheck, Filter,
 } from 'lucide-react'
 import { categories, chains, timeCosts } from '../lib/constants'
 import { formatTvl } from '../lib/scoring'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
 import { Onboarding } from './onboarding'
-import type { DashboardData, Opportunity, AlertRule, UserSettings } from '../lib/types'
+import type { DashboardData, Opportunity, AlertRule, UserSettings, DashboardUser, NotificationStatus } from '../lib/types'
 
 type Tab = 'opportunities' | 'watchlist' | 'alerts' | 'settings'
 
@@ -131,9 +132,35 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
     })
     const result = await r.json()
     if (r.ok) {
-      setData((c) => ({ ...c, settings: result.settings }))
+      setData((c) => ({ ...c, settings: result.settings, notifications: result.notifications ?? c.notifications }))
       toasts.push('success', 'Settings saved')
     }
+  }
+
+  async function toggleNotificationChannel(type: 'email' | 'telegram', enabled: boolean) {
+    const r = await fetch('/api/user/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notificationChannels: { [type]: enabled } }),
+    })
+    const result = await r.json()
+    if (r.ok) {
+      setData((c) => ({ ...c, notifications: result.notifications ?? c.notifications }))
+      toasts.push('success', `${type === 'telegram' ? 'Telegram' : 'Email'} alerts ${enabled ? 'enabled' : 'paused'}`)
+    } else {
+      toasts.push('error', result?.error || 'Notification update failed')
+    }
+  }
+
+  async function connectTelegram() {
+    const r = await fetch('/api/notifications/telegram/connect', { method: 'POST' })
+    const result = await r.json()
+    if (!r.ok) {
+      toasts.push('error', result?.error || 'Telegram connect failed')
+      return
+    }
+    window.open(result.deepLink, '_blank', 'noopener,noreferrer')
+    toasts.push('success', 'Telegram opened. Press Start in the bot to finish connecting.')
   }
 
   return (
@@ -161,12 +188,11 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
         </nav>
         <div className="qy-aside-foot">
           <div className="qy-aside-user">
-            <div className="qy-aside-user-label">Mode</div>
-            <div className="qy-aside-user-email">Authenticated</div>
+            <div className="qy-aside-user-label">{data.user.isLocal ? 'Local mode' : data.user.name}</div>
+            <div className="qy-aside-user-email">{data.user.email}</div>
           </div>
-          <Link href="/" className="qy-aside-link" data-testid="logout-btn">
-            <LogOut className="qy-aside-icon" /> Back to home
-          </Link>
+          {!data.user.isLocal && <UserButton />}
+          {data.user.isLocal && <Link href="/" className="qy-aside-link">Back to home</Link>}
         </div>
       </aside>
 
@@ -205,9 +231,13 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             )}
             {tab === 'settings' && (
               <SettingsView
+                user={data.user}
                 settings={data.settings}
+                notifications={data.notifications}
                 capital={capital} setCapital={setCapital}
                 onSave={saveSettings}
+                onToggleChannel={toggleNotificationChannel}
+                onConnectTelegram={connectTelegram}
               />
             )}
           </div>
@@ -583,12 +613,14 @@ function AlertsView({ alerts, onDelete, onToggle }: { alerts: AlertRule[]; onDel
   )
 }
 
-function SettingsView({ settings, capital, setCapital, onSave }: {
-  settings: UserSettings; capital: number; setCapital: (v: number) => void;
+function SettingsView({ user, settings, notifications, capital, setCapital, onSave, onToggleChannel, onConnectTelegram }: {
+  user: DashboardUser; settings: UserSettings; notifications: NotificationStatus; capital: number; setCapital: (v: number) => void;
   onSave: (s: Partial<UserSettings>) => Promise<void>;
+  onToggleChannel: (type: 'email' | 'telegram', enabled: boolean) => Promise<void>;
+  onConnectTelegram: () => Promise<void>;
 }) {
-  const [emailOpt, setEmailOpt] = useState(settings.emailOptIn)
   const [freq, setFreq] = useState<'instant' | 'daily' | 'weekly'>('daily')
+  const emailOpt = notifications.email.enabled
 
   // Keep capital in form state synced when user types
   useEffect(() => { setCapital(settings.capital) }, [settings.capital, setCapital])
@@ -603,7 +635,7 @@ function SettingsView({ settings, capital, setCapital, onSave }: {
       <div style={{ maxWidth: 720 }}>
         <section className="qy-set-section">
           <h3>Profile</h3>
-          <p>Defaults are saved server-side for authenticated users and in-memory for local development.</p>
+          <p>Signed in as {user.email}. Defaults are saved server-side for this account.</p>
           <div className="qy-set-row">
             <div className="qy-set-row-info">
               <strong>Tracked capital</strong>
@@ -625,19 +657,38 @@ function SettingsView({ settings, capital, setCapital, onSave }: {
 
         <section className="qy-set-section">
           <h3>Notifications</h3>
-          <p>Email frequency for alert deliveries.</p>
+          <p>Telegram is best for fast trader alerts. Email stays available as a backup channel.</p>
           <div className="qy-set-row">
             <div className="qy-set-row-info">
               <strong>Email alerts enabled</strong>
-              <span>Master switch for all alerts.</span>
+              <span>{notifications.email.destination ?? 'Uses your Clerk account email once available.'}</span>
             </div>
             <button
               type="button"
               className={`qy-toggle ${emailOpt ? 'on' : ''}`}
-              onClick={() => { const next = !emailOpt; setEmailOpt(next); onSave({ emailOptIn: next }) }}
+              onClick={() => { const next = !emailOpt; onToggleChannel('email', next); onSave({ emailOptIn: next }) }}
               data-testid="toggle-notifications"
               aria-label="Toggle notifications"
             />
+          </div>
+          <div className="qy-set-row">
+            <div className="qy-set-row-info">
+              <strong>Telegram alerts</strong>
+              <span>{notifications.telegram.connected ? `Connected${notifications.telegram.username ? ` as ${notifications.telegram.username}` : ''}` : 'Connect your Telegram chat for fast alerts.'}</span>
+            </div>
+            {notifications.telegram.connected ? (
+              <button
+                type="button"
+                className={`qy-toggle ${notifications.telegram.enabled ? 'on' : ''}`}
+                onClick={() => onToggleChannel('telegram', !notifications.telegram.enabled)}
+                data-testid="toggle-telegram"
+                aria-label="Toggle Telegram alerts"
+              />
+            ) : (
+              <button type="button" className="qy-btn qy-btn-secondary" onClick={onConnectTelegram} data-testid="connect-telegram">
+                Connect Telegram
+              </button>
+            )}
           </div>
           <div style={{ paddingTop: 16 }}>
             <div className="qy-overline" style={{ marginBottom: 8 }}>Digest frequency</div>

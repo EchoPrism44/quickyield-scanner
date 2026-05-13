@@ -10,14 +10,17 @@ function getResend() {
   return resend
 }
 
-export async function sendAlertEmail(alert: AlertRule, opportunity: Opportunity) {
+export async function sendAlertEmail(to: string | undefined, alert: AlertRule, opportunity: Opportunity) {
   const client = getResend()
-  if (!client) return { skipped: true, reason: 'RESEND_API_KEY is not configured' }
+  if (!client) return { sent: false as const, skipped: true as const, reason: 'RESEND_API_KEY is not configured' }
+  if (!to) return { sent: false as const, skipped: true as const, reason: 'No verified email destination configured' }
 
-  return client.emails.send({
+  const result = await client.emails.send({
     from: process.env.RESEND_FROM ?? 'QuickYield <onboarding@resend.dev>',
-    to: process.env.ALERT_TEST_RECIPIENT ?? 'delivered@resend.dev',
+    to,
     subject: `QuickYield alert: ${opportunity.name}`,
     react: AlertEmail({ alert, opportunity }),
   })
+  if (result.error) return { sent: false as const, reason: result.error.message }
+  return { sent: true as const }
 }

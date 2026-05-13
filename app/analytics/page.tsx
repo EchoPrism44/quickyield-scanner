@@ -139,7 +139,7 @@ export default function AnalyticsPage() {
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
                     labelStyle={{ color: '#e2e8f0' }}
-                    formatter={(value: number) => [`${value.toFixed(2)}%`, 'APY']}
+                    formatter={(value) => [`${Number(value ?? 0).toFixed(2)}%`, 'APY']}
                   />
                   <Line type="monotone" dataKey="apy" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981' }} />
                 </LineChart>
@@ -158,7 +158,7 @@ export default function AnalyticsPage() {
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
                     labelStyle={{ color: '#e2e8f0' }}
-                    formatter={(value: number) => [formatTvl(value), 'TVL']}
+                    formatter={(value) => [formatTvl(Number(value ?? 0)), 'TVL']}
                   />
                   <Legend />
                   <Bar dataKey="totalTvl" fill="#3b82f6" name="Total TVL" radius={[4, 4, 0, 0]} />

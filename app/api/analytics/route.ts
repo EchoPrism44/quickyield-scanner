@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getCachedOpportunities } from '../../../../lib/store'
-import type { Opportunity } from '../../../../lib/types'
+import { getCachedOpportunities } from '../../../lib/store'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,10 +28,8 @@ export async function GET() {
     })
   }
 
-  const now = new Date()
   const history: TimePoint[] = []
   for (let i = 6; i >= 0; i--) {
-    const time = new Date(now.getTime() - i * 60 * 60 * 1000)
     const variation = Math.random() * 1.5 - 0.5
     const baseApy = opportunities.slice(0, 5).reduce((sum, o) => sum + o.apy, 0) / Math.min(opportunities.length, 5)
     history.push({

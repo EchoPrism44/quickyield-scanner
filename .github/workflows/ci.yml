@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 * * * *'
 
 jobs:
   check:
@@ -20,3 +22,15 @@ jobs:
       - run: npm run type-check
       - run: npm run test
       - run: npm run build
+
+  cron-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Trigger yield scan
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/cron/scan-yields" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
