@@ -22,4 +22,8 @@ export const settingsInput = z.object({
   category: z.string().optional(),
   emailOptIn: z.boolean().optional(),
   disclosureAccepted: z.boolean().optional(),
+  notificationChannels: z.object({
+    email: z.boolean().optional(),
+    telegram: z.boolean().optional(),
+  }).optional(),
 })

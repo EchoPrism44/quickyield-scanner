@@ -375,7 +375,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-aside-link:hover { background: rgba(255, 255, 255, 0.03); color: var(--ink); }
 .qy-aside-link.active { background: rgba(255, 255, 255, 0.06); color: var(--ink); }
 .qy-aside-icon { width: 17px; height: 17px; }
-.qy-aside-foot { padding: 12px; border-top: 1px solid var(--line); }
+.qy-aside-foot { padding: 12px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
 .qy-aside-user {
   padding: 10px 14px; border-radius: 6px; font-size: 12px; color: var(--ink-mute);
 }

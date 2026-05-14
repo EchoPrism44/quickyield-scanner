@@ -2,8 +2,8 @@ import { desc, eq, sql } from 'drizzle-orm'
 import { ALERT_LIMIT, WATCHLIST_LIMIT, defaultSettings } from './constants'
 import { getDb, hasDatabase } from './db'
 import { memory } from './memory-store'
-import { alertDeliveries, alertRules, opportunitiesCache, users, watchlistItems } from './schema'
-import type { AlertRule, Opportunity, UserSettings } from './types'
+import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, telegramConnectTokens, users, watchlistItems } from './schema'
+import type { AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, UserSettings } from './types'
 
 function id(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`
@@ -31,16 +31,53 @@ function dbAlertToAlert(row: typeof alertRules.$inferSelect): AlertRule {
   }
 }
 
-export async function ensureUser(userId: string) {
+function dbChannelToChannel(row: typeof notificationChannels.$inferSelect): NotificationChannel {
+  return {
+    id: row.id,
+    userId: row.userId,
+    type: row.type === 'telegram' ? 'telegram' : 'email',
+    destination: row.destination,
+    label: row.label ?? undefined,
+    enabled: row.enabled,
+    verified: Boolean(row.verifiedAt),
+    createdAt: row.createdAt.toISOString(),
+  }
+}
+
+function notificationStatus(channels: NotificationChannel[]): NotificationStatus {
+  const email = channels.find((channel) => channel.type === 'email')
+  const telegram = channels.find((channel) => channel.type === 'telegram')
+  return {
+    email: {
+      enabled: email?.enabled ?? false,
+      destination: email?.destination,
+      verified: email?.verified ?? false,
+    },
+    telegram: {
+      enabled: telegram?.enabled ?? false,
+      connected: Boolean(telegram?.verified),
+      username: telegram?.label,
+    },
+  }
+}
+
+export async function ensureUser(userId: string, email?: string | null) {
   if (!hasDatabase()) return
   const db = getDb()
   const existing = await db.select().from(users).where(eq(users.clerkUserId, userId)).limit(1)
-  if (existing.length) return
+  if (existing.length) {
+    if (email && existing[0].email !== email) {
+      await db.update(users).set({ email, updatedAt: new Date() }).where(eq(users.clerkUserId, userId))
+    }
+    return
+  }
   await db.insert(users).values({
     id: id('user'),
     clerkUserId: userId,
+    email: email ?? null,
     settingsJson: JSON.stringify(defaultSettings),
   })
+  if (email) await upsertNotificationChannel(userId, 'email', email, 'Primary email', true)
 }
 
 export async function getUserSettings(userId: string): Promise<UserSettings> {
@@ -60,6 +97,110 @@ export async function updateUserSettings(userId: string, patch: Partial<UserSett
   await ensureUser(userId)
   await getDb().update(users).set({ settingsJson: JSON.stringify(next), updatedAt: new Date() }).where(eq(users.clerkUserId, userId))
   return next
+}
+
+export async function getUserEmail(userId: string) {
+  if (!hasDatabase()) return undefined
+  const [row] = await getDb().select().from(users).where(eq(users.clerkUserId, userId)).limit(1)
+  return row?.email ?? undefined
+}
+
+export async function getNotificationChannels(userId: string) {
+  if (!hasDatabase()) return memory.notificationChannels.get(userId) ?? []
+  await ensureUser(userId)
+  const rows = await getDb().select().from(notificationChannels).where(eq(notificationChannels.userId, userId)).orderBy(desc(notificationChannels.createdAt))
+  return rows.map(dbChannelToChannel)
+}
+
+export async function getNotificationStatus(userId: string) {
+  return notificationStatus(await getNotificationChannels(userId))
+}
+
+export async function upsertNotificationChannel(
+  userId: string,
+  type: NotificationChannelType,
+  destination: string,
+  label?: string,
+  verified = false,
+) {
+  const now = new Date()
+  if (!hasDatabase()) {
+    const channels = memory.notificationChannels.get(userId) ?? []
+    const existing = channels.find((channel) => channel.type === type && channel.destination === destination)
+    const next: NotificationChannel = existing
+      ? { ...existing, label, enabled: true, verified: existing.verified || verified }
+      : {
+          id: id('channel'),
+          userId,
+          type,
+          destination,
+          label,
+          enabled: true,
+          verified,
+          createdAt: now.toISOString(),
+        }
+    memory.notificationChannels.set(userId, existing ? channels.map((channel) => (channel.id === existing.id ? next : channel)) : [next, ...channels])
+    return next
+  }
+
+  await ensureUser(userId)
+  await getDb().insert(notificationChannels).values({
+    id: id('channel'),
+    userId,
+    type,
+    destination,
+    label,
+    enabled: true,
+    verifiedAt: verified ? now : null,
+    updatedAt: now,
+  }).onConflictDoUpdate({
+    target: [notificationChannels.userId, notificationChannels.type, notificationChannels.destination],
+    set: {
+      label,
+      enabled: true,
+      verifiedAt: verified ? now : sql`${notificationChannels.verifiedAt}`,
+      updatedAt: now,
+    },
+  })
+  const [channel] = (await getNotificationChannels(userId)).filter((item) => item.type === type && item.destination === destination)
+  return channel
+}
+
+export async function updateNotificationChannel(userId: string, type: NotificationChannelType, enabled: boolean) {
+  if (!hasDatabase()) {
+    const channels = memory.notificationChannels.get(userId) ?? []
+    memory.notificationChannels.set(userId, channels.map((channel) => (channel.type === type ? { ...channel, enabled } : channel)))
+    return getNotificationStatus(userId)
+  }
+  await getDb().update(notificationChannels).set({ enabled, updatedAt: new Date() }).where(sql`${notificationChannels.userId} = ${userId} and ${notificationChannels.type} = ${type}`)
+  return getNotificationStatus(userId)
+}
+
+export async function createTelegramConnectToken(userId: string) {
+  const token = crypto.randomUUID().replaceAll('-', '')
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000)
+  if (!hasDatabase()) {
+    memory.telegramConnectTokens.set(token, { userId, expiresAt, used: false })
+    return { token, expiresAt: expiresAt.toISOString() }
+  }
+  await ensureUser(userId)
+  await getDb().insert(telegramConnectTokens).values({ token, userId, expiresAt })
+  return { token, expiresAt: expiresAt.toISOString() }
+}
+
+export async function verifyTelegramConnectToken(token: string, chatId: string, username?: string) {
+  if (!hasDatabase()) {
+    const record = memory.telegramConnectTokens.get(token)
+    if (!record || record.used || record.expiresAt.getTime() < Date.now()) return null
+    record.used = true
+    const channel = await upsertNotificationChannel(record.userId, 'telegram', chatId, username, true)
+    return channel
+  }
+
+  const [record] = await getDb().select().from(telegramConnectTokens).where(eq(telegramConnectTokens.token, token)).limit(1)
+  if (!record || record.usedAt || record.expiresAt.getTime() < Date.now()) return null
+  await getDb().update(telegramConnectTokens).set({ usedAt: new Date() }).where(eq(telegramConnectTokens.token, token))
+  return upsertNotificationChannel(record.userId, 'telegram', chatId, username, true)
 }
 
 export async function getWatchlist(userId: string) {

@@ -12,9 +12,10 @@ QuickYield is a Next.js SaaS beta for crypto yield research. It scans public DeF
 
 - Next.js App Router on Vercel
 - Clerk email auth
-- Neon Postgres with Drizzle schema
+- Supabase Postgres with Drizzle schema
 - Resend + React Email for alert emails
-- Vercel Cron for hourly scans
+- GitHub Actions for hourly scans
+- Telegram bot alerts for trader notifications
 - Framer Motion + Lucide icons + custom CSS aesthetic (Cabinet Grotesk + JetBrains Mono on Signal Orange)
 
 ## Local Development
@@ -34,8 +35,10 @@ CLERK_SECRET_KEY=
 DATABASE_URL=
 RESEND_API_KEY=
 RESEND_FROM="QuickYield <alerts@yourdomain.com>"
-ALERT_TEST_RECIPIENT=
 CRON_SECRET=
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_WEBHOOK_SECRET=
+NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=
 ```
 
 ## Commands
