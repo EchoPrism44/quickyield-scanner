@@ -20,10 +20,10 @@
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.14.0",
     "next": "^16.2.4",
+    "postgres": "^3.4.9",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "recharts": "^3.8.1",
-    "postgres": "^3.4.7",
     "resend": "^6.12.2",
     "zod": "^4.4.3"
   },
