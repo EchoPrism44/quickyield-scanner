@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useMemo, useState, useTransition, useEffect } from 'react'
 import {
   LineChart, Eye, Bell, Settings as SettingsIcon,
-  Trash2, ExternalLink, BellOff, ShieldCheck, Filter,
+  Trash2, ExternalLink, BellOff, ShieldCheck, Filter, BarChart3,
 } from 'lucide-react'
 import { categories, chains, timeCosts } from '../lib/constants'
 import { formatTvl } from '../lib/scoring'
@@ -185,6 +185,9 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               <Icon className="qy-aside-icon" /> {label}
             </button>
           ))}
+          <Link href="/analytics" className="qy-aside-link">
+            <BarChart3 className="qy-aside-icon" /> Analytics
+          </Link>
         </nav>
         <div className="qy-aside-foot">
           <div className="qy-aside-user">
