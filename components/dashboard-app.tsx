@@ -185,7 +185,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               <Icon className="qy-aside-icon" /> {label}
             </button>
           ))}
-          <Link href="/analytics" className="qy-aside-link">
+          <Link href="/analytics" className="qy-aside-link" target="_blank">
             <BarChart3 className="qy-aside-icon" /> Analytics
           </Link>
         </nav>
