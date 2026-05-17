@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 interface TimePoint {
   time: string
@@ -46,29 +46,36 @@ export default function AnalyticsPage() {
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString())
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const refreshData = async () => {
+  const latestPoint = history[history.length - 1]
+  const totalTvl = chains.reduce((sum, chain) => sum + chain.totalTvl, 0)
+  const totalOpportunities = chains.reduce((sum, chain) => sum + chain.opportunities, 0)
+
+  async function refreshData() {
     setIsRefreshing(true)
     try {
       const res = await fetch('/api/analytics', { cache: 'no-store' })
-      if (res.ok) {
-        const data: AnalyticsData = await res.json()
-        setHistory(data.history)
-        setChains(data.chains)
-        setLastUpdated(new Date().toLocaleTimeString())
-      }
+      if (!res.ok) return
+      const data: AnalyticsData = await res.json()
+      if (data.history.length > 0) setHistory(data.history)
+      if (data.chains.length > 0) setChains(data.chains)
+      setLastUpdated(new Date(data.lastUpdated).toLocaleTimeString())
     } catch {
-      // Keep existing data on error
+      // Keep the last known snapshot visible if the refresh fails.
     } finally {
       setIsRefreshing(false)
     }
   }
 
   useEffect(() => {
-    const interval = setInterval(refreshData, 60000) // Refresh every minute
-    return () => clearInterval(interval)
+    const initialRefresh = setTimeout(() => { void refreshData() }, 0)
+    const interval = setInterval(refreshData, 60000)
+    return () => {
+      clearTimeout(initialRefresh)
+      clearInterval(interval)
+    }
   }, [])
 
-  const formatTvl = (value: number) => {
+  function formatTvl(value: number) {
     if (value >= 1000000000) return `$${(value / 1000000000).toFixed(1)}B`
     if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`
     if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`
@@ -76,66 +83,62 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-slate-900 p-6 text-slate-100">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-emerald-400">Yield Analytics</h1>
-            <p className="text-slate-400 mt-1">Real-time APY trends and chain performance</p>
+            <p className="mt-1 text-slate-400">Live APY trends and chain performance from the tracked opportunity set</p>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-500">Last updated: {lastUpdated}</span>
             <button
               onClick={refreshData}
               disabled={isRefreshing}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 rounded-lg font-medium transition-colors"
+              className="rounded-lg bg-emerald-600 px-4 py-2 font-medium transition-colors hover:bg-emerald-500 disabled:bg-emerald-800"
             >
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-            <p className="text-slate-400 text-sm">Avg APY (All Chains)</p>
-            <p className="text-3xl font-bold text-emerald-400 mt-1">
-              {mockHistoryData[mockHistoryData.length - 1].apy.toFixed(2)}%
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+            <p className="text-sm text-slate-400">Avg APY (All Chains)</p>
+            <p className="mt-1 text-3xl font-bold text-emerald-400">
+              {latestPoint ? latestPoint.apy.toFixed(2) : '0.00'}%
             </p>
-            <p className="text-emerald-400 text-sm mt-1">↑ +0.3% from 24h ago</p>
+            <p className="mt-1 text-sm text-emerald-400">Based on the current tracked pool set</p>
           </div>
-          <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-            <p className="text-slate-400 text-sm">Total TVL Tracked</p>
-            <p className="text-3xl font-bold text-blue-400 mt-1">
-              {formatTvl(chains.reduce((sum, c) => sum + c.totalTvl, 0))}
-            </p>
-            <p className="text-blue-400 text-sm mt-1">↑ +2.4% today</p>
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+            <p className="text-sm text-slate-400">Total TVL Tracked</p>
+            <p className="mt-1 text-3xl font-bold text-blue-400">{formatTvl(totalTvl)}</p>
+            <p className="mt-1 text-sm text-blue-400">Aggregated across the analytics snapshot</p>
           </div>
-          <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-            <p className="text-slate-400 text-sm">Active Opportunities</p>
-            <p className="text-3xl font-bold text-amber-400 mt-1">
-              {chains.reduce((sum, c) => sum + c.opportunities, 0)}
-            </p>
-            <p className="text-amber-400 text-sm mt-1">Across 4 chains</p>
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+            <p className="text-sm text-slate-400">Active Opportunities</p>
+            <p className="mt-1 text-3xl font-bold text-amber-400">{totalOpportunities}</p>
+            <p className="mt-1 text-sm text-amber-400">Across {chains.length} tracked chains</p>
           </div>
-          <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-            <p className="text-slate-400 text-sm">Live Data Status</p>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-emerald-400 font-medium">Live Feed Active</span>
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+            <p className="text-sm text-slate-400">Live Data Status</p>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="h-3 w-3 animate-pulse rounded-full bg-emerald-500"></div>
+              <span className="font-medium text-emerald-400">Live Feed Active</span>
             </div>
-            <p className="text-slate-500 text-sm mt-1">Auto-refresh every 60s</p>
+            <p className="mt-1 text-sm text-slate-500">Auto-refresh every 60s</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-            <h2 className="text-xl font-semibold mb-4">APY Trend (Last 6 Hours)</h2>
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
+            <h2 className="mb-4 text-xl font-semibold">APY Trend (Last 6 Hours)</h2>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `${v}%`} />
+                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `${value}%`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
                     labelStyle={{ color: '#e2e8f0' }}
@@ -147,14 +150,14 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-            <h2 className="text-xl font-semibold mb-4">TVL by Chain</h2>
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
+            <h2 className="mb-4 text-xl font-semibold">TVL by Chain</h2>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chains}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis dataKey="chain" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${(v / 1000000000).toFixed(1)}B`} />
+                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `$${(value / 1000000000).toFixed(1)}B`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
                     labelStyle={{ color: '#e2e8f0' }}
@@ -168,28 +171,28 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-          <h2 className="text-xl font-semibold mb-4">Chain Performance Comparison</h2>
+        <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
+          <h2 className="mb-4 text-xl font-semibold">Chain Performance Comparison</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Chain</th>
-                  <th className="text-right py-3 px-4 text-slate-400 font-medium">Avg APY</th>
-                  <th className="text-right py-3 px-4 text-slate-400 font-medium">Total TVL</th>
-                  <th className="text-right py-3 px-4 text-slate-400 font-medium">Opportunities</th>
-                  <th className="text-right py-3 px-4 text-slate-400 font-medium">Risk Score</th>
+                  <th className="px-4 py-3 text-left font-medium text-slate-400">Chain</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-400">Avg APY</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-400">Total TVL</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-400">Opportunities</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-400">Risk Score</th>
                 </tr>
               </thead>
               <tbody>
                 {chains.map((chain) => (
-                  <tr key={chain.chain} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                    <td className="py-3 px-4 font-medium">{chain.chain}</td>
-                    <td className="py-3 px-4 text-right text-emerald-400 font-semibold">{chain.avgApy.toFixed(2)}%</td>
-                    <td className="py-3 px-4 text-right text-blue-400">{formatTvl(chain.totalTvl)}</td>
-                    <td className="py-3 px-4 text-right text-amber-400">{chain.opportunities}</td>
-                    <td className="py-3 px-4 text-right">
-                      <span className={`px-2 py-1 rounded text-sm font-medium ${
+                  <tr key={chain.chain} className="border-b border-slate-700/50 transition-colors hover:bg-slate-700/30">
+                    <td className="px-4 py-3 font-medium">{chain.chain}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-emerald-400">{chain.avgApy.toFixed(2)}%</td>
+                    <td className="px-4 py-3 text-right text-blue-400">{formatTvl(chain.totalTvl)}</td>
+                    <td className="px-4 py-3 text-right text-amber-400">{chain.opportunities}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className={`rounded px-2 py-1 text-sm font-medium ${
                         chain.avgApy > 5 ? 'bg-amber-600/20 text-amber-400' : 'bg-emerald-600/20 text-emerald-400'
                       }`}>
                         {chain.avgApy > 5 ? 'High Yield' : 'Stable'}
@@ -202,9 +205,9 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-center text-slate-500 text-sm">
+        <div className="mt-8 flex items-center justify-center text-sm text-slate-500">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></div>
             <span>Data synced from DeFiLlama live feeds</span>
           </div>
         </div>
