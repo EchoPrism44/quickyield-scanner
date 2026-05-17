@@ -1,7 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 
 interface TimePoint {
   time: string
@@ -55,12 +66,13 @@ export default function AnalyticsPage() {
     try {
       const res = await fetch('/api/analytics', { cache: 'no-store' })
       if (!res.ok) return
+
       const data: AnalyticsData = await res.json()
       if (data.history.length > 0) setHistory(data.history)
       if (data.chains.length > 0) setChains(data.chains)
       setLastUpdated(new Date(data.lastUpdated).toLocaleTimeString())
     } catch {
-      // Keep the last known snapshot visible if the refresh fails.
+      // Keep the last known snapshot visible if refresh fails.
     } finally {
       setIsRefreshing(false)
     }
@@ -83,135 +95,124 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 text-slate-100">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex items-center justify-between">
+    <main className="qy-analytics">
+      <div className="qy-container">
+        <div className="qy-analytics-head">
           <div>
-            <h1 className="text-3xl font-bold text-emerald-400">Yield Analytics</h1>
-            <p className="mt-1 text-slate-400">Live APY trends and chain performance from the tracked opportunity set</p>
+            <span className="qy-overline qy-overline-signal">Analytics</span>
+            <h1 className="qy-h2">Yield Analytics</h1>
+            <p className="qy-analytics-sub">Live APY trends and chain performance from the tracked opportunity set.</p>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-500">Last updated: {lastUpdated}</span>
+          <div className="qy-analytics-actions">
+            <span className="qy-mono qy-analytics-updated">Updated {lastUpdated}</span>
             <button
+              type="button"
+              className="qy-btn qy-btn-primary"
               onClick={refreshData}
               disabled={isRefreshing}
-              className="rounded-lg bg-emerald-600 px-4 py-2 font-medium transition-colors hover:bg-emerald-500 disabled:bg-emerald-800"
             >
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </button>
           </div>
         </div>
 
-        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
-            <p className="text-sm text-slate-400">Avg APY (All Chains)</p>
-            <p className="mt-1 text-3xl font-bold text-emerald-400">
-              {latestPoint ? latestPoint.apy.toFixed(2) : '0.00'}%
-            </p>
-            <p className="mt-1 text-sm text-emerald-400">Based on the current tracked pool set</p>
-          </div>
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
-            <p className="text-sm text-slate-400">Total TVL Tracked</p>
-            <p className="mt-1 text-3xl font-bold text-blue-400">{formatTvl(totalTvl)}</p>
-            <p className="mt-1 text-sm text-blue-400">Aggregated across the analytics snapshot</p>
-          </div>
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
-            <p className="text-sm text-slate-400">Active Opportunities</p>
-            <p className="mt-1 text-3xl font-bold text-amber-400">{totalOpportunities}</p>
-            <p className="mt-1 text-sm text-amber-400">Across {chains.length} tracked chains</p>
-          </div>
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
-            <p className="text-sm text-slate-400">Live Data Status</p>
-            <div className="mt-2 flex items-center gap-2">
-              <div className="h-3 w-3 animate-pulse rounded-full bg-emerald-500"></div>
-              <span className="font-medium text-emerald-400">Live Feed Active</span>
-            </div>
-            <p className="mt-1 text-sm text-slate-500">Auto-refresh every 60s</p>
-          </div>
-        </div>
+        <section className="qy-analytics-stats">
+          <article className="qy-analytics-stat">
+            <span className="qy-overline">Avg APY</span>
+            <strong>{latestPoint ? latestPoint.apy.toFixed(2) : '0.00'}%</strong>
+            <p>Based on the current tracked pool set.</p>
+          </article>
+          <article className="qy-analytics-stat">
+            <span className="qy-overline">Total TVL</span>
+            <strong>{formatTvl(totalTvl)}</strong>
+            <p>Aggregated across the analytics snapshot.</p>
+          </article>
+          <article className="qy-analytics-stat">
+            <span className="qy-overline">Opportunities</span>
+            <strong>{totalOpportunities}</strong>
+            <p>Across {chains.length} tracked chains.</p>
+          </article>
+          <article className="qy-analytics-stat">
+            <span className="qy-overline">Feed Status</span>
+            <strong>Live</strong>
+            <p>Auto-refresh every 60 seconds.</p>
+          </article>
+        </section>
 
-        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-            <h2 className="mb-4 text-xl font-semibold">APY Trend (Last 6 Hours)</h2>
-            <div className="h-72">
+        <section className="qy-analytics-grid">
+          <article className="qy-analytics-panel">
+            <div className="qy-analytics-panel-head">
+              <h2>APY Trend</h2>
+              <span className="qy-mono">Last 6 hours</span>
+            </div>
+            <div className="qy-analytics-chart">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `${value}%`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                  <XAxis dataKey="time" stroke="#a1a1aa" fontSize={12} />
+                  <YAxis stroke="#a1a1aa" fontSize={12} tickFormatter={(value) => `${value}%`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
-                    labelStyle={{ color: '#e2e8f0' }}
+                    contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}
+                    labelStyle={{ color: '#f4f4f5' }}
                     formatter={(value) => [`${Number(value ?? 0).toFixed(2)}%`, 'APY']}
                   />
-                  <Line type="monotone" dataKey="apy" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981' }} />
+                  <Line type="monotone" dataKey="apy" stroke="#ff4500" strokeWidth={3} dot={{ fill: '#ff4500' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </article>
 
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-            <h2 className="mb-4 text-xl font-semibold">TVL by Chain</h2>
-            <div className="h-72">
+          <article className="qy-analytics-panel">
+            <div className="qy-analytics-panel-head">
+              <h2>TVL by Chain</h2>
+              <span className="qy-mono">Current snapshot</span>
+            </div>
+            <div className="qy-analytics-chart">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chains}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="chain" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `$${(value / 1000000000).toFixed(1)}B`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                  <XAxis dataKey="chain" stroke="#a1a1aa" fontSize={12} />
+                  <YAxis stroke="#a1a1aa" fontSize={12} tickFormatter={(value) => `$${(value / 1000000000).toFixed(1)}B`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
-                    labelStyle={{ color: '#e2e8f0' }}
+                    contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}
+                    labelStyle={{ color: '#f4f4f5' }}
                     formatter={(value) => [formatTvl(Number(value ?? 0)), 'TVL']}
                   />
                   <Legend />
-                  <Bar dataKey="totalTvl" fill="#3b82f6" name="Total TVL" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="totalTvl" fill="#00e599" radius={[8, 8, 0, 0]} name="Total TVL" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
-        </div>
+          </article>
+        </section>
 
-        <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-          <h2 className="mb-4 text-xl font-semibold">Chain Performance Comparison</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="px-4 py-3 text-left font-medium text-slate-400">Chain</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-400">Avg APY</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-400">Total TVL</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-400">Opportunities</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-400">Risk Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {chains.map((chain) => (
-                  <tr key={chain.chain} className="border-b border-slate-700/50 transition-colors hover:bg-slate-700/30">
-                    <td className="px-4 py-3 font-medium">{chain.chain}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-emerald-400">{chain.avgApy.toFixed(2)}%</td>
-                    <td className="px-4 py-3 text-right text-blue-400">{formatTvl(chain.totalTvl)}</td>
-                    <td className="px-4 py-3 text-right text-amber-400">{chain.opportunities}</td>
-                    <td className="px-4 py-3 text-right">
-                      <span className={`rounded px-2 py-1 text-sm font-medium ${
-                        chain.avgApy > 5 ? 'bg-amber-600/20 text-amber-400' : 'bg-emerald-600/20 text-emerald-400'
-                      }`}>
-                        {chain.avgApy > 5 ? 'High Yield' : 'Stable'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <section className="qy-analytics-panel">
+          <div className="qy-analytics-panel-head">
+            <h2>Chain Performance Comparison</h2>
+            <span className="qy-mono">Current ranking</span>
           </div>
-        </div>
-
-        <div className="mt-8 flex items-center justify-center text-sm text-slate-500">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></div>
-            <span>Data synced from DeFiLlama live feeds</span>
+          <div className="qy-analytics-table">
+            <div className="qy-analytics-table-head">
+              <span>Chain</span>
+              <span>Avg APY</span>
+              <span>Total TVL</span>
+              <span>Opportunities</span>
+              <span>Profile</span>
+            </div>
+            {chains.map((chain) => (
+              <div key={chain.chain} className="qy-analytics-table-row">
+                <span>{chain.chain}</span>
+                <span className="qy-num">{chain.avgApy.toFixed(2)}%</span>
+                <span className="qy-mono">{formatTvl(chain.totalTvl)}</span>
+                <span className="qy-mono">{chain.opportunities}</span>
+                <span className={`qy-analytics-badge ${chain.avgApy > 5 ? 'warn' : 'safe'}`}>
+                  {chain.avgApy > 5 ? 'High Yield' : 'Stable'}
+                </span>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }
