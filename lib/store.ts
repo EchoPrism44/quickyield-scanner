@@ -371,7 +371,7 @@ export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
 
 export async function getCachedOpportunities() {
   if (!hasDatabase()) return memory.opportunities
-  const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt)).limit(50)
+  const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt)).limit(500)
   return rows.map((row) => JSON.parse(row.payloadJson) as Opportunity)
 }
 

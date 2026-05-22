@@ -7,7 +7,6 @@ import {
   Bell,
   BellOff,
   Bookmark,
-  ExternalLink,
   Filter,
   LayoutDashboard,
   Settings as SettingsIcon,
@@ -359,7 +358,7 @@ function MarketsView({
         </div>
         <div className="qy-terminal-kpis">
           <div className="qy-terminal-kpi"><span className="qy-overline">Screened</span><strong>{data.opportunities.filter((item) => item.risk === 'Low').length}</strong></div>
-          <div className="qy-terminal-kpi"><span className="qy-overline">Live source</span><strong>DeFiLlama</strong></div>
+          <div className="qy-terminal-kpi"><span className="qy-overline">Universe cap</span><strong>500</strong></div>
         </div>
       </div>
 
@@ -417,9 +416,9 @@ function MarketsView({
               <strong>{new Date(item.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
             </div>
             <div className="qy-terminal-actions">
-              <a href={item.officialUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-sm qy-btn-outline">
-                Protocol <ExternalLink size={12} />
-              </a>
+              <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
+                Research
+              </Link>
               <button type="button" className="qy-icon-btn" onClick={() => onCreateAlert(item)} title="Create alert"><Bell size={14} /></button>
               <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
                 {watched.has(item.id) ? 'Saved' : '+ Watch'}
@@ -612,7 +611,7 @@ function SettingsView({
 
         <section className="qy-set-section">
           <h3>Method</h3>
-          <p>QuickYield combines live DeFiLlama market data with internal ranking, data completeness, and volatility screens. It is a research terminal, not an execution product.</p>
+          <p>QuickYield combines live market-feed data with internal ranking, data completeness, and volatility screens. It is a research terminal, not an execution product.</p>
         </section>
       </div>
     </section>

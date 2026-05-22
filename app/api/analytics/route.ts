@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getCachedOpportunities, getOpportunitySnapshots } from '../../../lib/store'
+import type { Opportunity } from '../../../lib/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +17,8 @@ interface ChainData {
   totalTvl: number
   opportunities: number
 }
+
+type TopPool = Pick<Opportunity, 'id' | 'platform' | 'asset' | 'chain' | 'apy' | 'tvlUsd' | 'confidence' | 'volatility'>
 
 function formatHourLabel(timestamp: string) {
   return new Date(timestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
@@ -46,7 +49,7 @@ export async function GET() {
     }
   }
 
-  const history: TimePoint[] = Array.from(bucket.entries())
+  let history: TimePoint[] = Array.from(bucket.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .slice(-12)
     .map(([hourKey, value]) => ({
@@ -55,6 +58,17 @@ export async function GET() {
       tvl: value.tvlSum,
       count: value.count,
     }))
+
+  if (history.length === 0) {
+    const apySum = opportunities.reduce((sum, item) => sum + item.apy, 0)
+    const tvlSum = opportunities.reduce((sum, item) => sum + item.tvlUsd, 0)
+    history = [{
+      time: 'Now',
+      apy: Number((apySum / Math.max(opportunities.length, 1)).toFixed(2)),
+      tvl: tvlSum,
+      count: opportunities.length,
+    }]
+  }
 
   const chainMap = new Map<string, ChainData>()
   for (const op of opportunities) {
@@ -74,6 +88,20 @@ export async function GET() {
   return NextResponse.json({
     history,
     chains,
+    topPools: opportunities
+      .slice()
+      .sort((a, b) => b.confidence - a.confidence || b.tvlUsd - a.tvlUsd)
+      .slice(0, 12)
+      .map((item): TopPool => ({
+        id: item.id,
+        platform: item.platform,
+        asset: item.asset,
+        chain: item.chain,
+        apy: item.apy,
+        tvlUsd: item.tvlUsd,
+        confidence: item.confidence,
+        volatility: item.volatility,
+      })),
     lastUpdated,
   })
 }

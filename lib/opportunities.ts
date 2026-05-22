@@ -5,7 +5,7 @@ import { poolToOpportunity } from './scoring'
 import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
-const MAX_TRACKED_LIVE_POOLS = 24
+const MAX_TRACKED_LIVE_POOLS = 500
 
 function valid(value: string | undefined, options: string[], fallback: string) {
   return value && options.includes(value) ? value : fallback
@@ -34,7 +34,7 @@ async function fetchLiveOpportunities() {
     cache: 'no-store',
     signal: AbortSignal.timeout(LIVE_FEED_TIMEOUT_MS),
   })
-  if (!response.ok) throw new Error(`DeFiLlama returned ${response.status}`)
+  if (!response.ok) throw new Error(`Market feed returned ${response.status}`)
   const payload = (await response.json()) as { data?: LlamaPool[] }
   const allowedChains = new Set(['Base', 'Solana', 'Arbitrum', 'Ethereum'])
   const live = (payload.data ?? [])
@@ -79,7 +79,7 @@ export async function scanAndCacheYields() {
       opportunities,
       dataStatus: 'fallback' as const,
       lastUpdated: new Date().toISOString(),
-      fallbackReason: error instanceof Error ? error.message : 'Live scan failed',
+      fallbackReason: error instanceof Error ? error.message : 'Market scan failed',
     }
   }
 }

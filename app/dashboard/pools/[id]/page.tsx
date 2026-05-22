@@ -68,7 +68,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
                 <div><span className="qy-overline">Sustainability</span><strong>{opportunity.scoreBreakdown.sustainability}</strong></div>
                 <div><span className="qy-overline">Completeness</span><strong>{opportunity.scoreBreakdown.completeness}</strong></div>
               </div>
-              <p className="qy-detail-copy">QuickYield ranks pools using scale, APY behavior, reward quality, and how much source data is available.</p>
+              <p className="qy-detail-copy">QuickYield ranks pools using scale, APY behavior, reward quality, and data completeness.</p>
             </div>
           </aside>
         </section>
@@ -110,8 +110,9 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
               {opportunity.flags.map((flag) => <li key={flag}>{flag}</li>)}
             </ul>
             <div className="qy-detail-links">
-              <a href={opportunity.officialUrl} target="_blank" rel="noreferrer">Official protocol <ExternalLink size={12} /></a>
-              <a href={opportunity.sourceUrl} target="_blank" rel="noreferrer">Source page <ExternalLink size={12} /></a>
+              {opportunity.officialUrl.startsWith('http') ? (
+                <a href={opportunity.officialUrl} target="_blank" rel="noreferrer">Protocol site <ExternalLink size={12} /></a>
+              ) : null}
             </div>
           </article>
         </section>

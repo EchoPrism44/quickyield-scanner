@@ -54,8 +54,8 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     .join(' ')
   const protocol = getProtocolMeta(project)
   const symbol = normalizeSymbol(pool.symbol)
-  const sourceUrl = `https://defillama.com/yields/pool/${pool.pool}`
-  const officialUrl = protocol.officialUrl ?? sourceUrl
+  const internalUrl = `/dashboard/pools/${encodeURIComponent(`live-${pool.pool}`)}`
+  const officialUrl = protocol.officialUrl ?? internalUrl
   const now = new Date().toISOString()
 
   return {
@@ -82,11 +82,11 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     action: 'Visit protocol',
     actionUrl: officialUrl,
     officialUrl,
-    sourceUrl,
+    sourceUrl: officialUrl,
     logoUrl: protocol.logoUrl,
     protocolSlug: normalizeProtocolSlug(project),
     source: 'Live',
-    notes: `Live yield pool for ${pool.symbol} on ${pool.chain}. Verify details before depositing.`,
+    notes: `Market-feed yield pool for ${pool.symbol} on ${pool.chain}. Verify protocol details before depositing.`,
     flags: [
       tvl >= 1_000_000 ? 'TVL above $1M' : 'Lower TVL',
       Number(pool.apyMean30d ?? 0) ? '30d APY history present' : 'Limited APY history',

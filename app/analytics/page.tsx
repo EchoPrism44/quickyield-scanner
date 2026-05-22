@@ -28,16 +28,28 @@ interface ChainData {
   opportunities: number
 }
 
+interface TopPool {
+  id: string
+  platform: string
+  asset: string
+  chain: string
+  apy: number
+  tvlUsd: number
+  confidence: number
+  volatility: number
+}
+
 interface AnalyticsData {
   history: TimePoint[]
   chains: ChainData[]
+  topPools: TopPool[]
   lastUpdated: string
 }
 
 export const dynamic = 'force-dynamic'
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData>({ history: [], chains: [], lastUpdated: new Date().toISOString() })
+  const [data, setData] = useState<AnalyticsData>({ history: [], chains: [], topPools: [], lastUpdated: new Date().toISOString() })
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   const refreshData = useCallback(async () => {
@@ -80,7 +92,7 @@ export default function AnalyticsPage() {
           <div>
             <span className="qy-overline qy-overline-signal">Market overview</span>
             <h1 className="qy-h2">Stored market history</h1>
-            <p className="qy-analytics-sub">Hourly snapshots of the tracked universe, using stored data only. No synthetic trend lines.</p>
+            <p className="qy-analytics-sub">Market breadth, chain exposure, current leaders, and stored hourly history as snapshots accumulate.</p>
           </div>
           <div className="qy-analytics-actions">
             <Link href="/dashboard" className="qy-btn qy-btn-secondary">Back to terminal</Link>
@@ -94,22 +106,22 @@ export default function AnalyticsPage() {
           <article className="qy-analytics-stat">
             <span className="qy-overline">Tracked pools</span>
             <strong>{trackedCount}</strong>
-            <p>Current stored market universe.</p>
+            <p>Current terminal universe.</p>
           </article>
           <article className="qy-analytics-stat">
             <span className="qy-overline">Average APY</span>
             <strong>{avgApy.toFixed(2)}%</strong>
-            <p>Most recent aggregate snapshot.</p>
+            <p>Most recent aggregate point.</p>
           </article>
           <article className="qy-analytics-stat">
             <span className="qy-overline">Total TVL</span>
             <strong>{formatCurrency(totalTvl)}</strong>
-            <p>Across the tracked shortlist.</p>
+            <p>Across the active market table.</p>
           </article>
           <article className="qy-analytics-stat">
             <span className="qy-overline">Last updated</span>
             <strong>{new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
-            <p>GitHub Actions scan cadence.</p>
+            <p>Latest completed scan.</p>
           </article>
         </section>
 
@@ -117,7 +129,7 @@ export default function AnalyticsPage() {
           <article className="qy-analytics-panel">
             <div className="qy-analytics-panel-head">
               <h2>APY trend</h2>
-              <span className="qy-mono">Stored hourly points</span>
+              <span className="qy-mono">{data.history.length > 1 ? 'Stored hourly points' : 'Current point'}</span>
             </div>
             <div className="qy-analytics-chart">
               <ResponsiveContainer width="100%" height="100%" minWidth={280} minHeight={320}>
@@ -180,6 +192,33 @@ export default function AnalyticsPage() {
                   {item.avgApy >= 6 ? 'Higher yield' : 'Core market'}
                 </span>
               </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="qy-analytics-panel">
+          <div className="qy-analytics-panel-head">
+            <h2>Top ranked pools</h2>
+            <span className="qy-mono">Internal research pages</span>
+          </div>
+          <div className="qy-analytics-table">
+            <div className="qy-analytics-table-head">
+              <span>Pool</span>
+              <span>APY</span>
+              <span>TVL</span>
+              <span>QY score</span>
+              <span>Volatility</span>
+            </div>
+            {data.topPools.map((item) => (
+              <Link key={item.id} href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-analytics-table-row">
+                <span>{item.platform} / {item.asset} / {item.chain}</span>
+                <span className="qy-num">{item.apy.toFixed(2)}%</span>
+                <span className="qy-mono">{formatCurrency(item.tvlUsd)}</span>
+                <span className="qy-mono">{item.confidence}</span>
+                <span className={`qy-analytics-badge ${item.volatility > 2 ? 'warn' : 'safe'}`}>
+                  {item.volatility.toFixed(2)}%
+                </span>
+              </Link>
             ))}
           </div>
         </section>

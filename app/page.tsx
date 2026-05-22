@@ -15,10 +15,10 @@ const previewRows = [
 ]
 
 const steps = [
-  { n: '01', icon: LineChart, t: 'Track the screened market', b: 'QuickYield pulls live DeFiLlama data, ranks the shortlist, and keeps a tighter focus than a generic pool directory.' },
-  { n: '02', icon: Eye, t: 'Open pool research pages', b: 'Each pool gets a dedicated page with real stored history, method notes, and direct source links.' },
+  { n: '01', icon: LineChart, t: 'Track the screened market', b: 'QuickYield scans up to 500 live pools, ranks the universe, and keeps the research workflow inside the terminal.' },
+  { n: '02', icon: Eye, t: 'Open pool research pages', b: 'Each pool gets a dedicated page with stored history, method notes, related pools, and alert actions.' },
   { n: '03', icon: Bell, t: 'Set alerts that matter', b: 'Watch specific pools, set thresholds, and get hourly-scan notifications in email or Telegram.' },
-  { n: '04', icon: Zap, t: 'Act from source links', b: "QuickYield stays in research mode. We never touch your wallet or move funds for you." },
+  { n: '04', icon: Zap, t: 'Move with context', b: "QuickYield stays in research mode. We never touch your wallet or move funds for you." },
 ]
 
 export default function HomePage() {
@@ -60,7 +60,7 @@ export default function HomePage() {
               A private terminal for <em>screened</em><br />DeFi yield research.
             </h1>
             <p className="qy-hero-sub">
-              QuickYield tracks a ranked shortlist of live yield opportunities, stores hourly snapshots, and helps you monitor the pools worth checking first. No wallet connection. No custody. No fake breadth.
+              QuickYield scans up to 500 live yield pools, ranks the market, stores hourly snapshots, and helps you monitor the opportunities worth checking first. No wallet connection. No custody.
             </p>
             <div className="qy-hero-actions">
               <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
@@ -123,7 +123,7 @@ export default function HomePage() {
       <section className="qy-stats">
         <div className="qy-stats-grid">
           {[
-            { l: 'Tracked pools', v: stats.total },
+            { l: 'Live universe', v: stats.total },
             { l: 'Tracked TVL', v: stats.tvl },
             { l: 'Screened pools', v: stats.screened },
             { l: 'Avg APY', v: stats.avg },
@@ -168,8 +168,8 @@ export default function HomePage() {
           <div className="qy-bento">
             <div className="qy-bento-card qy-bento-hero qy-noise qy-fade-up">
               <span className="qy-overline qy-overline-signal">Ranked market</span>
-              <h3>Real source data, explicit scoring, and a denser table.</h3>
-              <p>Sort by APY, TVL, volatility, or QuickYield score. Lower-risk screens are called out, but every pool still keeps its source links and data caveats visible.</p>
+              <h3>Live market data, explicit scoring, and a denser table.</h3>
+              <p>Sort by APY, TVL, volatility, or QuickYield score. Lower-risk screens are called out, and every pool opens into an internal research page.</p>
               <div className="qy-bento-mini">
                 <div className="qy-bento-mini-head">Tracked market / sample</div>
                 {[
@@ -212,7 +212,7 @@ export default function HomePage() {
           <div className="qy-testimonials-grid">
             <div className="qy-testi qy-fade-up">
               <Sparkles className="qy-testi-icon" fill="currentColor" />
-              <blockquote>"I do not need a thousand noisy pools. I need the few worth checking first, with the source links and history right there."</blockquote>
+              <blockquote>"I do not need a thousand noisy pools. I need the few worth checking first, with history and alerts right there."</blockquote>
               <p style={{ marginTop: 8, color: 'var(--ink-dim)', fontSize: 13 }}>Terminal-first product direction</p>
             </div>
           </div>
@@ -224,7 +224,7 @@ export default function HomePage() {
           <div className="qy-cta qy-noise qy-fade-up">
             <div className="qy-cta-glow" />
             <h2 className="qy-h2">Stop guessing which pool deserves attention.<br />Start with a cleaner market.</h2>
-            <p>Private dashboard. Hourly snapshots. Real source links. Research only.</p>
+            <p>Private dashboard. Hourly snapshots. Internal pool pages. Research only.</p>
             <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
               Get started <ArrowRight size={16} strokeWidth={2.5} />
             </Link>
@@ -238,7 +238,7 @@ export default function HomePage() {
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--ink)' }}>QuickYield</div>
               <p style={{ marginTop: 8, color: 'var(--ink-dim)', fontSize: 12, maxWidth: 280 }}>
-                Research and alerting for DeFi yields. Not financial advice. No custody. Always verify on the source protocol.
+                Research and alerting for DeFi yields. Not financial advice. No custody. Always verify with the protocol before moving funds.
               </p>
             </div>
             <div>
@@ -252,7 +252,7 @@ export default function HomePage() {
             <div>
               <h4>Resources</h4>
               <ul>
-                <li>Live data sourced from public DeFi APIs</li>
+                <li>Live market-feed coverage</li>
                 <li><Link href="/analytics">Market overview</Link></li>
               </ul>
             </div>
