@@ -1,6 +1,5 @@
 import { SignIn } from '@clerk/nextjs'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 
 export default function SignInPage() {
   if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
@@ -11,13 +10,12 @@ export default function SignInPage() {
             <span className="qy-logo-mark"><span /><span /><span /></span>
             <span className="qy-logo-text">QuickYield</span>
           </Link>
-          <h1>Local beta mode</h1>
+          <h1>Sign-in unavailable</h1>
           <p>
-            Clerk auth isn't configured in this workspace. The dashboard works with a local
-            development identity. Add <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--signal)' }}>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> on Vercel to enable real email sign-ins.
+            Clerk auth is not configured for this environment. Add <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--signal)' }}>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> and <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--signal)' }}>CLERK_SECRET_KEY</code> before opening the private terminal.
           </p>
-          <Link className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg" href="/dashboard" style={{ width: '100%' }} data-testid="local-continue-btn">
-            Continue to dashboard <ArrowRight size={16} strokeWidth={2.5} />
+          <Link className="qy-btn qy-btn-secondary qy-btn-lg" href="/" style={{ width: '100%' }}>
+            Back to home
           </Link>
         </section>
       </main>
