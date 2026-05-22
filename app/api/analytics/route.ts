@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getCachedOpportunities, getOpportunitySnapshots } from '../../../lib/store'
+import { getOpportunities } from '../../../lib/opportunities'
 import type { Opportunity } from '../../../lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -25,12 +26,17 @@ function formatHourLabel(timestamp: string) {
 }
 
 export async function GET() {
-  const opportunities = await getCachedOpportunities()
+  let opportunities = await getCachedOpportunities()
+  if (opportunities.length === 0) {
+    const scan = await getOpportunities({ capital: 100000 })
+    opportunities = scan.opportunities
+  }
 
   if (opportunities.length === 0) {
     return NextResponse.json({
       history: [],
       chains: [],
+      topPools: [],
       lastUpdated: new Date().toISOString(),
     })
   }

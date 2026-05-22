@@ -63,7 +63,7 @@ export default function HomePage() {
               QuickYield scans up to 500 live yield pools, ranks the market, stores hourly snapshots, and helps you monitor the opportunities worth checking first. No wallet connection. No custody.
             </p>
             <div className="qy-hero-actions">
-              <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
+              <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
                 Open the terminal <ArrowRight size={16} strokeWidth={2.5} />
               </Link>
               <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg">
@@ -225,7 +225,7 @@ export default function HomePage() {
             <div className="qy-cta-glow" />
             <h2 className="qy-h2">Stop guessing which pool deserves attention.<br />Start with a cleaner market.</h2>
             <p>Private dashboard. Hourly snapshots. Internal pool pages. Research only.</p>
-            <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
+            <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
               Get started <ArrowRight size={16} strokeWidth={2.5} />
             </Link>
           </div>
@@ -246,14 +246,14 @@ export default function HomePage() {
               <ul>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#how">How it works</a></li>
-                <li><Link href="/dashboard">Dashboard</Link></li>
+                <li><Link href="/sign-in">Dashboard</Link></li>
               </ul>
             </div>
             <div>
               <h4>Resources</h4>
               <ul>
                 <li>Live market-feed coverage</li>
-                <li><Link href="/analytics">Market overview</Link></li>
+                <li><Link href="/sign-in">Market overview</Link></li>
               </ul>
             </div>
             <div>

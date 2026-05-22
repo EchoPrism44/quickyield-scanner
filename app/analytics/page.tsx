@@ -91,8 +91,8 @@ export default function AnalyticsPage() {
         <div className="qy-analytics-head">
           <div>
             <span className="qy-overline qy-overline-signal">Market overview</span>
-            <h1 className="qy-h2">Stored market history</h1>
-            <p className="qy-analytics-sub">Market breadth, chain exposure, current leaders, and stored hourly history as snapshots accumulate.</p>
+            <h1 className="qy-h2">Terminal analytics</h1>
+            <p className="qy-analytics-sub">A control-room view for market breadth, chain exposure, top ranked pools, and APY history as snapshots accumulate.</p>
           </div>
           <div className="qy-analytics-actions">
             <Link href="/dashboard" className="qy-btn qy-btn-secondary">Back to terminal</Link>
@@ -209,17 +209,22 @@ export default function AnalyticsPage() {
               <span>QY score</span>
               <span>Volatility</span>
             </div>
-            {data.topPools.map((item) => (
-              <Link key={item.id} href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-analytics-table-row">
-                <span>{item.platform} / {item.asset} / {item.chain}</span>
-                <span className="qy-num">{item.apy.toFixed(2)}%</span>
-                <span className="qy-mono">{formatCurrency(item.tvlUsd)}</span>
-                <span className="qy-mono">{item.confidence}</span>
-                <span className={`qy-analytics-badge ${item.volatility > 2 ? 'warn' : 'safe'}`}>
-                  {item.volatility.toFixed(2)}%
-                </span>
-              </Link>
-            ))}
+            {data.topPools.length === 0 ? (
+              <div className="qy-empty">
+                <h3>No market scan yet</h3>
+                <p>Run the scanner or open Markets to populate ranked pools and analytics.</p>
+              </div>
+            ) : data.topPools.map((item) => (
+                <Link key={item.id} href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-analytics-table-row">
+                  <span>{item.platform} / {item.asset} / {item.chain}</span>
+                  <span className="qy-num">{item.apy.toFixed(2)}%</span>
+                  <span className="qy-mono">{formatCurrency(item.tvlUsd)}</span>
+                  <span className="qy-mono">{item.confidence}</span>
+                  <span className={`qy-analytics-badge ${item.volatility > 2 ? 'warn' : 'safe'}`}>
+                    {item.volatility.toFixed(2)}%
+                  </span>
+                </Link>
+              ))}
           </div>
         </section>
       </div>

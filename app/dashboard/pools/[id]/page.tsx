@@ -4,16 +4,18 @@ import { ArrowLeftRight, ExternalLink } from 'lucide-react'
 import { ProtocolLogo } from '../../../../components/protocol-logo'
 import { PoolDetailActions } from '../../../../components/pool-detail-actions'
 import { requireDashboardUserId } from '../../../../lib/auth'
+import { getOpportunities } from '../../../../lib/opportunities'
 import { formatTvl } from '../../../../lib/scoring'
-import { getPoolDetail, getWatchlist } from '../../../../lib/store'
-import type { Opportunity } from '../../../../lib/types'
+import { getOpportunitySnapshots, getPoolDetail, getWatchlist } from '../../../../lib/store'
+import type { Opportunity, PoolDetail } from '../../../../lib/types'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const userId = await requireDashboardUserId('/dashboard')
   const { id } = await params
-  const detail = await getPoolDetail(id)
+  let detail = await getPoolDetail(id)
+  if (!detail) detail = await recoverPoolDetail(id)
   if (!detail) notFound()
 
   const watchlist = await getWatchlist(userId)
@@ -125,6 +127,21 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
       </div>
     </main>
   )
+}
+
+async function recoverPoolDetail(id: string): Promise<PoolDetail | null> {
+  const scan = await getOpportunities({ capital: 100000 })
+  const opportunity = scan.opportunities.find((item) => item.id === id)
+  if (!opportunity) return null
+  const [history] = await Promise.all([getOpportunitySnapshots(id, 72)])
+  const allOpportunities = scan.opportunities
+  return {
+    opportunity,
+    history,
+    relatedByProtocol: allOpportunities.filter((item) => item.id !== id && item.protocolSlug === opportunity.protocolSlug).slice(0, 4),
+    relatedByAsset: allOpportunities.filter((item) => item.id !== id && item.asset === opportunity.asset).slice(0, 4),
+    relatedByChain: allOpportunities.filter((item) => item.id !== id && item.chain === opportunity.chain).slice(0, 4),
+  }
 }
 
 function RelatedSection({ title, items }: { title: string; items: Opportunity[] }) {
