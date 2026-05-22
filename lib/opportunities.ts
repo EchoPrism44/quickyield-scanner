@@ -1,10 +1,11 @@
 import { categories, chains, riskLevels, timeCosts } from './constants'
 import { curatedOpportunities } from './curated'
-import { cacheOpportunities, getCachedOpportunities } from './store'
+import { cacheOpportunities, getCachedOpportunities, storeOpportunitySnapshots } from './store'
 import { poolToOpportunity } from './scoring'
 import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
+const MAX_TRACKED_LIVE_POOLS = 500
 
 function valid(value: string | undefined, options: string[], fallback: string) {
   return value && options.includes(value) ? value : fallback
@@ -33,7 +34,7 @@ async function fetchLiveOpportunities() {
     cache: 'no-store',
     signal: AbortSignal.timeout(LIVE_FEED_TIMEOUT_MS),
   })
-  if (!response.ok) throw new Error(`DeFiLlama returned ${response.status}`)
+  if (!response.ok) throw new Error(`Market feed returned ${response.status}`)
   const payload = (await response.json()) as { data?: LlamaPool[] }
   const allowedChains = new Set(['Base', 'Solana', 'Arbitrum', 'Ethereum'])
   const live = (payload.data ?? [])
@@ -42,9 +43,23 @@ async function fetchLiveOpportunities() {
     .filter((pool) => Number(pool.apy ?? pool.apyBase ?? 0) > 0.3)
     .filter((pool) => Number(pool.apy ?? pool.apyBase ?? 0) <= 22)
     .filter((pool) => /USDC|USDT|DAI|SOL|ETH|STETH/i.test(pool.symbol))
-    .sort((a, b) => Number(b.tvlUsd) - Number(a.tvlUsd))
-    .slice(0, 8)
+    .sort((a, b) => {
+      const aApy = Number(a.apy ?? a.apyBase ?? 0)
+      const bApy = Number(b.apy ?? b.apyBase ?? 0)
+      const aVol = Math.abs(Number(a.apyPct1D ?? 0))
+      const bVol = Math.abs(Number(b.apyPct1D ?? 0))
+      const aRewardShare = Number(a.apyReward ?? 0) / Math.max(aApy || 1, 1)
+      const bRewardShare = Number(b.apyReward ?? 0) / Math.max(bApy || 1, 1)
+      const aCompleteness = [a.apyBase, a.apyReward, a.apyPct1D, a.apyMean30d].filter((v) => v !== undefined).length
+      const bCompleteness = [b.apyBase, b.apyReward, b.apyPct1D, b.apyMean30d].filter((v) => v !== undefined).length
+      const aScore = Number(a.tvlUsd) / 1_000_000 + aApy * 2.5 - aVol * 8 - aRewardShare * 12 + aCompleteness * 3
+      const bScore = Number(b.tvlUsd) / 1_000_000 + bApy * 2.5 - bVol * 8 - bRewardShare * 12 + bCompleteness * 3
+      return bScore - aScore
+    })
+    .slice(0, MAX_TRACKED_LIVE_POOLS)
     .map(poolToOpportunity)
+    .sort((a, b) => b.confidence - a.confidence || b.tvlUsd - a.tvlUsd)
+    .map((item, index) => ({ ...item, rank: index + 1 }))
 
   if (live.length === 0) throw new Error('No live pools matched the safety screen')
   return live
@@ -55,6 +70,7 @@ export async function scanAndCacheYields() {
     const live = await fetchLiveOpportunities()
     const opportunities = [...live, ...curatedOpportunities]
     await cacheOpportunities(opportunities)
+    await storeOpportunitySnapshots(opportunities)
     return { opportunities, dataStatus: 'live' as const, lastUpdated: new Date().toISOString() }
   } catch (error) {
     const cached = await getCachedOpportunities()
@@ -63,7 +79,7 @@ export async function scanAndCacheYields() {
       opportunities,
       dataStatus: 'fallback' as const,
       lastUpdated: new Date().toISOString(),
-      fallbackReason: error instanceof Error ? error.message : 'Live scan failed',
+      fallbackReason: error instanceof Error ? error.message : 'Market scan failed',
     }
   }
 }

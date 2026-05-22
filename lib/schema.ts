@@ -23,6 +23,19 @@ export const opportunitiesCache = pgTable('opportunities_cache', {
   lastSeenAt: timestamp('last_seen_at').defaultNow().notNull(),
 })
 
+export const opportunitySnapshots = pgTable('opportunity_snapshots', {
+  id: text('id').primaryKey(),
+  opportunityId: text('opportunity_id').notNull(),
+  capturedAt: timestamp('captured_at').defaultNow().notNull(),
+  apy: numeric('apy').notNull(),
+  apyBase: numeric('apy_base'),
+  apyReward: numeric('apy_reward'),
+  apyPct1D: numeric('apy_pct_1d'),
+  apyMean30d: numeric('apy_mean_30d'),
+  tvlUsd: numeric('tvl_usd').notNull(),
+  payloadJson: text('payload_json'),
+})
+
 export const watchlistItems = pgTable(
   'watchlist_items',
   {

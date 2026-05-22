@@ -2,160 +2,173 @@
 
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
-import { useMemo, useState, useTransition, useEffect } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import {
-  LineChart, Eye, Bell, Settings as SettingsIcon,
-  Trash2, ExternalLink, BellOff, ShieldCheck, Filter, BarChart3,
+  Bell,
+  BellOff,
+  Bookmark,
+  Filter,
+  LayoutDashboard,
+  Settings as SettingsIcon,
+  Trash2,
 } from 'lucide-react'
 import { categories, chains, timeCosts } from '../lib/constants'
 import { formatTvl } from '../lib/scoring'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
-import { Onboarding } from './onboarding'
-import type { DashboardData, Opportunity, AlertRule, UserSettings, DashboardUser, NotificationStatus } from '../lib/types'
+import { ProtocolLogo } from './protocol-logo'
+import type { AlertRule, DashboardData, DashboardUser, NotificationStatus, Opportunity, UserSettings } from '../lib/types'
 
-type Tab = 'opportunities' | 'watchlist' | 'alerts' | 'settings'
-
-const navItems: { tab: Tab; label: string; Icon: typeof LineChart }[] = [
-  { tab: 'opportunities', label: 'Opportunities', Icon: LineChart },
-  { tab: 'watchlist', label: 'Watchlist', Icon: Eye },
-  { tab: 'alerts', label: 'Alerts', Icon: Bell },
-  { tab: 'settings', label: 'Settings', Icon: SettingsIcon },
-]
-
+type Tab = 'markets' | 'watchlist' | 'alerts' | 'settings'
 type Toast = { id: number; type: 'success' | 'error'; msg: string }
+
+const navItems: { tab: Tab; label: string; icon: typeof LayoutDashboard }[] = [
+  { tab: 'markets', label: 'Markets', icon: LayoutDashboard },
+  { tab: 'watchlist', label: 'Watchlist', icon: Bookmark },
+  { tab: 'alerts', label: 'Alerts', icon: Bell },
+  { tab: 'settings', label: 'Settings', icon: SettingsIcon },
+]
 
 function useToasts() {
   const [items, setItems] = useState<Toast[]>([])
-  const push = (type: Toast['type'], msg: string) => {
+  function push(type: Toast['type'], msg: string) {
     const id = Date.now() + Math.random()
-    setItems((p) => [...p, { id, type, msg }])
-    setTimeout(() => setItems((p) => p.filter((t) => t.id !== id)), 3500)
+    setItems((current) => [...current, { id, type, msg }])
+    setTimeout(() => setItems((current) => current.filter((item) => item.id !== id)), 3500)
   }
   return { items, push }
 }
 
 export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   const [data, setData] = useState(initialData)
-  const [tab, setTab] = useState<Tab>('opportunities')
-  const [, startTransition] = useTransition()
-  const toasts = useToasts()
-
-  // Filter / search state
+  const [tab, setTab] = useState<Tab>('markets')
   const [chain, setChain] = useState(initialData.settings.chain)
   const [risk, setRisk] = useState(initialData.settings.risk)
   const [time, setTime] = useState(initialData.settings.time)
   const [category, setCategory] = useState(initialData.settings.category)
   const [query, setQuery] = useState('')
   const [capital, setCapital] = useState(initialData.settings.capital)
-  const [showOnboarding, setShowOnboarding] = useState(() => typeof window !== 'undefined' && !localStorage.getItem('qy_onboarded'))
+  const [, startTransition] = useTransition()
+  const toasts = useToasts()
 
   const watched = useMemo(() => new Set(data.watchlist), [data.watchlist])
-  const watchedOps = useMemo(() => data.opportunities.filter((o) => watched.has(o.id)), [data.opportunities, watched])
+  const watchedOps = useMemo(() => data.opportunities.filter((item) => watched.has(item.id)), [data.opportunities, watched])
 
   function refreshOpportunities(next = { chain, risk, time, category, q: query, capital }) {
     const params = new URLSearchParams({
-      chain: next.chain, risk: next.risk, time: next.time,
-      category: next.category, q: next.q, capital: String(next.capital),
+      chain: next.chain,
+      risk: next.risk,
+      time: next.time,
+      category: next.category,
+      q: next.q,
+      capital: String(next.capital),
     })
     startTransition(async () => {
-      const r = await fetch(`/api/opportunities?${params}`)
-      const result = await r.json()
-      setData((c) => ({ ...c, ...result }))
+      const response = await fetch(`/api/opportunities?${params}`)
+      const result = await response.json()
+      setData((current) => ({ ...current, ...result }))
     })
   }
 
-  async function toggleWatch(id: string) {
-    const isOn = watched.has(id)
-    const r = isOn
-      ? await fetch(`/api/watchlist/${encodeURIComponent(id)}`, { method: 'DELETE' })
+  async function toggleWatch(opportunityId: string) {
+    const isWatching = watched.has(opportunityId)
+    const response = isWatching
+      ? await fetch(`/api/watchlist/${encodeURIComponent(opportunityId)}`, { method: 'DELETE' })
       : await fetch('/api/watchlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ opportunityId: id }),
+          body: JSON.stringify({ opportunityId }),
         })
-    const result = await r.json()
-    if (r.ok) {
-      setData((c) => ({ ...c, watchlist: result.items }))
-      toasts.push('success', isOn ? 'Removed from watchlist' : 'Added to watchlist')
+    const result = await response.json()
+    if (response.ok) {
+      setData((current) => ({ ...current, watchlist: result.items }))
+      toasts.push('success', isWatching ? 'Removed from watchlist' : 'Added to watchlist')
     } else {
-      toasts.push('error', result?.error || 'Action failed')
+      toasts.push('error', result?.error || 'Watchlist update failed')
     }
   }
 
   async function createAlert(item: Opportunity) {
-    const r = await fetch('/api/alerts', {
+    const response = await fetch('/api/alerts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: `${item.asset} on ${item.chain} above ${Math.max(1, Math.floor(item.apy))}%`,
-        chain: item.chain, category: item.category, asset: item.asset,
-        minApy: Math.max(1, Math.floor(item.apy)), maxRisk: item.risk,
+        name: `${item.platform} ${item.asset} above ${Math.max(1, Math.floor(item.apy))}%`,
+        chain: item.chain,
+        category: item.category,
+        asset: item.asset,
+        minApy: Math.max(1, Math.floor(item.apy)),
+        maxRisk: item.risk,
         minConfidence: Math.max(70, item.confidence - 5),
-        frequency: 'daily', enabled: true,
+        frequency: 'daily',
+        enabled: true,
       }),
     })
-    const result = await r.json()
-    if (r.ok) {
-      setData((c) => ({ ...c, alerts: result.alerts }))
-      toasts.push('success', "Alert created — we'll email you when thresholds match.")
+    const result = await response.json()
+    if (response.ok) {
+      setData((current) => ({ ...current, alerts: result.alerts }))
       setTab('alerts')
+      toasts.push('success', 'Alert created')
     } else {
-      toasts.push('error', result?.error || 'Failed to create alert')
+      toasts.push('error', result?.error || 'Alert creation failed')
     }
   }
 
-  async function deleteAlert(id: string) {
-    const r = await fetch(`/api/alerts/${encodeURIComponent(id)}`, { method: 'DELETE' })
-    const result = await r.json()
-    if (r.ok) {
-      setData((c) => ({ ...c, alerts: result.alerts }))
+  async function deleteAlert(alertId: string) {
+    const response = await fetch(`/api/alerts/${encodeURIComponent(alertId)}`, { method: 'DELETE' })
+    const result = await response.json()
+    if (response.ok) {
+      setData((current) => ({ ...current, alerts: result.alerts }))
       toasts.push('success', 'Alert removed')
     }
   }
 
   async function toggleAlert(alert: AlertRule) {
-    const r = await fetch(`/api/alerts/${encodeURIComponent(alert.id)}`, {
+    const response = await fetch(`/api/alerts/${encodeURIComponent(alert.id)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled: !alert.enabled }),
     })
-    const result = await r.json()
-    if (r.ok) setData((c) => ({ ...c, alerts: result.alerts }))
+    const result = await response.json()
+    if (response.ok) setData((current) => ({ ...current, alerts: result.alerts }))
   }
 
   async function saveSettings(patch: Partial<typeof data.settings>) {
     const next = { ...data.settings, ...patch }
-    const r = await fetch('/api/user/settings', {
+    const response = await fetch('/api/user/settings', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(next),
     })
-    const result = await r.json()
-    if (r.ok) {
-      setData((c) => ({ ...c, settings: result.settings, notifications: result.notifications ?? c.notifications }))
+    const result = await response.json()
+    if (response.ok) {
+      setData((current) => ({
+        ...current,
+        settings: result.settings,
+        notifications: result.notifications ?? current.notifications,
+      }))
       toasts.push('success', 'Settings saved')
     }
   }
 
   async function toggleNotificationChannel(type: 'email' | 'telegram', enabled: boolean) {
-    const r = await fetch('/api/user/settings', {
+    const response = await fetch('/api/user/settings', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ notificationChannels: { [type]: enabled } }),
     })
-    const result = await r.json()
-    if (r.ok) {
-      setData((c) => ({ ...c, notifications: result.notifications ?? c.notifications }))
-      toasts.push('success', `${type === 'telegram' ? 'Telegram' : 'Email'} alerts ${enabled ? 'enabled' : 'paused'}`)
+    const result = await response.json()
+    if (response.ok) {
+      setData((current) => ({ ...current, notifications: result.notifications ?? current.notifications }))
+      toasts.push('success', `${type === 'telegram' ? 'Telegram' : 'Email'} ${enabled ? 'enabled' : 'paused'}`)
     } else {
       toasts.push('error', result?.error || 'Notification update failed')
     }
   }
 
   async function connectTelegram() {
-    const r = await fetch('/api/notifications/telegram/connect', { method: 'POST' })
-    const result = await r.json()
-    if (!r.ok) {
+    const response = await fetch('/api/notifications/telegram/connect', { method: 'POST' })
+    const result = await response.json()
+    if (!response.ok) {
       toasts.push('error', result?.error || 'Telegram connect failed')
       return
     }
@@ -164,8 +177,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   }
 
   return (
-    <div className="qy-app">
-      {showOnboarding && <Onboarding onComplete={() => { localStorage.setItem('qy_onboarded', '1'); setShowOnboarding(false) }} />}
+    <div className="qy-app qy-terminal-app">
       <aside className="qy-aside" data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <Link href="/" className="qy-logo">
@@ -174,90 +186,95 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
           </Link>
         </div>
         <nav className="qy-aside-nav">
-          {navItems.map(({ tab: t, label, Icon }) => (
+          {navItems.map(({ tab: itemTab, label, icon: Icon }) => (
             <button
-              key={t}
+              key={itemTab}
               type="button"
-              className={`qy-aside-link ${tab === t ? 'active' : ''}`}
-              onClick={() => setTab(t)}
-              data-testid={`nav-${t}`}
+              className={`qy-aside-link ${tab === itemTab ? 'active' : ''}`}
+              onClick={() => setTab(itemTab)}
             >
-              <Icon className="qy-aside-icon" /> {label}
+              <Icon className="qy-aside-icon" />
+              {label}
             </button>
           ))}
-          <Link href="/analytics" className="qy-aside-link" target="_blank">
-            <BarChart3 className="qy-aside-icon" /> Analytics
-          </Link>
         </nav>
         <div className="qy-aside-foot">
           <div className="qy-aside-user">
-            <div className="qy-aside-user-label">{data.user.isLocal ? 'Local mode' : data.user.name}</div>
+            <div className="qy-aside-user-label">{data.user.name}</div>
             <div className="qy-aside-user-email">{data.user.email}</div>
           </div>
           {!data.user.isLocal && <UserButton />}
-          {data.user.isLocal && <Link href="/" className="qy-aside-link">Back to home</Link>}
         </div>
       </aside>
 
-      <div className="qy-main">
-        <header className="qy-topbar">
+      <main className="qy-main">
+        <header className="qy-topbar qy-terminal-topbar">
           <div className="qy-topbar-status">
             <span className="qy-pill-dot" />
             <span className="qy-overline">
-              {data.dataStatus === 'live' ? 'Live · updated hourly' : 'Curated fallback'}
+              {data.dataStatus === 'live' ? 'Live market feed' : 'Fallback market feed'}
             </span>
+            <span className="qy-topbar-sep">/</span>
+            <span className="qy-mono qy-topbar-updated">Updated {new Date(data.lastUpdated).toLocaleTimeString()}</span>
+          </div>
+          <div className="qy-terminal-topbar-actions">
+            <Link href="/analytics" className="qy-btn qy-btn-secondary qy-btn-sm">Market overview</Link>
+            {!data.user.isLocal && <UserButton />}
           </div>
         </header>
 
-        <div
-          key={tab}
-          className="qy-fade-up"
-          style={{ animationDuration: '0.35s' }}
-        >
-            {tab === 'opportunities' && (
-              <OpportunitiesView
-                data={data}
-                chain={chain} setChain={(v: string) => { setChain(v); refreshOpportunities({ chain: v, risk, time, category, q: query, capital }) }}
-                risk={risk} setRisk={(v: string) => { setRisk(v); refreshOpportunities({ chain, risk: v, time, category, q: query, capital }) }}
-                time={time} setTime={(v: string) => { setTime(v); refreshOpportunities({ chain, risk, time: v, category, q: query, capital }) }}
-                category={category} setCategory={(v: string) => { setCategory(v); refreshOpportunities({ chain, risk, time, category: v, q: query, capital }) }}
-                query={query} setQuery={(v: string) => { setQuery(v); refreshOpportunities({ chain, risk, time, category, q: v, capital }) }}
-                watched={watched}
-                onToggleWatch={toggleWatch}
-              />
-            )}
-            {tab === 'watchlist' && (
-              <WatchlistView items={watchedOps} onRemove={toggleWatch} onCreateAlert={createAlert} />
-            )}
-            {tab === 'alerts' && (
-              <AlertsView alerts={data.alerts} onDelete={deleteAlert} onToggle={toggleAlert} />
-            )}
-            {tab === 'settings' && (
-              <SettingsView
-                user={data.user}
-                settings={data.settings}
-                notifications={data.notifications}
-                capital={capital} setCapital={setCapital}
-                onSave={saveSettings}
-                onToggleChannel={toggleNotificationChannel}
-                onConnectTelegram={connectTelegram}
-              />
-            )}
-          </div>
-      </div>
+        <div className="qy-fade-up" style={{ animationDuration: '0.35s' }}>
+          {tab === 'markets' && (
+            <MarketsView
+              data={data}
+              watched={watched}
+              chain={chain}
+              risk={risk}
+              time={time}
+              category={category}
+              query={query}
+              onChain={(value) => { setChain(value); refreshOpportunities({ chain: value, risk, time, category, q: query, capital }) }}
+              onRisk={(value) => { setRisk(value); refreshOpportunities({ chain, risk: value, time, category, q: query, capital }) }}
+              onTime={(value) => { setTime(value); refreshOpportunities({ chain, risk, time: value, category, q: query, capital }) }}
+              onCategory={(value) => { setCategory(value); refreshOpportunities({ chain, risk, time, category: value, q: query, capital }) }}
+              onQuery={(value) => { setQuery(value); refreshOpportunities({ chain, risk, time, category, q: value, capital }) }}
+              onToggleWatch={toggleWatch}
+              onCreateAlert={createAlert}
+            />
+          )}
+          {tab === 'watchlist' && (
+            <WatchlistView items={watchedOps} onRemove={toggleWatch} onCreateAlert={createAlert} />
+          )}
+          {tab === 'alerts' && (
+            <AlertsView alerts={data.alerts} onDelete={deleteAlert} onToggle={toggleAlert} />
+          )}
+          {tab === 'settings' && (
+            <SettingsView
+              user={data.user}
+              notifications={data.notifications}
+              capital={capital}
+              setCapital={setCapital}
+              onSave={saveSettings}
+              onToggleChannel={toggleNotificationChannel}
+              onConnectTelegram={connectTelegram}
+            />
+          )}
+        </div>
+      </main>
 
       <div className="qy-toast-wrap" aria-live="polite">
-        {toasts.items.map((t) => (
-          <div key={t.id} className={`qy-toast ${t.type}`}>{t.msg}</div>
+        {toasts.items.map((toast) => (
+          <div key={toast.id} className={`qy-toast ${toast.type}`}>{toast.msg}</div>
         ))}
       </div>
+
       <nav className="qy-bottom-nav">
-        {navItems.map(({ tab: t, label, Icon }) => (
+        {navItems.map(({ tab: itemTab, label, icon: Icon }) => (
           <button
-            key={t}
+            key={itemTab}
             type="button"
-            className={`qy-bottom-nav-item ${tab === t ? 'active' : ''}`}
-            onClick={() => setTab(t)}
+            className={`qy-bottom-nav-item ${tab === itemTab ? 'active' : ''}`}
+            onClick={() => setTab(itemTab)}
           >
             <Icon size={18} />
             <span>{label}</span>
@@ -268,452 +285,335 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   )
 }
 
-/* ---------- Sparkline cell ---------- */
-
 function SparklineCell({ poolId }: { poolId: string }) {
-  const [data, setData] = useState<number[] | null>(null)
+  const [svg, setSvg] = useState<string | null>(null)
+
   useEffect(() => {
     let cancelled = false
-    fetchSparkline(poolId).then((d) => { if (!cancelled) setData(d) })
+    void fetchSparkline(poolId).then((data) => {
+      if (!cancelled) setSvg(renderSparklineSvg(data))
+    })
     return () => { cancelled = true }
   }, [poolId])
-  const svg = data ? renderSparklineSvg(data) : null
-  if (!svg) return null
-  return <span dangerouslySetInnerHTML={{ __html: svg }} style={{ display: 'inline-flex', verticalAlign: 'middle', marginLeft: 6 }} />
+
+  if (!svg) return <span className="qy-sparkline-placeholder">--</span>
+  return <span className="qy-sparkline" dangerouslySetInnerHTML={{ __html: svg }} />
 }
 
-/* ---------- Pool detail modal ---------- */
-
-function PoolDetailModal({ opportunity, onClose }: { opportunity: Opportunity | null; onClose: () => void }) {
-  const [chartData, setChartData] = useState<number[]>([])
-  useEffect(() => {
-    if (!opportunity || !opportunity.id.startsWith('live-')) return
-    let cancelled = false
-    fetchSparkline(opportunity.id).then((d) => { if (!cancelled) setChartData(d.slice(-30)) })
-    return () => { cancelled = true }
-  }, [opportunity])
-  if (!opportunity) return null
-  return (
-    <div className="qy-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="qy-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="qy-modal-header">
-          <div>
-            <h2>{opportunity.platform}</h2>
-            <p className="qy-asset-meta">{opportunity.chain} · {opportunity.asset} · {opportunity.category}</p>
-          </div>
-          <button onClick={onClose} className="qy-icon-btn" aria-label="Close">&times;</button>
-        </div>
-        <div className="qy-modal-body">
-          <div className="qy-modal-stats">
-            <div><span className="qy-overline">APY</span><span className="qy-num bold" style={{ fontSize: 28, color: 'var(--ink)' }}>{opportunity.apy.toFixed(2)}%</span></div>
-            <div><span className="qy-overline">TVL</span><span className="qy-num bold" style={{ fontSize: 20 }}>{opportunity.tvl}</span></div>
-            <div><span className="qy-overline">Risk</span><span className={`qy-tag-mini qy-risk-${opportunity.risk.toLowerCase()}`}>{opportunity.risk}</span></div>
-            <div><span className="qy-overline">Confidence</span><span className="qy-num bold">{opportunity.confidence}/100</span></div>
-          </div>
-          {chartData.length > 0 && (
-            <div style={{ marginTop: 24 }}>
-              <div className="qy-overline" style={{ marginBottom: 12 }}>30-day APY history</div>
-              <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 80 }}>
-                <polyline
-                  points={chartData.map((v, i) => `${(i / (chartData.length - 1)) * 300},${100 - ((v - Math.min(...chartData)) / (Math.max(...chartData) - Math.min(...chartData) || 1)) * 80}`).join(' ')}
-                  fill="none" stroke="var(--signal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          )}
-          {opportunity.notes && (
-            <div style={{ marginTop: 24 }}>
-              <div className="qy-overline" style={{ marginBottom: 8 }}>Notes</div>
-              <p style={{ fontSize: 13, color: 'var(--ink-dim)', lineHeight: 1.6 }}>{opportunity.notes}</p>
-            </div>
-          )}
-        </div>
-        <div className="qy-modal-footer">
-          {opportunity.actionUrl && (
-            <a href={opportunity.actionUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-primary">
-              Visit Protocol <ExternalLink size={14} />
-            </a>
-          )}
-          <button onClick={onClose} className="qy-btn qy-btn-secondary">Close</button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ---------- Sub views ---------- */
-
-function OpportunitiesView({
-  data, chain, setChain, risk, setRisk, time, setTime, category, setCategory,
-  query, setQuery, watched, onToggleWatch,
+function MarketsView({
+  data,
+  watched,
+  chain,
+  risk,
+  time,
+  category,
+  query,
+  onChain,
+  onRisk,
+  onTime,
+  onCategory,
+  onQuery,
+  onToggleWatch,
+  onCreateAlert,
 }: {
-  data: DashboardData; chain: string; setChain: (v: string) => void;
-  risk: string; setRisk: (v: string) => void;
-  time: string; setTime: (v: string) => void;
-  category: string; setCategory: (v: string) => void;
-  query: string; setQuery: (v: string) => void;
-  watched: Set<string>;
-  onToggleWatch: (id: string) => Promise<void>;
+  data: DashboardData
+  watched: Set<string>
+  chain: string
+  risk: string
+  time: string
+  category: string
+  query: string
+  onChain: (value: string) => void
+  onRisk: (value: string) => void
+  onTime: (value: string) => void
+  onCategory: (value: string) => void
+  onQuery: (value: string) => void
+  onToggleWatch: (id: string) => Promise<void>
+  onCreateAlert: (item: Opportunity) => Promise<void>
 }) {
-  const [sortBy, setSortBy] = useState<'apy' | 'tvl'>('apy')
-  const [detail, setDetail] = useState<Opportunity | null>(null)
+  const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'volatility' | 'updated'>('confidence')
+
   const sorted = useMemo(() => {
-    const arr = [...data.opportunities]
-    arr.sort((a: Opportunity, b: Opportunity) =>
-      sortBy === 'apy' ? (b.apy - a.apy) : (b.tvlUsd - a.tvlUsd)
-    )
-    return arr
+    const items = [...data.opportunities]
+    items.sort((a, b) => {
+      if (sortBy === 'apy') return b.apy - a.apy
+      if (sortBy === 'tvl') return b.tvlUsd - a.tvlUsd
+      if (sortBy === 'volatility') return a.volatility - b.volatility
+      if (sortBy === 'updated') return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
+      return b.confidence - a.confidence
+    })
+    return items
   }, [data.opportunities, sortBy])
 
-  const safeOnly = risk === 'Low'
-  const totalTvl = data.opportunities.reduce((s: number, o: Opportunity) => s + (o.tvlUsd || 0), 0)
-  const avgApy = data.opportunities.length ? (data.opportunities.reduce((s: number, o: Opportunity) => s + o.apy, 0) / data.opportunities.length) : 0
-
-  function apyColor(apy: number): string {
-    if (apy === 0) return 'qy-apy-task'
-    if (apy >= 8) return 'qy-apy-high'
-    if (apy >= 4) return 'qy-apy-mid'
-    return 'qy-apy-low'
-  }
-
-  const protocolColors: Record<string, string> = {
-    'aave': '#E8E0FE', 'jito': '#FFF0E0', 'maple': '#E8F5E9',
-    'lido': '#E3F2FD', 'ether fi': '#E0F4F1', 'rocket pool': '#FFEBEE',
-    'spark': '#FFF8E1', 'kelp': '#F5F5F5', 'binance': '#FFF0E0',
-    'coinbase': '#E3F2FD', 'layer3': '#F5F5F5', 'pendle': '#E8E0FE',
-    'morpho': '#E0F4F1', 'compound': '#E8F5E9', 'curve': '#FFEBEE',
-    'yearn': '#E8E0FE', 'balancer': '#FFF8E1',
-  }
-
-  function protocolInitials(platform: string): string {
-    const parts = platform.split(' ')
-    if (parts.length >= 2) return parts[0].slice(0, 1).toUpperCase() + parts[1].slice(0, 1).toLowerCase()
-    return platform.slice(0, 2).toLowerCase()
-  }
-
-  function protocolColor(platform: string): string {
-    const key = platform.toLowerCase()
-    for (const [name, color] of Object.entries(protocolColors)) {
-      if (key.includes(name)) return color
-    }
-    return '#F0F0F0'
-  }
+  const totalTvl = data.opportunities.reduce((sum, item) => sum + item.tvlUsd, 0)
+  const avgScore = data.opportunities.length ? Math.round(data.opportunities.reduce((sum, item) => sum + item.confidence, 0) / data.opportunities.length) : 0
 
   return (
-    <div className="qy-page" data-testid="opportunities-page">
-      <div className="qy-page-header">
-        <span className="qy-overline qy-overline-signal">Live scanner</span>
-        <h1>Opportunities</h1>
-        <p>{data.opportunities.length} matches · {formatTvl(totalTvl)} TVL · avg APY {avgApy.toFixed(1)}%</p>
+    <section className="qy-page qy-terminal-page" data-testid="markets-page">
+      <div className="qy-page-header qy-terminal-header">
+        <div>
+          <span className="qy-overline qy-overline-signal">Private yield terminal</span>
+          <h1>Markets</h1>
+          <p>{data.opportunities.length} tracked pools, {formatTvl(totalTvl)} total TVL, QuickYield score avg {avgScore}</p>
+        </div>
+        <div className="qy-terminal-kpis">
+          <div className="qy-terminal-kpi"><span className="qy-overline">Screened</span><strong>{data.opportunities.filter((item) => item.risk === 'Low').length}</strong></div>
+          <div className="qy-terminal-kpi"><span className="qy-overline">Universe cap</span><strong>500</strong></div>
+        </div>
       </div>
 
-      <div className="qy-filters" data-testid="filters">
+      <div className="qy-filters qy-terminal-filters" data-testid="filters">
         <div className="qy-filter-label"><Filter size={14} /><span className="qy-overline">Filter</span></div>
-        <select className="qy-input" value={chain} onChange={(e) => setChain(e.target.value)} data-testid="filter-chain">
-          {chains.map((c: string) => <option key={c} value={c}>{c}</option>)}
+        <select className="qy-input" value={chain} onChange={(event) => onChain(event.target.value)}>{chains.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+        <input className="qy-input qy-market-search" placeholder="Search pool, asset, or protocol" value={query} onChange={(event) => onQuery(event.target.value)} />
+        <select className="qy-input" value={category} onChange={(event) => onCategory(event.target.value)}>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+        <select className="qy-input" value={risk} onChange={(event) => onRisk(event.target.value)}>
+          {['All risk', 'Low', 'Medium'].map((item) => <option key={item} value={item}>{item === 'Low' ? 'Lower risk only' : item}</option>)}
         </select>
-        <input
-          className="qy-input"
-          placeholder="Search asset, protocol..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          data-testid="filter-search"
-        />
-        <select className="qy-input" value={category} onChange={(e) => setCategory(e.target.value)} data-testid="filter-category">
-          {categories.map((c: string) => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <button
-          className={`qy-chip ${safeOnly ? 'active' : ''}`}
-          onClick={() => setRisk(safeOnly ? 'All risk' : 'Low')}
-          data-testid="filter-safe"
-        >
-          <ShieldCheck size={12} /> Beginner safe
-        </button>
-        <select className="qy-input" value={time} onChange={(e) => setTime(e.target.value)} data-testid="filter-time">
-          {timeCosts.map((c: string) => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <div className="qy-sort">
-          <span className="qy-overline">Sort</span>
-          <button className={`qy-sort-btn ${sortBy === 'apy' ? 'active' : ''}`} onClick={() => setSortBy('apy')} data-testid="sort-apy">APY</button>
-          <button className={`qy-sort-btn ${sortBy === 'tvl' ? 'active' : ''}`} onClick={() => setSortBy('tvl')} data-testid="sort-tvl">TVL</button>
-        </div>
+        <select className="qy-input" value={time} onChange={(event) => onTime(event.target.value)}>{timeCosts.map((item) => <option key={item} value={item}>{item}</option>)}</select>
       </div>
 
-      <div className="qy-table-wrap">
-        <div className="qy-table-head">
-          <span>Protocol · Asset</span>
-          <span>Chain</span>
-          <span>Risk</span>
-          <span style={{ textAlign: 'right' }}>TVL</span>
-          <span style={{ textAlign: 'right' }}>APY</span>
-          <span style={{ textAlign: 'right' }}>Action</span>
+      <div className="qy-terminal-table-wrap">
+        <div className="qy-terminal-table-head">
+          <span>Pool</span>
+          <button type="button" className={`qy-sort-link ${sortBy === 'apy' ? 'active' : ''}`} onClick={() => setSortBy('apy')}>APY</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'tvl' ? 'active' : ''}`} onClick={() => setSortBy('tvl')}>TVL</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'confidence' ? 'active' : ''}`} onClick={() => setSortBy('confidence')}>QY score</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'volatility' ? 'active' : ''}`} onClick={() => setSortBy('volatility')}>Volatility</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'updated' ? 'active' : ''}`} onClick={() => setSortBy('updated')}>Updated</button>
+          <span>Actions</span>
         </div>
-        {sorted.length === 0 ? (
-          <div className="qy-table-empty">No opportunities match these filters.</div>
-        ) : sorted.map((o: Opportunity, i: number) => (
-          <div
-            key={o.id}
-            className="qy-table-row qy-row-slide"
-            style={{ animationDelay: `${Math.min(i * 0.015, 0.4)}s`, cursor: 'pointer' }}
-            data-testid="opp-row"
-            onClick={() => setDetail(o)}
-          >
-            <div className="qy-asset-cell">
-              <div className="qy-asset-icon" style={{ backgroundColor: protocolColor(o.platform) }}>{protocolInitials(o.platform)}</div>
-              <div style={{ minWidth: 0 }}>
+
+        {sorted.map((item) => (
+          <div key={item.id} className="qy-terminal-row">
+            <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-terminal-pool">
+              <ProtocolLogo name={item.platform} logoUrl={item.logoUrl} />
+              <div className="qy-terminal-pool-copy">
                 <div className="qy-asset-name">
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.platform}</span>
-                  {o.risk === 'Low' && <span className="qy-tag-mini qy-risk-low">Safe</span>}
+                  <span>{item.platform}</span>
+                  <span className={`qy-tag-mini ${item.risk === 'Low' ? 'qy-risk-low' : 'qy-risk-medium'}`}>
+                    {item.risk === 'Low' ? 'Lower risk' : 'Review'}
+                  </span>
                 </div>
-                <div className="qy-asset-meta">{o.asset}</div>
+                <div className="qy-asset-meta">{item.asset} / {item.chain} / {item.category}</div>
               </div>
+            </Link>
+
+            <div className="qy-terminal-metric">
+              <strong>{item.apy.toFixed(2)}%</strong>
+              <SparklineCell poolId={item.id} />
             </div>
-            <span className="qy-mono" style={{ fontSize: 12, color: 'var(--ink-dim)' }}>{o.chain}</span>
-            <span><span className={`qy-tag-mini qy-risk-${o.risk.toLowerCase()}`}>{o.risk}</span></span>
-            <span className="qy-num">{o.tvl}</span>
-            <span className={`qy-num bold ${apyColor(o.apy)}`}>
-              {o.apy ? `${o.apy.toFixed(2)}%` : 'Task'}
-              {o.id.startsWith('live-') && <SparklineCell poolId={o.id} />}
-            </span>
-            <div className="qy-actions" onClick={(e) => e.stopPropagation()}>
-              {o.actionUrl && (
-                <a href={o.actionUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-sm qy-btn-outline" title="Visit protocol">
-                  Visit Protocol <ExternalLink size={12} />
-                </a>
-              )}
-              <button
-                className={`qy-btn qy-btn-sm ${watched.has(o.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`}
-                onClick={() => onToggleWatch(o.id)}
-                disabled={watched.has(o.id)}
-                data-testid="opp-add-watch"
-              >{watched.has(o.id) ? 'Watched' : '+ Watch'}</button>
+            <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
+            <div className="qy-terminal-metric">
+              <strong>{item.confidence}</strong>
+              <span className="qy-terminal-submetric">{item.dataCompleteness}% data</span>
+            </div>
+            <div className="qy-terminal-metric">
+              <strong>{item.volatility.toFixed(2)}%</strong>
+              <span className="qy-terminal-submetric">24h move</span>
+            </div>
+            <div className="qy-terminal-metric qy-terminal-right">
+              <strong>{new Date(item.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
+            </div>
+            <div className="qy-terminal-actions">
+              <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
+                Research
+              </Link>
+              <button type="button" className="qy-icon-btn" onClick={() => onCreateAlert(item)} title="Create alert"><Bell size={14} /></button>
+              <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
+                {watched.has(item.id) ? 'Saved' : '+ Watch'}
+              </button>
             </div>
           </div>
         ))}
       </div>
-      <PoolDetailModal opportunity={detail} onClose={() => setDetail(null)} />
-    </div>
+    </section>
   )
 }
 
-function WatchlistView({ items, onRemove, onCreateAlert }: { items: Opportunity[]; onRemove: (id: string) => void; onCreateAlert: (o: Opportunity) => void }) {
-  function apyColor(apy: number): string {
-    if (apy === 0) return 'qy-apy-task'
-    if (apy >= 8) return 'qy-apy-high'
-    if (apy >= 4) return 'qy-apy-mid'
-    return 'qy-apy-low'
-  }
-
-  const protocolColors: Record<string, string> = {
-    'aave': '#E8E0FE', 'jito': '#FFF0E0', 'maple': '#E8F5E9',
-    'lido': '#E3F2FD', 'ether fi': '#E0F4F1', 'rocket pool': '#FFEBEE',
-    'spark': '#FFF8E1', 'kelp': '#F5F5F5', 'binance': '#FFF0E0',
-    'coinbase': '#E3F2FD', 'layer3': '#F5F5F5',
-  }
-
-  function protocolInitials(platform: string): string {
-    const parts = platform.split(' ')
-    if (parts.length >= 2) return parts[0].slice(0, 1).toUpperCase() + parts[1].slice(0, 1).toLowerCase()
-    return platform.slice(0, 2).toLowerCase()
-  }
-
-  function protocolColor(platform: string): string {
-    const key = platform.toLowerCase()
-    for (const [name, color] of Object.entries(protocolColors)) {
-      if (key.includes(name)) return color
-    }
-    return '#F0F0F0'
-  }
+function WatchlistView({
+  items,
+  onRemove,
+  onCreateAlert,
+}: {
+  items: Opportunity[]
+  onRemove: (id: string) => Promise<void>
+  onCreateAlert: (item: Opportunity) => Promise<void>
+}) {
   return (
-    <div className="qy-page" data-testid="watchlist-page">
+    <section className="qy-page" data-testid="watchlist-page">
       <div className="qy-page-header">
-        <span className="qy-overline qy-overline-signal">Saved</span>
+        <span className="qy-overline qy-overline-signal">Tracked by you</span>
         <h1>Watchlist</h1>
-        <p>Pools you're tracking. Tap the bell to set thresholds.</p>
+        <p>Saved pools and the faster path back into each detail page.</p>
       </div>
       {items.length === 0 ? (
-        <div className="qy-empty" data-testid="watchlist-empty">
-          <Eye className="qy-empty-icon" />
+        <div className="qy-empty">
+          <Bookmark className="qy-empty-icon" />
           <h3>No pools saved yet</h3>
-          <p>Browse Opportunities and click the + icon to start tracking yields here.</p>
+          <p>Use the market table to save pools you want to monitor more closely.</p>
         </div>
       ) : (
-        <div>
-          {items.map((o, i) => (
-            <div key={o.id} style={{ animationDelay: `${i * 0.04}s` }} className="qy-wl-row qy-row-slide" data-testid="watchlist-row">
-              <div className="qy-wl-row-inner">
-                <div className="qy-asset-icon" style={{ backgroundColor: protocolColor(o.platform) }}>{protocolInitials(o.platform)}</div>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <div className="qy-asset-name">{o.platform}</div>
-                  <div className="qy-asset-meta">{o.chain} · {o.asset}</div>
+        <div className="qy-watchlist-grid">
+          {items.map((item) => (
+            <div key={item.id} className="qy-watchlist-card">
+              <div className="qy-watchlist-card-top">
+                <div className="qy-asset-cell">
+                  <ProtocolLogo name={item.platform} logoUrl={item.logoUrl} />
+                  <div>
+                    <div className="qy-asset-name">{item.platform}</div>
+                    <div className="qy-asset-meta">{item.asset} / {item.chain}</div>
+                  </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div className="qy-overline">APY</div>
-                  <div className={`qy-num bold ${apyColor(o.apy)}`}>{o.apy.toFixed(2)}%</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div className="qy-overline">TVL</div>
-                  <div className="qy-num">{o.tvl}</div>
-                </div>
-                <div className="qy-wl-actions">
-                  {o.actionUrl && (<a href={o.actionUrl} target="_blank" rel="noreferrer" className="qy-icon-btn"><ExternalLink size={14} /></a>)}
-                  <button className="qy-icon-btn" onClick={() => onCreateAlert(o)} title="Create alert" data-testid="wl-create-alert-btn"><Bell size={14} /></button>
-                  <button className="qy-icon-btn danger" onClick={() => onRemove(o.id)} data-testid="wl-remove-btn"><Trash2 size={14} /></button>
-                </div>
+                <span className={`qy-tag-mini ${item.risk === 'Low' ? 'qy-risk-low' : 'qy-risk-medium'}`}>
+                  {item.risk === 'Low' ? 'Lower risk' : 'Review'}
+                </span>
+              </div>
+              <div className="qy-watchlist-metrics">
+                <div><span className="qy-overline">APY</span><strong>{item.apy.toFixed(2)}%</strong></div>
+                <div><span className="qy-overline">TVL</span><strong>{item.tvl}</strong></div>
+                <div><span className="qy-overline">QY score</span><strong>{item.confidence}</strong></div>
+              </div>
+              <div className="qy-terminal-actions">
+                <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-secondary qy-btn-sm">Open page</Link>
+                <button type="button" className="qy-icon-btn" onClick={() => onCreateAlert(item)} title="Create alert"><Bell size={14} /></button>
+                <button type="button" className="qy-icon-btn danger" onClick={() => onRemove(item.id)} title="Remove"><Trash2 size={14} /></button>
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
-function AlertsView({ alerts, onDelete, onToggle }: { alerts: AlertRule[]; onDelete: (id: string) => void; onToggle: (a: AlertRule) => void }) {
+function AlertsView({
+  alerts,
+  onDelete,
+  onToggle,
+}: {
+  alerts: AlertRule[]
+  onDelete: (id: string) => Promise<void>
+  onToggle: (alert: AlertRule) => Promise<void>
+}) {
   return (
-    <div className="qy-page" data-testid="alerts-page">
+    <section className="qy-page" data-testid="alerts-page">
       <div className="qy-page-header">
         <span className="qy-overline qy-overline-signal">Notifications</span>
         <h1>Alerts</h1>
-        <p>Threshold rules across your watchlist. Email lands the second a threshold is crossed.</p>
+        <p>Private rules for yield changes you actually care about.</p>
       </div>
       {alerts.length === 0 ? (
-        <div className="qy-empty" data-testid="alerts-empty">
+        <div className="qy-empty">
           <Bell className="qy-empty-icon" />
           <h3>No alerts yet</h3>
-          <p>Open Opportunities or Watchlist and tap the bell icon on a pool to set a threshold.</p>
+          <p>Create threshold alerts from any pool row or pool detail page.</p>
         </div>
       ) : (
         <div className="qy-table-wrap">
           <div className="qy-table-head" style={{ gridTemplateColumns: '4fr 2fr 2fr 2fr 1fr' }}>
-            <span>Rule</span><span>Asset</span><span>Min APY</span><span>Frequency</span><span style={{ textAlign: 'right' }}>Actions</span>
+            <span>Rule</span>
+            <span>Asset</span>
+            <span>Min APY</span>
+            <span>Frequency</span>
+            <span style={{ textAlign: 'right' }}>Actions</span>
           </div>
-          {alerts.map((a, i) => (
-            <div
-              key={a.id}
-              className="qy-table-row qy-row-slide"
-              style={{ gridTemplateColumns: '4fr 2fr 2fr 2fr 1fr', opacity: a.enabled ? 1 : 0.5, animationDelay: `${i * 0.04}s` }}
-              data-testid="alert-row"
-            >
+          {alerts.map((alert) => (
+            <div key={alert.id} className="qy-table-row" style={{ gridTemplateColumns: '4fr 2fr 2fr 2fr 1fr', opacity: alert.enabled ? 1 : 0.55 }}>
               <div>
-                <div style={{ color: 'var(--ink)', fontSize: 14 }}>{a.name}</div>
-                <div className="qy-asset-meta">{a.chain} · {a.category}</div>
+                <div className="qy-asset-name">{alert.name}</div>
+                <div className="qy-asset-meta">{alert.chain} / {alert.category}</div>
               </div>
-              <span className="qy-mono" style={{ fontSize: 12, color: 'var(--ink-dim)' }}>{a.asset}</span>
-              <span className="qy-num bold" style={{ color: 'var(--safe)' }}>{a.minApy}%</span>
-              <span className="qy-mono" style={{ fontSize: 12, color: 'var(--ink-dim)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{a.frequency}</span>
+              <span className="qy-mono">{alert.asset}</span>
+              <span className="qy-num bold">{alert.minApy}%</span>
+              <span className="qy-mono">{alert.frequency}</span>
               <div className="qy-actions">
-                <button className="qy-icon-btn" onClick={() => onToggle(a)} data-testid="alert-toggle">
-                  {a.enabled ? <Bell size={14} /> : <BellOff size={14} />}
-                </button>
-                <button className="qy-icon-btn danger" onClick={() => onDelete(a.id)} data-testid="alert-delete"><Trash2 size={14} /></button>
+                <button type="button" className="qy-icon-btn" onClick={() => onToggle(alert)}>{alert.enabled ? <Bell size={14} /> : <BellOff size={14} />}</button>
+                <button type="button" className="qy-icon-btn danger" onClick={() => onDelete(alert.id)}><Trash2 size={14} /></button>
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
-function SettingsView({ user, settings, notifications, capital, setCapital, onSave, onToggleChannel, onConnectTelegram }: {
-  user: DashboardUser; settings: UserSettings; notifications: NotificationStatus; capital: number; setCapital: (v: number) => void;
-  onSave: (s: Partial<UserSettings>) => Promise<void>;
-  onToggleChannel: (type: 'email' | 'telegram', enabled: boolean) => Promise<void>;
-  onConnectTelegram: () => Promise<void>;
+function SettingsView({
+  user,
+  notifications,
+  capital,
+  setCapital,
+  onSave,
+  onToggleChannel,
+  onConnectTelegram,
+}: {
+  user: DashboardUser
+  notifications: NotificationStatus
+  capital: number
+  setCapital: (value: number) => void
+  onSave: (settings: Partial<UserSettings>) => Promise<void>
+  onToggleChannel: (type: 'email' | 'telegram', enabled: boolean) => Promise<void>
+  onConnectTelegram: () => Promise<void>
 }) {
-  const [freq, setFreq] = useState<'instant' | 'daily' | 'weekly'>('daily')
-  const emailOpt = notifications.email.enabled
-
-  // Keep capital in form state synced when user types
-  useEffect(() => { setCapital(settings.capital) }, [settings.capital, setCapital])
-
   return (
-    <div className="qy-page" data-testid="settings-page">
+    <section className="qy-page" data-testid="settings-page">
       <div className="qy-page-header">
         <span className="qy-overline qy-overline-signal">Account</span>
         <h1>Settings</h1>
+        <p>Private notification and sizing defaults for this account.</p>
       </div>
 
-      <div style={{ maxWidth: 720 }}>
+      <div className="qy-settings-shell">
         <section className="qy-set-section">
           <h3>Profile</h3>
-          <p>Signed in as {user.email}. Defaults are saved server-side for this account.</p>
+          <p>Signed in as {user.email}. Watchlists and alerts are scoped to this account only.</p>
           <div className="qy-set-row">
             <div className="qy-set-row-info">
               <strong>Tracked capital</strong>
-              <span>Used to estimate weekly earnings for each opportunity.</span>
+              <span>Used for projected sizing and quick comparisons.</span>
             </div>
             <input
               className="qy-input"
-              style={{ width: 120, fontFamily: 'var(--font-mono)' }}
+              style={{ width: 120 }}
               type="number"
               min={25}
               max={100000}
               value={capital}
-              onChange={(e) => setCapital(Number(e.target.value))}
+              onChange={(event) => setCapital(Number(event.target.value))}
               onBlur={() => onSave({ capital })}
-              data-testid="settings-capital"
             />
           </div>
         </section>
 
         <section className="qy-set-section">
           <h3>Notifications</h3>
-          <p>Telegram is best for fast trader alerts. Email stays available as a backup channel.</p>
+          <p>Telegram is the fastest route. Email stays available as a backup record.</p>
           <div className="qy-set-row">
             <div className="qy-set-row-info">
-              <strong>Email alerts enabled</strong>
-              <span>{notifications.email.destination ?? 'Uses your Clerk account email once available.'}</span>
+              <strong>Email</strong>
+              <span>{notifications.email.destination ?? 'Uses your Clerk email when available.'}</span>
             </div>
-            <button
-              type="button"
-              className={`qy-toggle ${emailOpt ? 'on' : ''}`}
-              onClick={() => { const next = !emailOpt; onToggleChannel('email', next); onSave({ emailOptIn: next }) }}
-              data-testid="toggle-notifications"
-              aria-label="Toggle notifications"
-            />
+            <button type="button" className={`qy-toggle ${notifications.email.enabled ? 'on' : ''}`} onClick={() => onToggleChannel('email', !notifications.email.enabled)} />
           </div>
           <div className="qy-set-row">
             <div className="qy-set-row-info">
-              <strong>Telegram alerts</strong>
-              <span>{notifications.telegram.connected ? `Connected${notifications.telegram.username ? ` as ${notifications.telegram.username}` : ''}` : 'Connect your Telegram chat for fast alerts.'}</span>
+              <strong>Telegram</strong>
+              <span>{notifications.telegram.connected ? `Connected${notifications.telegram.username ? ` as ${notifications.telegram.username}` : ''}` : 'Connect your Telegram bot chat for faster alerts.'}</span>
             </div>
             {notifications.telegram.connected ? (
-              <button
-                type="button"
-                className={`qy-toggle ${notifications.telegram.enabled ? 'on' : ''}`}
-                onClick={() => onToggleChannel('telegram', !notifications.telegram.enabled)}
-                data-testid="toggle-telegram"
-                aria-label="Toggle Telegram alerts"
-              />
+              <button type="button" className={`qy-toggle ${notifications.telegram.enabled ? 'on' : ''}`} onClick={() => onToggleChannel('telegram', !notifications.telegram.enabled)} />
             ) : (
-              <button type="button" className="qy-btn qy-btn-secondary" onClick={onConnectTelegram} data-testid="connect-telegram">
-                Connect Telegram
-              </button>
+              <button type="button" className="qy-btn qy-btn-secondary" onClick={onConnectTelegram}>Connect Telegram</button>
             )}
-          </div>
-          <div style={{ paddingTop: 16 }}>
-            <div className="qy-overline" style={{ marginBottom: 8 }}>Digest frequency</div>
-            <div className="qy-freq-group">
-              {(['instant', 'daily', 'weekly'] as const).map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  className={`qy-chip ${freq === f ? 'active-signal' : ''}`}
-                  onClick={() => setFreq(f)}
-                  data-testid={`freq-${f}`}
-                >{f}</button>
-              ))}
-            </div>
           </div>
         </section>
 
         <section className="qy-set-section">
-          <h3>Disclaimers</h3>
-          <p>QuickYield is informational research and alerting. We never custody funds, never connect to your wallet, and never execute trades. APY data is sourced from DeFiLlama and refreshed hourly. Always verify on the source protocol before depositing.</p>
+          <h3>Method</h3>
+          <p>QuickYield combines live market-feed data with internal ranking, data completeness, and volatility screens. It is a research terminal, not an execution product.</p>
         </section>
       </div>
-    </div>
+    </section>
   )
 }
