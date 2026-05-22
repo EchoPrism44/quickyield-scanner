@@ -15,6 +15,7 @@ export type QuickYieldScoreBreakdown = {
 export type ProtocolMeta = {
   slug: string
   name: string
+  aliases?: string[]
   logoUrl?: string
   officialUrl?: string
 }
