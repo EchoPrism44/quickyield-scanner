@@ -2,8 +2,8 @@ import { desc, eq, sql } from 'drizzle-orm'
 import { ALERT_LIMIT, WATCHLIST_LIMIT, defaultSettings } from './constants'
 import { getDb, hasDatabase } from './db'
 import { memory } from './memory-store'
-import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, telegramConnectTokens, users, watchlistItems } from './schema'
-import type { AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, UserSettings } from './types'
+import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, opportunitySnapshots, telegramConnectTokens, users, watchlistItems } from './schema'
+import type { AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, UserSettings } from './types'
 
 function id(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`
@@ -332,10 +332,91 @@ export async function cacheOpportunities(opportunities: Opportunity[]) {
   }
 }
 
+export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
+  const capturedAt = new Date()
+  if (!hasDatabase()) {
+    for (const item of opportunities) {
+      const snapshots = memory.snapshots.get(item.id) ?? []
+      const next: OpportunitySnapshot = {
+        opportunityId: item.id,
+        capturedAt: capturedAt.toISOString(),
+        apy: item.apy,
+        apyBase: item.apyBase,
+        apyReward: item.apyReward,
+        apyPct1D: item.apyPct1D,
+        apyMean30d: item.apyMean30d,
+        tvlUsd: item.tvlUsd,
+      }
+      memory.snapshots.set(item.id, [...snapshots.slice(-167), next])
+    }
+    return
+  }
+
+  const db = getDb()
+  for (const item of opportunities) {
+    await db.insert(opportunitySnapshots).values({
+      id: id('snap'),
+      opportunityId: item.id,
+      capturedAt,
+      apy: String(item.apy),
+      apyBase: item.apyBase === undefined ? null : String(item.apyBase),
+      apyReward: item.apyReward === undefined ? null : String(item.apyReward),
+      apyPct1D: item.apyPct1D === undefined ? null : String(item.apyPct1D),
+      apyMean30d: item.apyMean30d === undefined ? null : String(item.apyMean30d),
+      tvlUsd: String(item.tvlUsd),
+      payloadJson: JSON.stringify(item),
+    })
+  }
+}
+
 export async function getCachedOpportunities() {
   if (!hasDatabase()) return memory.opportunities
   const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt)).limit(50)
   return rows.map((row) => JSON.parse(row.payloadJson) as Opportunity)
+}
+
+export async function getCachedOpportunityById(opportunityId: string) {
+  const items = await getCachedOpportunities()
+  return items.find((item) => item.id === opportunityId) ?? null
+}
+
+export async function getOpportunitySnapshots(opportunityId: string, limit = 48) {
+  if (!hasDatabase()) return (memory.snapshots.get(opportunityId) ?? []).slice(-limit)
+  const rows = await getDb()
+    .select()
+    .from(opportunitySnapshots)
+    .where(eq(opportunitySnapshots.opportunityId, opportunityId))
+    .orderBy(desc(opportunitySnapshots.capturedAt))
+    .limit(limit)
+  return rows
+    .map((row) => ({
+      opportunityId: row.opportunityId,
+      capturedAt: row.capturedAt.toISOString(),
+      apy: Number(row.apy),
+      apyBase: row.apyBase === null ? undefined : Number(row.apyBase),
+      apyReward: row.apyReward === null ? undefined : Number(row.apyReward),
+      apyPct1D: row.apyPct1D === null ? undefined : Number(row.apyPct1D),
+      apyMean30d: row.apyMean30d === null ? undefined : Number(row.apyMean30d),
+      tvlUsd: Number(row.tvlUsd),
+    }) satisfies OpportunitySnapshot)
+    .reverse()
+}
+
+export async function getPoolDetail(opportunityId: string): Promise<PoolDetail | null> {
+  const opportunity = await getCachedOpportunityById(opportunityId)
+  if (!opportunity) return null
+  const [allOpportunities, history] = await Promise.all([
+    getCachedOpportunities(),
+    getOpportunitySnapshots(opportunityId, 72),
+  ])
+
+  return {
+    opportunity,
+    history,
+    relatedByProtocol: allOpportunities.filter((item) => item.id !== opportunityId && item.protocolSlug === opportunity.protocolSlug).slice(0, 4),
+    relatedByAsset: allOpportunities.filter((item) => item.id !== opportunityId && item.asset === opportunity.asset).slice(0, 4),
+    relatedByChain: allOpportunities.filter((item) => item.id !== opportunityId && item.chain === opportunity.chain).slice(0, 4),
+  }
 }
 
 export async function wasAlertDelivered(deliveryKey: string) {

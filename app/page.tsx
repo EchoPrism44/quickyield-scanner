@@ -1,42 +1,42 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { ArrowRight, Bell, LineChart, Eye, Zap, ShieldCheck, Sparkles } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowRight, Bell, Eye, LineChart, ShieldCheck, Sparkles, Zap } from 'lucide-react'
 import { MarketingNav } from '../components/marketing-nav'
 import type { Opportunity } from '../lib/types'
 
 const previewRows = [
-  { p: 'Aave v3', c: 'Arbitrum', a: 'USDC', apy: '8.42%', tvl: '$930M', safe: true },
-  { p: 'Compound v3', c: 'Ethereum', a: 'USDT', apy: '6.18%', tvl: '$610M', safe: true },
-  { p: 'Morpho', c: 'Base', a: 'DAI', apy: '9.34%', tvl: '$480M', safe: true },
-  { p: 'Lido', c: 'Ethereum', a: 'stETH', apy: '4.21%', tvl: '$21B', safe: true },
-  { p: 'Curve', c: 'Polygon', a: 'USDC', apy: '7.55%', tvl: '$180M', safe: true },
+  { p: 'Aave', c: 'Base', a: 'USDC', apy: '8.40%', tvl: '$146M', screened: true },
+  { p: 'Jito', c: 'Solana', a: 'SOL', apy: '7.10%', tvl: '$1.7B', screened: true },
+  { p: 'Maple', c: 'Ethereum', a: 'USDC', apy: '4.80%', tvl: '$3.3B', screened: true },
+  { p: 'Lido', c: 'Arbitrum', a: 'ETH', apy: '3.90%', tvl: '$35B', screened: true },
+  { p: 'Binance Earn', c: 'Exchange', a: 'USDT', apy: '5.30%', tvl: 'N/A', screened: false },
 ]
 
 const steps = [
-  { n: '01', icon: LineChart, t: 'Scan opportunities', b: 'Live yields from 30+ protocols across 20+ chains, curated and ranked. Beginner-safe routes are clearly tagged.' },
-  { n: '02', icon: Eye, t: 'Build a watchlist', b: 'Save the pools you care about. We track them every hour and surface meaningful changes — no noise.' },
-  { n: '03', icon: Bell, t: 'Set smart alerts', b: 'Notify me if Aave/USDC drops below 6% or Pendle/sUSDe rises above 12%. Email lands in seconds.' },
-  { n: '04', icon: Zap, t: 'Act with confidence', b: "Click the source link to deposit on the protocol's official site. We never touch your funds." },
+  { n: '01', icon: LineChart, t: 'Track the screened market', b: 'QuickYield pulls live DeFiLlama data, ranks the shortlist, and keeps a tighter focus than a generic pool directory.' },
+  { n: '02', icon: Eye, t: 'Open pool research pages', b: 'Each pool gets a dedicated page with real stored history, method notes, and direct source links.' },
+  { n: '03', icon: Bell, t: 'Set alerts that matter', b: 'Watch specific pools, set thresholds, and get hourly-scan notifications in email or Telegram.' },
+  { n: '04', icon: Zap, t: 'Act from source links', b: "QuickYield stays in research mode. We never touch your wallet or move funds for you." },
 ]
 
 export default function HomePage() {
-  const [stats, setStats] = useState({ total: '500', tvl: '$80B', safe: '120', avg: '6.2%' })
+  const [stats, setStats] = useState({ total: '0', tvl: '$0', screened: '0', avg: '0.0%' })
 
   useEffect(() => {
     fetch('/api/opportunities?capital=100')
-      .then((r) => r.json())
-      .then((d: { opportunities?: Opportunity[] }) => {
-        const ops = d.opportunities ?? []
-        if (!ops.length) return
-        const tvl = ops.reduce((s: number, o: Opportunity) => s + (o.tvlUsd || 0), 0)
-        const safe = ops.filter((o: Opportunity) => o.risk === 'Low').length
-        const avg = ops.reduce((s: number, o: Opportunity) => s + (o.apy || 0), 0) / ops.length
+      .then((response) => response.json())
+      .then((data: { opportunities?: Opportunity[] }) => {
+        const opportunities = data.opportunities ?? []
+        if (!opportunities.length) return
+        const tvl = opportunities.reduce((sum, item) => sum + (item.tvlUsd || 0), 0)
+        const screened = opportunities.filter((item) => item.risk === 'Low').length
+        const avg = opportunities.reduce((sum, item) => sum + (item.apy || 0), 0) / opportunities.length
         setStats({
-          total: ops.length.toString(),
+          total: opportunities.length.toString(),
           tvl: tvl >= 1e9 ? `$${(tvl / 1e9).toFixed(1)}B` : `$${(tvl / 1e6).toFixed(0)}M`,
-          safe: safe.toString(),
+          screened: screened.toString(),
           avg: `${avg.toFixed(1)}%`,
         })
       })
@@ -47,7 +47,6 @@ export default function HomePage() {
     <main>
       <MarketingNav />
 
-      {/* HERO */}
       <section className="qy-hero">
         <div className="qy-hero-bg-grid qy-grid-bg qy-grid-bg-fade" />
         <div className="qy-hero-glow" />
@@ -55,24 +54,24 @@ export default function HomePage() {
           <div className="qy-fade-up">
             <div className="qy-pill">
               <span className="qy-pill-dot" />
-              <span className="qy-mono">Live yields · email alerts</span>
+              <span className="qy-mono">Live data / ranked shortlist / private dashboard</span>
             </div>
             <h1 className="qy-h1">
-              Where your <em>stablecoins</em><br />should sit, right now.
+              A private terminal for <em>screened</em><br />DeFi yield research.
             </h1>
             <p className="qy-hero-sub">
-              QuickYield scans 500+ DeFi pools every hour, surfaces the beginner-safe routes, and emails you the second something moves. No wallet. No custody. No noise.
+              QuickYield tracks a ranked shortlist of live yield opportunities, stores hourly snapshots, and helps you monitor the pools worth checking first. No wallet connection. No custody. No fake breadth.
             </p>
             <div className="qy-hero-actions">
-              <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg" data-testid="hero-cta-primary">
-                Start scanning free <ArrowRight size={16} strokeWidth={2.5} />
+              <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
+                Open the terminal <ArrowRight size={16} strokeWidth={2.5} />
               </Link>
-              <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg" data-testid="hero-cta-secondary">
+              <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg">
                 See how it works
               </a>
             </div>
             <div className="qy-hero-protocols">
-              <span>· Aave</span><span>· Compound</span><span>· Morpho</span><span>· Pendle</span><span>· Lido</span>
+              <span>Aave</span><span>Jito</span><span>Maple</span><span>Lido</span><span>Pendle</span>
             </div>
           </div>
 
@@ -83,39 +82,35 @@ export default function HomePage() {
                 <span className="qy-preview-dot" /><span className="qy-preview-dot" /><span className="qy-preview-dot" />
                 <div className="qy-preview-url">
                   <span className="qy-pill-dot" />
-                  quickyield-scanner.vercel.app/dashboard
+                  sample-market-view
                 </div>
               </div>
               <div className="qy-preview-grid">
                 <div className="qy-preview-side">
-                  {['Opportunities', 'Watchlist', 'Alerts', 'Settings'].map((s, i) => (
-                    <div key={s} className={`qy-preview-side-item${i === 0 ? ' active' : ''}`}>{s}</div>
+                  {['Markets', 'Watchlist', 'Alerts', 'Settings'].map((item, index) => (
+                    <div key={item} className={`qy-preview-side-item${index === 0 ? ' active' : ''}`}>{item}</div>
                   ))}
                 </div>
                 <div>
                   <div className="qy-preview-table-head">
                     <div>
-                      <div className="qy-overline">Top opportunities</div>
-                      <div style={{ marginTop: 2, fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--ink)' }}>Beginner-safe routes</div>
+                      <div className="qy-overline">Sample market view</div>
+                      <div style={{ marginTop: 2, fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--ink)' }}>Screened yield table</div>
                     </div>
-                    <span className="qy-pill" style={{ margin: 0, padding: '4px 12px' }}>Live</span>
+                    <span className="qy-pill" style={{ margin: 0, padding: '4px 12px' }}>Private</span>
                   </div>
-                  {previewRows.map((r, i) => (
-                    <div
-                      key={r.p}
-                      className="qy-preview-row qy-row-slide"
-                      style={{ animationDelay: `${0.6 + i * 0.08}s` }}
-                    >
+                  {previewRows.map((row, index) => (
+                    <div key={row.p} className="qy-preview-row qy-row-slide" style={{ animationDelay: `${0.6 + index * 0.08}s` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <div className="qy-preview-icon" />
                         <div>
-                          <strong>{r.p}</strong>
-                          <div className="qy-mono" style={{ marginTop: 2 }}>{r.c} · {r.a}</div>
+                          <strong>{row.p}</strong>
+                          <div className="qy-mono" style={{ marginTop: 2 }}>{row.c} / {row.a}</div>
                         </div>
                       </div>
-                      <div>{r.safe && <span className="qy-tag-safe">Safe</span>}</div>
-                      <div className="qy-mono" style={{ textAlign: 'right' }}>{r.tvl}</div>
-                      <div className="qy-num bold">{r.apy}</div>
+                      <div>{row.screened ? <span className="qy-tag-safe">Screened</span> : <span className="qy-tag-mini qy-risk-medium">Review</span>}</div>
+                      <div className="qy-mono" style={{ textAlign: 'right' }}>{row.tvl}</div>
+                      <div className="qy-num bold">{row.apy}</div>
                     </div>
                   ))}
                 </div>
@@ -125,40 +120,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STATS */}
       <section className="qy-stats">
         <div className="qy-stats-grid">
           {[
-            { l: 'Pools tracked', v: stats.total },
-            { l: 'Total TVL', v: stats.tvl },
-            { l: 'Beginner-safe', v: stats.safe },
+            { l: 'Tracked pools', v: stats.total },
+            { l: 'Tracked TVL', v: stats.tvl },
+            { l: 'Screened pools', v: stats.screened },
             { l: 'Avg APY', v: stats.avg },
-          ].map((s, i) => (
-            <div key={s.l} className="qy-stats-cell qy-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
-              <div className="qy-stats-value">{s.v}</div>
-              <div className="qy-overline" style={{ marginTop: 4 }}>{s.l}</div>
+          ].map((stat, index) => (
+            <div key={stat.l} className="qy-stats-cell qy-fade-up" style={{ animationDelay: `${index * 0.08}s` }}>
+              <div className="qy-stats-value">{stat.v}</div>
+              <div className="qy-overline" style={{ marginTop: 4 }}>{stat.l}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
       <section id="how" className="qy-section">
         <div className="qy-container">
           <div className="qy-section-head">
             <span className="qy-overline qy-overline-signal">How it works</span>
-            <h2 className="qy-h2">From overwhelming to obvious in four steps.</h2>
-            <p>QuickYield watches yields for you and tells you what changed.</p>
+            <h2 className="qy-h2">From noisy market to cleaner shortlist.</h2>
+            <p>QuickYield narrows the market, stores history, and helps you move from browsing to research.</p>
           </div>
           <div className="qy-how-grid">
-            {steps.map((s, i) => (
-              <div key={s.n} className="qy-how-step qy-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
+            {steps.map((step, index) => (
+              <div key={step.n} className="qy-how-step qy-fade-up" style={{ animationDelay: `${index * 0.08}s` }}>
                 <div className="qy-how-step-top">
-                  <span className="qy-how-step-num">{s.n}</span>
-                  <s.icon className="qy-how-step-icon" />
+                  <span className="qy-how-step-num">{step.n}</span>
+                  <step.icon className="qy-how-step-icon" />
                 </div>
-                <h3>{s.t}</h3>
-                <p>{s.b}</p>
+                <h3>{step.t}</h3>
+                <p>{step.b}</p>
                 <span className="qy-how-underline" />
               </div>
             ))}
@@ -166,31 +159,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FEATURE BENTO */}
       <section id="features" className="qy-section" style={{ paddingTop: 0 }}>
         <div className="qy-container">
           <div className="qy-section-head">
             <span className="qy-overline qy-overline-signal">Features</span>
-            <h2 className="qy-h2">Built for crypto-curious and DeFi natives alike.</h2>
+            <h2 className="qy-h2">Closer to a terminal than a hype page.</h2>
           </div>
           <div className="qy-bento">
             <div className="qy-bento-card qy-bento-hero qy-noise qy-fade-up">
-              <span className="qy-overline qy-overline-signal">Live scanner</span>
-              <h3>Curated yields, ranked by what matters.</h3>
-              <p>Sort by APY, filter by chain or asset. Beginner-safe routes (Aave, Compound, Morpho, Lido) are tagged so you can act without second-guessing.</p>
+              <span className="qy-overline qy-overline-signal">Ranked market</span>
+              <h3>Real source data, explicit scoring, and a denser table.</h3>
+              <p>Sort by APY, TVL, volatility, or QuickYield score. Lower-risk screens are called out, but every pool still keeps its source links and data caveats visible.</p>
               <div className="qy-bento-mini">
-                <div className="qy-bento-mini-head">Top APYs · USDC</div>
+                <div className="qy-bento-mini-head">Tracked market / sample</div>
                 {[
-                  { p: 'Pendle', c: 'Arbitrum', a: 12.4 },
-                  { p: 'Morpho', c: 'Base', a: 9.34 },
-                  { p: 'Aave v3', c: 'Arbitrum', a: 8.42 },
-                  { p: 'Spark', c: 'Ethereum', a: 7.61 },
-                  { p: 'Compound v3', c: 'Optimism', a: 6.18 },
-                ].map((r) => (
-                  <div key={r.p} className="qy-bento-mini-row">
-                    <strong>{r.p}</strong>
-                    <span>{r.c}</span>
-                    <span className="qy-mono">{r.a.toFixed(2)}%</span>
+                  { p: 'Aave', c: 'Base', a: 8.4 },
+                  { p: 'Jito', c: 'Solana', a: 7.1 },
+                  { p: 'Maple', c: 'Ethereum', a: 4.8 },
+                  { p: 'Lido', c: 'Arbitrum', a: 3.9 },
+                  { p: 'Kelp', c: 'Ethereum', a: 2.86 },
+                ].map((row) => (
+                  <div key={row.p} className="qy-bento-mini-row">
+                    <strong>{row.p}</strong>
+                    <span>{row.c}</span>
+                    <span className="qy-mono">{row.a.toFixed(2)}%</span>
                   </div>
                 ))}
               </div>
@@ -199,50 +191,47 @@ export default function HomePage() {
             <div className="qy-bento-card qy-fade-up" style={{ animationDelay: '0.08s' }}>
               <Bell className="qy-icon" />
               <h3>Threshold alerts</h3>
-              <p>"Email me if APY drops below 6%." Instant notifications when something moves.</p>
+              <p>Email and Telegram alerts tied to the pools you follow, deduped against hourly scan runs.</p>
             </div>
 
             <div className="qy-bento-card green qy-fade-up" style={{ animationDelay: '0.16s' }}>
               <ShieldCheck className="qy-icon" />
-              <h3>No custody, ever</h3>
-              <p>We don't connect wallets, hold funds, or execute trades. Pure research and alerting.</p>
+              <h3>Research only</h3>
+              <p>We do not connect wallets, hold funds, or pretend a score replaces protocol due diligence.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
       <section className="qy-section" style={{ paddingTop: 0 }}>
         <div className="qy-container">
           <div className="qy-section-head">
-            <span className="qy-overline qy-overline-signal">Loved by users</span>
-            <h2 className="qy-h2">Join 50+ users exploring DeFi yields with confidence.</h2>
+            <span className="qy-overline qy-overline-signal">Direction</span>
+            <h2 className="qy-h2">Built for users who want signal without fake certainty.</h2>
           </div>
           <div className="qy-testimonials-grid">
-            <div className="qy-testi-counter qy-fade-up">
+            <div className="qy-testi qy-fade-up">
               <Sparkles className="qy-testi-icon" fill="currentColor" />
-              <blockquote>"QuickYield caught a rate drop I would have missed. Worth every second it takes to set up."</blockquote>
-              <p style={{ marginTop: 8, color: 'var(--ink-dim)', fontSize: 13 }}>— Early user, DeFi yield farmer</p>
+              <blockquote>"I do not need a thousand noisy pools. I need the few worth checking first, with the source links and history right there."</blockquote>
+              <p style={{ marginTop: 8, color: 'var(--ink-dim)', fontSize: 13 }}>Terminal-first product direction</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
       <section className="qy-section" style={{ paddingTop: 0 }}>
         <div className="qy-container">
           <div className="qy-cta qy-noise qy-fade-up">
             <div className="qy-cta-glow" />
-            <h2 className="qy-h2">Stop manually checking yields.<br />Start getting notified.</h2>
-            <p>Free to start. No wallet connection. No spam. Just clarity on where your stablecoins should sit.</p>
-            <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn" data-testid="cta-getstarted">
-              Get started free <ArrowRight size={16} strokeWidth={2.5} />
+            <h2 className="qy-h2">Stop guessing which pool deserves attention.<br />Start with a cleaner market.</h2>
+            <p>Private dashboard. Hourly snapshots. Real source links. Research only.</p>
+            <Link href="/dashboard" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
+              Get started <ArrowRight size={16} strokeWidth={2.5} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="qy-footer">
         <div className="qy-container">
           <div className="qy-footer-grid">
@@ -263,8 +252,8 @@ export default function HomePage() {
             <div>
               <h4>Resources</h4>
               <ul>
-                <li>Data sourced from public DeFi APIs</li>
-                <li><a href="#">Disclaimers</a></li>
+                <li>Live data sourced from public DeFi APIs</li>
+                <li><Link href="/analytics">Market overview</Link></li>
               </ul>
             </div>
             <div>
@@ -277,7 +266,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="qy-footer-bottom">© 2026 QuickYield · Built for clarity in DeFi</div>
+        <div className="qy-footer-bottom">© 2026 QuickYield / Built for clarity in DeFi</div>
       </footer>
     </main>
   )
