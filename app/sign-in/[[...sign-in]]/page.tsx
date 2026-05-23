@@ -24,7 +24,7 @@ export default function SignInPage() {
 
   return (
     <main className="qy-auth">
-      <SignIn />
+      <SignIn fallbackRedirectUrl="/dashboard" forceRedirectUrl="/dashboard" />
     </main>
   )
 }
