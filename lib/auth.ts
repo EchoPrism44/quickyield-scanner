@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 
 export const LOCAL_USER_ID = 'local-beta-user'
 
@@ -15,6 +16,8 @@ export async function requireUserId() {
 export async function requireDashboardUserId(returnBackUrl = '/dashboard'): Promise<string> {
   if (canUseLocalUser()) return LOCAL_USER_ID
   const session = await auth()
-  if (!session.userId) session.redirectToSignIn({ returnBackUrl })
+  if (!session.userId) {
+    redirect(`/sign-in?redirect_url=${encodeURIComponent(returnBackUrl)}`)
+  }
   return session.userId as string
 }

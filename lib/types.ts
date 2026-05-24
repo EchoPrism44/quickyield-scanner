@@ -5,6 +5,32 @@ export type DataStatus = 'live' | 'fallback'
 export type AlertFrequency = 'instant' | 'daily' | 'weekly'
 export type NotificationChannelType = 'email' | 'telegram'
 
+export type QuickYieldScoreBreakdown = {
+  liquidity: number
+  stability: number
+  sustainability: number
+  completeness: number
+}
+
+export type ProtocolMeta = {
+  slug: string
+  name: string
+  aliases?: string[]
+  logoUrl?: string
+  officialUrl?: string
+}
+
+export type OpportunitySnapshot = {
+  opportunityId: string
+  capturedAt: string
+  apy: number
+  apyBase?: number
+  apyReward?: number
+  apyPct1D?: number
+  apyMean30d?: number
+  tvlUsd: number
+}
+
 export type Opportunity = {
   id: string
   rank: number
@@ -28,10 +54,22 @@ export type Opportunity = {
   dailyHigh: number
   action: string
   actionUrl: string
+  officialUrl: string
+  sourceUrl: string
+  logoUrl?: string
+  protocolSlug: string
   source: 'Live' | 'Curated'
   notes: string
   flags: string[]
   lastSeenAt: string
+  lastUpdated: string
+  apyBase?: number
+  apyReward?: number
+  apyPct1D?: number
+  apyMean30d?: number
+  volatility: number
+  dataCompleteness: number
+  scoreBreakdown: QuickYieldScoreBreakdown
 }
 
 export type LlamaPool = {
@@ -124,4 +162,12 @@ export type DashboardData = {
   alerts: AlertRule[]
   settings: UserSettings
   notifications: NotificationStatus
+}
+
+export type PoolDetail = {
+  opportunity: Opportunity
+  history: OpportunitySnapshot[]
+  relatedByProtocol: Opportunity[]
+  relatedByAsset: Opportunity[]
+  relatedByChain: Opportunity[]
 }
