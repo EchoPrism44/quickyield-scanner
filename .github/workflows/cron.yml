@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Trigger scan-yields endpoint
         run: |
-          curl -X GET "https://quickyield-scanner.vercel.app/api/cron/scan-yields" \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            --fail --silent --show-error
+          response=$(curl -X GET "https://quickyield-scanner.vercel.app/api/cron/scan-yields?secret=${{ secrets.CRON_SECRET }}" \
+            --silent --show-error --max-time 60 --write-out "\n%{http_code}")
+          body=$(printf "%s" "$response" | sed '$d')
+          status=$(printf "%s" "$response" | tail -n 1)
+          printf "%s\n" "$body"
+          test "$status" -ge 200 -a "$status" -lt 300

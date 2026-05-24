@@ -304,9 +304,8 @@ export async function cacheOpportunities(opportunities: Opportunity[]) {
     memory.opportunities = opportunities
     return
   }
-  const db = getDb()
-  for (const item of opportunities) {
-    await db.insert(opportunitiesCache).values({
+  if (opportunities.length === 0) return
+  await getDb().insert(opportunitiesCache).values(opportunities.map((item) => ({
       id: item.id,
       payloadJson: JSON.stringify(item),
       source: item.source,
@@ -318,18 +317,21 @@ export async function cacheOpportunities(opportunities: Opportunity[]) {
       riskLevel: item.risk,
       confidence: item.confidence,
       lastSeenAt: new Date(item.lastSeenAt),
-    }).onConflictDoUpdate({
-      target: opportunitiesCache.id,
-      set: {
-        payloadJson: JSON.stringify(item),
-        apy: String(item.apy),
-        tvlUsd: String(item.tvlUsd),
-        riskLevel: item.risk,
-        confidence: item.confidence,
-        lastSeenAt: new Date(item.lastSeenAt),
-      },
-    })
-  }
+    }))).onConflictDoUpdate({
+    target: opportunitiesCache.id,
+    set: {
+      payloadJson: sql`excluded.payload_json`,
+      source: sql`excluded.source`,
+      chain: sql`excluded.chain`,
+      category: sql`excluded.category`,
+      asset: sql`excluded.asset`,
+      apy: sql`excluded.apy`,
+      tvlUsd: sql`excluded.tvl_usd`,
+      riskLevel: sql`excluded.risk_level`,
+      confidence: sql`excluded.confidence`,
+      lastSeenAt: sql`excluded.last_seen_at`,
+    },
+  })
 }
 
 export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
@@ -352,9 +354,8 @@ export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
     return
   }
 
-  const db = getDb()
-  for (const item of opportunities) {
-    await db.insert(opportunitySnapshots).values({
+  if (opportunities.length === 0) return
+  await getDb().insert(opportunitySnapshots).values(opportunities.map((item) => ({
       id: id('snap'),
       opportunityId: item.id,
       capturedAt,
@@ -365,8 +366,7 @@ export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
       apyMean30d: item.apyMean30d === undefined ? null : String(item.apyMean30d),
       tvlUsd: String(item.tvlUsd),
       payloadJson: JSON.stringify(item),
-    })
-  }
+    })))
 }
 
 export async function getCachedOpportunities() {

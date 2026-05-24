@@ -7,6 +7,10 @@ import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
 const LIVE_FEED_TIMEOUT_MS = 15000
 const MAX_TRACKED_LIVE_POOLS = 500
 
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 function valid(value: string | undefined, options: string[], fallback: string) {
   return value && options.includes(value) ? value : fallback
 }
@@ -69,17 +73,35 @@ export async function scanAndCacheYields() {
   try {
     const live = await fetchLiveOpportunities()
     const opportunities = [...live, ...curatedOpportunities]
-    await cacheOpportunities(opportunities)
-    await storeOpportunitySnapshots(opportunities)
+    try {
+      await cacheOpportunities(opportunities)
+      await storeOpportunitySnapshots(opportunities)
+    } catch (error) {
+      return {
+        opportunities,
+        dataStatus: 'live' as const,
+        lastUpdated: new Date().toISOString(),
+        fallbackReason: `Storage unavailable: ${errorMessage(error, 'Cache update failed')}`,
+      }
+    }
     return { opportunities, dataStatus: 'live' as const, lastUpdated: new Date().toISOString() }
   } catch (error) {
-    const cached = await getCachedOpportunities()
-    const opportunities = cached.length > 0 ? cached : curatedOpportunities
-    return {
-      opportunities,
-      dataStatus: 'fallback' as const,
-      lastUpdated: new Date().toISOString(),
-      fallbackReason: error instanceof Error ? error.message : 'Market scan failed',
+    try {
+      const cached = await getCachedOpportunities()
+      const opportunities = cached.length > 0 ? cached : curatedOpportunities
+      return {
+        opportunities,
+        dataStatus: 'fallback' as const,
+        lastUpdated: new Date().toISOString(),
+        fallbackReason: errorMessage(error, 'Market scan failed'),
+      }
+    } catch (cacheError) {
+      return {
+        opportunities: curatedOpportunities,
+        dataStatus: 'fallback' as const,
+        lastUpdated: new Date().toISOString(),
+        fallbackReason: `${errorMessage(error, 'Market scan failed')}; cache unavailable: ${errorMessage(cacheError, 'Cache read failed')}`,
+      }
     }
   }
 }

@@ -59,10 +59,12 @@ export function PoolDetailActions({
         <Bell size={14} />
         Create alert
       </button>
-      <a href={opportunity.officialUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-secondary">
-        Protocol
-        <ExternalLink size={14} />
-      </a>
+      {opportunity.officialUrl.startsWith('http') ? (
+        <a href={opportunity.officialUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-primary">
+          Continue to protocol
+          <ExternalLink size={14} />
+        </a>
+      ) : null}
       <button type="button" className="qy-btn qy-btn-secondary" onClick={copyLink}>
         <Copy size={14} />
         {copied ? 'Copied' : 'Share'}

@@ -53,6 +53,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
   const protocol = getProtocolMeta(project)
+  const platform = protocol.name || project
   const symbol = normalizeSymbol(pool.symbol)
   const internalUrl = `/dashboard/pools/${encodeURIComponent(`live-${pool.pool}`)}`
   const officialUrl = protocol.officialUrl ?? internalUrl
@@ -62,7 +63,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     id: `live-${pool.pool}`,
     rank: index + 1,
     name: `${symbol} yield pool`,
-    platform: project,
+    platform,
     category: inferCategory(pool),
     chain: pool.chain,
     asset: symbol,
@@ -84,7 +85,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     officialUrl,
     sourceUrl: officialUrl,
     logoUrl: protocol.logoUrl,
-    protocolSlug: normalizeProtocolSlug(project),
+    protocolSlug: protocol.slug || normalizeProtocolSlug(project),
     source: 'Live',
     notes: `Market-feed yield pool for ${pool.symbol} on ${pool.chain}. Verify protocol details before depositing.`,
     flags: [

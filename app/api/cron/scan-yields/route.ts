@@ -3,6 +3,7 @@ import { sendAlertEmail } from '../../../../lib/email'
 import { scanAndCacheYields } from '../../../../lib/opportunities'
 import { getAlertRules, getNotificationChannels, recordAlertDelivery, wasAlertDelivered } from '../../../../lib/store'
 import { sendTelegramAlert } from '../../../../lib/telegram'
+import type { AlertRule } from '../../../../lib/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,13 +13,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const failures: string[] = []
   const scan = await scanAndCacheYields()
-  const alerts = await getAlertRules()
+  let alerts: AlertRule[] = []
+  try {
+    alerts = await getAlertRules()
+  } catch (error) {
+    failures.push(`Alert lookup failed: ${error instanceof Error ? error.message : 'Database unavailable'}`)
+  }
   let matched = 0
   let emailSent = 0
   let telegramSent = 0
   let duplicatesSkipped = 0
-  const failures: string[] = []
 
   for (const alert of alerts.filter((item) => item.enabled)) {
     const match = scan.opportunities.find((item) => {

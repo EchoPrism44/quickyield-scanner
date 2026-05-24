@@ -11,7 +11,7 @@ export function hasDatabase() {
 
 export function getDb() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured')
-  if (!client) client = postgres(process.env.DATABASE_URL, { prepare: false })
+  if (!client) client = postgres(process.env.DATABASE_URL, { prepare: false, connect_timeout: 10, idle_timeout: 20, max: 5 })
   if (!db) db = drizzle(client, { schema })
   return db
 }

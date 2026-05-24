@@ -473,19 +473,27 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   justify-content: center;
   overflow: hidden;
   border-radius: 10px;
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,0.03);
+  border: 1px solid color-mix(in srgb, var(--logo-a, var(--signal)) 38%, rgba(255,255,255,0.12));
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255,255,255,0.32), transparent 28%),
+    linear-gradient(135deg, var(--logo-a, var(--signal)), var(--logo-b, #ffb020));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 8px 22px rgba(0,0,0,0.22);
   flex-shrink: 0;
 }
 .qy-protocol-logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 4px;
+  background: rgba(8,8,8,0.72);
 }
 .qy-protocol-fallback {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--ink-dim);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: #050505;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.22);
 }
 .qy-asset-name { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 14px; }
 .qy-asset-meta { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-mute); margin-top: 2px; }
