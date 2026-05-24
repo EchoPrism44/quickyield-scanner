@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Bell, Check, Copy, ExternalLink } from 'lucide-react'
+import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
 import type { Opportunity } from '../lib/types'
 
 export function PoolDetailActions({
@@ -13,6 +14,7 @@ export function PoolDetailActions({
 }) {
   const [watched, setWatched] = useState(initiallyWatched)
   const [copied, setCopied] = useState(false)
+  const [alertDraft, setAlertDraft] = useState<AlertDraft | null>(null)
 
   async function toggleWatch() {
     const response = watched
@@ -25,22 +27,13 @@ export function PoolDetailActions({
     if (response.ok) setWatched((current) => !current)
   }
 
-  async function createAlert() {
+  async function createAlert(draft: AlertDraft) {
     await fetch('/api/alerts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: `${opportunity.platform} ${opportunity.asset} above ${Math.max(1, Math.floor(opportunity.apy))}%`,
-        chain: opportunity.chain,
-        category: opportunity.category,
-        asset: opportunity.asset,
-        minApy: Math.max(1, Math.floor(opportunity.apy)),
-        maxRisk: opportunity.risk,
-        minConfidence: Math.max(70, opportunity.confidence - 5),
-        frequency: 'daily',
-        enabled: true,
-      }),
+      body: JSON.stringify({ ...draft, enabled: true }),
     })
+    setAlertDraft(null)
   }
 
   async function copyLink() {
@@ -50,25 +43,35 @@ export function PoolDetailActions({
   }
 
   return (
-    <div className="qy-detail-actions">
-      <button type="button" className={`qy-btn ${watched ? 'qy-btn-secondary' : 'qy-btn-primary'}`} onClick={toggleWatch}>
-        {watched ? <Check size={14} /> : null}
-        {watched ? 'Saved to watchlist' : 'Add to watchlist'}
-      </button>
-      <button type="button" className="qy-btn qy-btn-secondary" onClick={createAlert}>
-        <Bell size={14} />
-        Create alert
-      </button>
-      {opportunity.officialUrl.startsWith('http') ? (
-        <a href={opportunity.officialUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-primary">
-          Continue to protocol
-          <ExternalLink size={14} />
-        </a>
+    <>
+      <div className="qy-detail-actions">
+        <button type="button" className={`qy-btn ${watched ? 'qy-btn-secondary' : 'qy-btn-primary'}`} onClick={toggleWatch}>
+          {watched ? <Check size={14} /> : null}
+          {watched ? 'Saved to watchlist' : 'Add to watchlist'}
+        </button>
+        <button type="button" className="qy-btn qy-btn-secondary" onClick={() => setAlertDraft(alertDraftFromOpportunity(opportunity))}>
+          <Bell size={14} />
+          Set alert target
+        </button>
+        {opportunity.officialUrl.startsWith('http') ? (
+          <a href={opportunity.officialUrl} target="_blank" rel="noreferrer" className="qy-btn qy-btn-primary">
+            Continue to protocol
+            <ExternalLink size={14} />
+          </a>
+        ) : null}
+        <button type="button" className="qy-btn qy-btn-secondary" onClick={copyLink}>
+          <Copy size={14} />
+          {copied ? 'Copied' : 'Share'}
+        </button>
+      </div>
+      {alertDraft ? (
+        <AlertTargetDialog
+          draft={alertDraft}
+          onChange={setAlertDraft}
+          onClose={() => setAlertDraft(null)}
+          onSubmit={createAlert}
+        />
       ) : null}
-      <button type="button" className="qy-btn qy-btn-secondary" onClick={copyLink}>
-        <Copy size={14} />
-        {copied ? 'Copied' : 'Share'}
-      </button>
-    </div>
+    </>
   )
 }
