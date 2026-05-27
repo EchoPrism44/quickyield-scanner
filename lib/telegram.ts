@@ -14,6 +14,24 @@ export function getTelegramDeepLink(token: string) {
   return `https://t.me/${username}?start=${token}`
 }
 
+export async function sendTelegramMessage(chatId: string, text: string): Promise<TelegramSendResult> {
+  const token = getTelegramToken()
+  if (!token) return { sent: false, skipped: true, reason: 'TELEGRAM_BOT_TOKEN is not configured' }
+
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      disable_web_page_preview: true,
+    }),
+  })
+
+  if (!response.ok) return { sent: false, reason: `Telegram returned ${response.status}` }
+  return { sent: true }
+}
+
 export async function sendTelegramAlert(chatId: string, alert: AlertRule, opportunity: Opportunity): Promise<TelegramSendResult> {
   const token = getTelegramToken()
   if (!token) return { sent: false, skipped: true, reason: 'TELEGRAM_BOT_TOKEN is not configured' }
@@ -26,16 +44,5 @@ export async function sendTelegramAlert(chatId: string, alert: AlertRule, opport
     opportunity.actionUrl,
   ].join('\n')
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      disable_web_page_preview: false,
-    }),
-  })
-
-  if (!response.ok) return { sent: false, reason: `Telegram returned ${response.status}` }
-  return { sent: true }
+  return sendTelegramMessage(chatId, text)
 }

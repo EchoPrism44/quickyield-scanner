@@ -4,7 +4,7 @@ import { ArrowLeftRight, ExternalLink } from 'lucide-react'
 import { ProtocolLogo } from '../../../../components/protocol-logo'
 import { PoolDetailActions } from '../../../../components/pool-detail-actions'
 import { requireDashboardUserId } from '../../../../lib/auth'
-import { getOpportunities } from '../../../../lib/opportunities'
+import { getOpportunities, getRankReason } from '../../../../lib/opportunities'
 import { formatTvl } from '../../../../lib/scoring'
 import { getOpportunitySnapshots, getPoolDetail, getWatchlist } from '../../../../lib/store'
 import type { Opportunity, PoolDetail } from '../../../../lib/types'
@@ -108,6 +108,16 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
               </span>
             </div>
             <p className="qy-detail-copy">{opportunity.notes}</p>
+            <div className="qy-risk-brief">
+              <h3>Risk brief</h3>
+              <p>{getRankReason(opportunity)}</p>
+              <div className="qy-risk-brief-grid">
+                <span>Liquidity: {opportunity.scoreBreakdown.liquidity}/100</span>
+                <span>Stability: {opportunity.scoreBreakdown.stability}/100</span>
+                <span>Reward quality: {opportunity.scoreBreakdown.sustainability}/100</span>
+                <span>Data: {opportunity.scoreBreakdown.completeness}/100</span>
+              </div>
+            </div>
             <ul className="qy-detail-list">
               {opportunity.flags.map((flag) => <li key={flag}>{flag}</li>)}
             </ul>

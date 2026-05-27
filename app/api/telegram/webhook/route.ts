@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyTelegramConnectToken } from '../../../../lib/store'
+import { sendTelegramMessage } from '../../../../lib/telegram'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,5 +27,15 @@ export async function POST(request: NextRequest) {
 
   const username = update.message?.from?.username ? `@${update.message.from.username}` : update.message?.from?.first_name
   const channel = await verifyTelegramConnectToken(token, chatId, username)
+  if (channel) {
+    await sendTelegramMessage(
+      chatId,
+      [
+        'QuickYield is connected.',
+        'You will receive alerts here when one of your yield targets matches a scan.',
+        'Tip: open Settings in QuickYield and use Send test alert to verify the full path.',
+      ].join('\n'),
+    )
+  }
   return NextResponse.json({ ok: Boolean(channel), connected: Boolean(channel) })
 }

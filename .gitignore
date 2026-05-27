@@ -29,3 +29,6 @@ out
 .next/dev/cache/turbopack/e0739832/00000125.sst
 node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
 node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
+
+# clerk configuration (can include secrets)
+/.clerk/

@@ -64,19 +64,19 @@ function RadarPreview() {
 }
 
 export default function HomePage() {
-  const [stats, setStats] = useState({ total: '0', tvl: '$0', screened: '0', avg: '0.0%' })
+  const [stats, setStats] = useState({ total: '1,500+', tvl: 'Live', screened: 'Live', avg: 'Live' })
 
   useEffect(() => {
     fetch('/api/opportunities?capital=100')
       .then((response) => response.json())
-      .then((data: { opportunities?: Opportunity[] }) => {
+      .then((data: { opportunities?: Opportunity[]; total?: number }) => {
         const opportunities = data.opportunities ?? []
         if (!opportunities.length) return
         const tvl = opportunities.reduce((sum, item) => sum + (item.tvlUsd || 0), 0)
         const screened = opportunities.filter((item) => item.risk === 'Low').length
         const avg = opportunities.reduce((sum, item) => sum + (item.apy || 0), 0) / opportunities.length
         setStats({
-          total: opportunities.length.toString(),
+          total: data.total ? data.total.toLocaleString() : opportunities.length.toString(),
           tvl: tvl >= 1e9 ? `$${(tvl / 1e9).toFixed(1)}B` : `$${(tvl / 1e6).toFixed(0)}M`,
           screened: screened.toString(),
           avg: `${avg.toFixed(1)}%`,
@@ -96,6 +96,7 @@ export default function HomePage() {
             <h1 className="qy-h1">Find the yield worth checking.</h1>
             <p className="qy-hero-sub">
               QuickYield is a private radar for DeFi yield research. Scan live pools, set target rules, and get Telegram alerts when a cleaner opportunity appears.
+
             </p>
             <div className="qy-hero-actions">
               <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
@@ -253,7 +254,7 @@ export default function HomePage() {
             <div>
               <h4>Resources</h4>
               <ul>
-                <li>Live market-feed coverage</li>
+                <li>1500+ pool scanner</li>
                 <li><Link href="/sign-in">Market overview</Link></li>
               </ul>
             </div>
