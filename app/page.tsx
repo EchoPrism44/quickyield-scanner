@@ -2,24 +2,66 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowRight, Bell, Eye, LineChart, ShieldCheck, Sparkles, Zap } from 'lucide-react'
+import { ArrowRight, Bell, Crosshair, LineChart, Radio, ShieldCheck } from 'lucide-react'
 import { MarketingNav } from '../components/marketing-nav'
 import type { Opportunity } from '../lib/types'
 
-const previewRows = [
-  { p: 'Aave', c: 'Base', a: 'USDC', apy: '8.40%', tvl: '$146M', screened: true },
-  { p: 'Jito', c: 'Solana', a: 'SOL', apy: '7.10%', tvl: '$1.7B', screened: true },
-  { p: 'Maple', c: 'Ethereum', a: 'USDC', apy: '4.80%', tvl: '$3.3B', screened: true },
-  { p: 'Lido', c: 'Arbitrum', a: 'ETH', apy: '3.90%', tvl: '$35B', screened: true },
-  { p: 'Binance Earn', c: 'Exchange', a: 'USDT', apy: '5.30%', tvl: 'N/A', screened: false },
+const radarRows = [
+  { p: 'Lido', c: 'Ethereum', a: 'STETH', apy: '2.36%', score: 96, x: 60, y: 32 },
+  { p: 'Aave', c: 'Base', a: 'USDC', apy: '8.40%', score: 88, x: 34, y: 58 },
+  { p: 'Jito', c: 'Solana', a: 'SOL', apy: '7.10%', score: 84, x: 70, y: 67 },
+  { p: 'Maple', c: 'Ethereum', a: 'USDC', apy: '4.80%', score: 79, x: 42, y: 26 },
 ]
 
 const steps = [
-  { n: '01', icon: LineChart, t: 'Track the screened market', b: 'QuickYield scans up to 500 live pools, ranks the universe, and keeps the research workflow inside the terminal.' },
-  { n: '02', icon: Eye, t: 'Open pool research pages', b: 'Each pool gets a dedicated page with stored history, method notes, related pools, and alert actions.' },
-  { n: '03', icon: Bell, t: 'Set alerts that matter', b: 'Watch specific pools, set thresholds, and get hourly-scan notifications in email or Telegram.' },
-  { n: '04', icon: Zap, t: 'Move with context', b: "QuickYield stays in research mode. We never touch your wallet or move funds for you." },
+  { n: '01', icon: Radio, t: 'Scan', b: 'Pull live DeFiLlama yield data and narrow the universe to pools worth a closer look.' },
+  { n: '02', icon: Crosshair, t: 'Target', b: 'Set exact APY, asset, chain, risk, and confidence rules instead of watching everything.' },
+  { n: '03', icon: Bell, t: 'Alert', b: 'Send matching opportunities to Telegram or email when the hourly scan catches them.' },
+  { n: '04', icon: ShieldCheck, t: 'Research', b: 'Stay non-custodial. QuickYield shows signal; users still verify before moving funds.' },
 ]
+
+function RadarPreview() {
+  return (
+    <div className="qy-radar-panel" aria-label="QuickYield radar preview">
+      <div className="qy-radar-screen">
+        <div className="qy-radar-rings" />
+        <div className="qy-radar-cross qy-radar-cross-x" />
+        <div className="qy-radar-cross qy-radar-cross-y" />
+        <div className="qy-radar-sweep" />
+        {radarRows.map((row, index) => (
+          <div
+            key={row.p}
+            className="qy-radar-hit"
+            style={{ left: `${row.x}%`, top: `${row.y}%`, animationDelay: `${index * 0.18}s` }}
+          >
+            <span />
+          </div>
+        ))}
+        <div className="qy-radar-core">
+          <span>QY</span>
+        </div>
+      </div>
+      <div className="qy-radar-list">
+        <div className="qy-radar-list-head">
+          <span>Matched targets</span>
+          <strong>Live</strong>
+        </div>
+        {radarRows.map((row) => (
+          <div key={row.p} className="qy-radar-row">
+            <div>
+              <strong>{row.p}</strong>
+              <span>{row.a} / {row.c}</span>
+            </div>
+            <div>
+              <strong>{row.apy}</strong>
+              <span>{row.score} score</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function HomePage() {
   const [stats, setStats] = useState({ total: '0', tvl: '$0', screened: '0', avg: '0.0%' })
@@ -47,75 +89,29 @@ export default function HomePage() {
     <main>
       <MarketingNav />
 
-      <section className="qy-hero">
-        <div className="qy-hero-bg-grid qy-grid-bg qy-grid-bg-fade" />
-        <div className="qy-hero-glow" />
-        <div className="qy-container qy-hero-body">
-          <div className="qy-fade-up">
-            <div className="qy-pill">
-              <span className="qy-pill-dot" />
-              <span className="qy-mono">Live data / ranked shortlist / private dashboard</span>
-            </div>
-            <h1 className="qy-h1">
-              A private terminal for <em>screened</em><br />DeFi yield research.
-            </h1>
+      <section className="qy-hero qy-radar-hero">
+        <div className="qy-radar-bg" />
+        <div className="qy-container qy-hero-body qy-radar-hero-body">
+          <div className="qy-fade-up qy-hero-copy">
+            <h1 className="qy-h1">Find the yield worth checking.</h1>
             <p className="qy-hero-sub">
-              QuickYield scans up to 500 live yield pools, ranks the market, stores hourly snapshots, and helps you monitor the opportunities worth checking first. No wallet connection. No custody.
+              QuickYield is a private radar for DeFi yield research. Scan live pools, set target rules, and get Telegram alerts when a cleaner opportunity appears.
             </p>
             <div className="qy-hero-actions">
               <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
-                Open the terminal <ArrowRight size={16} strokeWidth={2.5} />
+                Open QuickYield <ArrowRight size={16} strokeWidth={2.5} />
               </Link>
-              <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg">
-                See how it works
-              </a>
+              <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg">See the radar</a>
             </div>
-            <div className="qy-hero-protocols">
-              <span>Aave</span><span>Jito</span><span>Maple</span><span>Lido</span><span>Pendle</span>
+            <div className="qy-hero-proof">
+              <span>No wallet connection</span>
+              <span>Telegram alerts</span>
+              <span>Research only</span>
             </div>
           </div>
 
-          <div className="qy-fade-up-delay-2 qy-preview-wrap">
-            <div className="qy-preview-glow" />
-            <div className="qy-preview qy-noise">
-              <div className="qy-preview-bar">
-                <span className="qy-preview-dot" /><span className="qy-preview-dot" /><span className="qy-preview-dot" />
-                <div className="qy-preview-url">
-                  <span className="qy-pill-dot" />
-                  sample-market-view
-                </div>
-              </div>
-              <div className="qy-preview-grid">
-                <div className="qy-preview-side">
-                  {['Markets', 'Watchlist', 'Alerts', 'Settings'].map((item, index) => (
-                    <div key={item} className={`qy-preview-side-item${index === 0 ? ' active' : ''}`}>{item}</div>
-                  ))}
-                </div>
-                <div>
-                  <div className="qy-preview-table-head">
-                    <div>
-                      <div className="qy-overline">Sample market view</div>
-                      <div style={{ marginTop: 2, fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--ink)' }}>Screened yield table</div>
-                    </div>
-                    <span className="qy-pill" style={{ margin: 0, padding: '4px 12px' }}>Private</span>
-                  </div>
-                  {previewRows.map((row, index) => (
-                    <div key={row.p} className="qy-preview-row qy-row-slide" style={{ animationDelay: `${0.6 + index * 0.08}s` }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div className="qy-preview-icon" />
-                        <div>
-                          <strong>{row.p}</strong>
-                          <div className="qy-mono" style={{ marginTop: 2 }}>{row.c} / {row.a}</div>
-                        </div>
-                      </div>
-                      <div>{row.screened ? <span className="qy-tag-safe">Screened</span> : <span className="qy-tag-mini qy-risk-medium">Review</span>}</div>
-                      <div className="qy-mono" style={{ textAlign: 'right' }}>{row.tvl}</div>
-                      <div className="qy-num bold">{row.apy}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="qy-fade-up-delay-2 qy-radar-stage">
+            <RadarPreview />
           </div>
         </div>
       </section>
@@ -138,10 +134,9 @@ export default function HomePage() {
 
       <section id="how" className="qy-section">
         <div className="qy-container">
-          <div className="qy-section-head">
-            <span className="qy-overline qy-overline-signal">How it works</span>
-            <h2 className="qy-h2">From noisy market to cleaner shortlist.</h2>
-            <p>QuickYield narrows the market, stores history, and helps you move from browsing to research.</p>
+          <div className="qy-section-head qy-section-head-wide">
+            <h2 className="qy-h2">A cleaner path from market noise to a target alert.</h2>
+            <p>Most yield pages show endless APY rows. QuickYield turns that into a repeatable research loop: scan, filter, target, notify.</p>
           </div>
           <div className="qy-how-grid">
             {steps.map((step, index) => (
@@ -161,17 +156,15 @@ export default function HomePage() {
 
       <section id="features" className="qy-section" style={{ paddingTop: 0 }}>
         <div className="qy-container">
-          <div className="qy-section-head">
-            <span className="qy-overline qy-overline-signal">Features</span>
-            <h2 className="qy-h2">Closer to a terminal than a hype page.</h2>
+          <div className="qy-section-head qy-section-head-wide">
+            <h2 className="qy-h2">Built like a terminal, explained like a product.</h2>
           </div>
           <div className="qy-bento">
             <div className="qy-bento-card qy-bento-hero qy-noise qy-fade-up">
-              <span className="qy-overline qy-overline-signal">Ranked market</span>
-              <h3>Live market data, explicit scoring, and a denser table.</h3>
+              <h3>Screen the market without pretending yield is risk-free.</h3>
               <p>Sort by APY, TVL, volatility, or QuickYield score. Lower-risk screens are called out, and every pool opens into an internal research page.</p>
               <div className="qy-bento-mini">
-                <div className="qy-bento-mini-head">Tracked market / sample</div>
+                <div className="qy-bento-mini-head">Radar shortlist</div>
                 {[
                   { p: 'Aave', c: 'Base', a: 8.4 },
                   { p: 'Jito', c: 'Solana', a: 7.1 },
@@ -190,13 +183,13 @@ export default function HomePage() {
 
             <div className="qy-bento-card qy-fade-up" style={{ animationDelay: '0.08s' }}>
               <Bell className="qy-icon" />
-              <h3>Threshold alerts</h3>
-              <p>Email and Telegram alerts tied to the pools you follow, deduped against hourly scan runs.</p>
+              <h3>Real target rules</h3>
+              <p>Users choose APY, asset, chain, category, risk, and confidence before alerts go out.</p>
             </div>
 
             <div className="qy-bento-card green qy-fade-up" style={{ animationDelay: '0.16s' }}>
               <ShieldCheck className="qy-icon" />
-              <h3>Research only</h3>
+              <h3>No custody story</h3>
               <p>We do not connect wallets, hold funds, or pretend a score replaces protocol due diligence.</p>
             </div>
           </div>
@@ -205,15 +198,23 @@ export default function HomePage() {
 
       <section className="qy-section" style={{ paddingTop: 0 }}>
         <div className="qy-container">
-          <div className="qy-section-head">
-            <span className="qy-overline qy-overline-signal">Direction</span>
-            <h2 className="qy-h2">Built for users who want signal without fake certainty.</h2>
+          <div className="qy-section-head qy-section-head-wide">
+            <h2 className="qy-h2">What a user sees when a target hits.</h2>
           </div>
-          <div className="qy-testimonials-grid">
-            <div className="qy-testi qy-fade-up">
-              <Sparkles className="qy-testi-icon" fill="currentColor" />
-              <blockquote>"I do not need a thousand noisy pools. I need the few worth checking first, with history and alerts right there."</blockquote>
-              <p style={{ marginTop: 8, color: 'var(--ink-dim)', fontSize: 13 }}>Terminal-first product direction</p>
+          <div className="qy-alert-demo">
+            <div className="qy-phone qy-fade-up">
+              <div className="qy-phone-top">QuickYield alert</div>
+              <div className="qy-phone-bubble">
+                <strong>STETH yield pool</strong>
+                <span>Lido on Ethereum</span>
+                <span>APY: 2.36% | Confidence: 96%</span>
+                <span>Rule: STETH above 2%</span>
+              </div>
+            </div>
+            <div className="qy-alert-demo-copy qy-fade-up-delay-2">
+              <LineChart className="qy-icon" />
+              <h3>Fast enough to feel alive. Calm enough to trust.</h3>
+              <p>Alerts are short, specific, and linked back to the research page. No fake urgency. No trade button. Just the signal and the context.</p>
             </div>
           </div>
         </div>
@@ -223,8 +224,8 @@ export default function HomePage() {
         <div className="qy-container">
           <div className="qy-cta qy-noise qy-fade-up">
             <div className="qy-cta-glow" />
-            <h2 className="qy-h2">Stop guessing which pool deserves attention.<br />Start with a cleaner market.</h2>
-            <p>Private dashboard. Hourly snapshots. Internal pool pages. Research only.</p>
+            <h2 className="qy-h2">Launch with a sharper signal.</h2>
+            <p>Private dashboard. Radar-style scanning. Target alerts. Research only.</p>
             <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
               Get started <ArrowRight size={16} strokeWidth={2.5} />
             </Link>

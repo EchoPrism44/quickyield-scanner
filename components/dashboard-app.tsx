@@ -10,11 +10,13 @@ import {
   Filter,
   LayoutDashboard,
   Settings as SettingsIcon,
+  Target,
   Trash2,
 } from 'lucide-react'
 import { categories, chains, timeCosts } from '../lib/constants'
 import { formatTvl } from '../lib/scoring'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
+import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
 import { ProtocolLogo } from './protocol-logo'
 import type { AlertRule, DashboardData, DashboardUser, NotificationStatus, Opportunity, UserSettings } from '../lib/types'
 
@@ -47,6 +49,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   const [category, setCategory] = useState(initialData.settings.category)
   const [query, setQuery] = useState('')
   const [capital, setCapital] = useState(initialData.settings.capital)
+  const [alertDraft, setAlertDraft] = useState<AlertDraft | null>(null)
   const [, startTransition] = useTransition()
   const toasts = useToasts()
 
@@ -87,25 +90,20 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
     }
   }
 
-  async function createAlert(item: Opportunity) {
+  function openAlertBuilder(item?: Opportunity) {
+    setAlertDraft(alertDraftFromOpportunity(item, { chain, category }))
+  }
+
+  async function createAlert(draft: AlertDraft) {
     const response = await fetch('/api/alerts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: `${item.platform} ${item.asset} above ${Math.max(1, Math.floor(item.apy))}%`,
-        chain: item.chain,
-        category: item.category,
-        asset: item.asset,
-        minApy: Math.max(1, Math.floor(item.apy)),
-        maxRisk: item.risk,
-        minConfidence: Math.max(70, item.confidence - 5),
-        frequency: 'daily',
-        enabled: true,
-      }),
+      body: JSON.stringify({ ...draft, enabled: true }),
     })
     const result = await response.json()
     if (response.ok) {
       setData((current) => ({ ...current, alerts: result.alerts }))
+      setAlertDraft(null)
       setTab('alerts')
       toasts.push('success', 'Alert created')
     } else {
@@ -239,14 +237,14 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               onCategory={(value) => { setCategory(value); refreshOpportunities({ chain, risk, time, category: value, q: query, capital }) }}
               onQuery={(value) => { setQuery(value); refreshOpportunities({ chain, risk, time, category, q: value, capital }) }}
               onToggleWatch={toggleWatch}
-              onCreateAlert={createAlert}
+              onCreateAlert={openAlertBuilder}
             />
           )}
           {tab === 'watchlist' && (
-            <WatchlistView items={watchedOps} onRemove={toggleWatch} onCreateAlert={createAlert} />
+            <WatchlistView items={watchedOps} onRemove={toggleWatch} onCreateAlert={openAlertBuilder} />
           )}
           {tab === 'alerts' && (
-            <AlertsView alerts={data.alerts} onDelete={deleteAlert} onToggle={toggleAlert} />
+            <AlertsView alerts={data.alerts} onDelete={deleteAlert} onToggle={toggleAlert} onCreate={() => openAlertBuilder()} />
           )}
           {tab === 'settings' && (
             <SettingsView
@@ -267,6 +265,15 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
           <div key={toast.id} className={`qy-toast ${toast.type}`}>{toast.msg}</div>
         ))}
       </div>
+
+      {alertDraft ? (
+        <AlertTargetDialog
+          draft={alertDraft}
+          onChange={setAlertDraft}
+          onClose={() => setAlertDraft(null)}
+          onSubmit={createAlert}
+        />
+      ) : null}
 
       <nav className="qy-bottom-nav">
         {navItems.map(({ tab: itemTab, label, icon: Icon }) => (
@@ -329,7 +336,7 @@ function MarketsView({
   onCategory: (value: string) => void
   onQuery: (value: string) => void
   onToggleWatch: (id: string) => Promise<void>
-  onCreateAlert: (item: Opportunity) => Promise<void>
+  onCreateAlert: (item: Opportunity) => void
 }) {
   const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'volatility' | 'updated'>('confidence')
 
@@ -438,7 +445,7 @@ function WatchlistView({
 }: {
   items: Opportunity[]
   onRemove: (id: string) => Promise<void>
-  onCreateAlert: (item: Opportunity) => Promise<void>
+  onCreateAlert: (item: Opportunity) => void
 }) {
   return (
     <section className="qy-page" data-testid="watchlist-page">
@@ -491,23 +498,35 @@ function AlertsView({
   alerts,
   onDelete,
   onToggle,
+  onCreate,
 }: {
   alerts: AlertRule[]
   onDelete: (id: string) => Promise<void>
   onToggle: (alert: AlertRule) => Promise<void>
+  onCreate: () => void
 }) {
   return (
     <section className="qy-page" data-testid="alerts-page">
-      <div className="qy-page-header">
-        <span className="qy-overline qy-overline-signal">Notifications</span>
-        <h1>Alerts</h1>
-        <p>Private rules for yield changes you actually care about.</p>
+      <div className="qy-page-header qy-page-header-row">
+        <div>
+          <span className="qy-overline qy-overline-signal">Notifications</span>
+          <h1>Alerts</h1>
+          <p>Private rules for yield changes you actually care about.</p>
+        </div>
+        <button type="button" className="qy-btn qy-btn-primary" onClick={onCreate}>
+          <Target size={14} />
+          New target
+        </button>
       </div>
       {alerts.length === 0 ? (
         <div className="qy-empty">
           <Bell className="qy-empty-icon" />
           <h3>No alerts yet</h3>
-          <p>Create threshold alerts from any pool row or pool detail page.</p>
+          <p>Create a target with APY, asset, chain, risk, and confidence rules.</p>
+          <button type="button" className="qy-btn qy-btn-secondary qy-empty-action" onClick={onCreate}>
+            <Target size={14} />
+            Set first target
+          </button>
         </div>
       ) : (
         <div className="qy-table-wrap">
