@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Bell, X } from 'lucide-react'
 import { categories, chains } from '../lib/constants'
 import type { Opportunity } from '../lib/types'
@@ -41,8 +41,44 @@ export function AlertTargetDialog({
   onSubmit: (draft: AlertDraft) => Promise<void>
 }) {
   const [saving, setSaving] = useState(false)
+  const dialogRef = useRef<HTMLFormElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
   const chainOptions = ['All chains', ...chains.filter((item) => item !== 'All chains')]
   const categoryOptions = ['All categories', ...categories.filter((item) => item !== 'All categories')]
+
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const dialog = dialogRef.current
+    const firstField = dialog?.querySelector<HTMLElement>('input, select, button, [href], [tabindex]:not([tabindex="-1"])')
+    firstField?.focus()
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !dialog) return
+      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>('button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])'))
+        .filter((element) => !element.hasAttribute('disabled') && element.tabIndex !== -1)
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      previousFocusRef.current?.focus()
+    }
+  }, [onClose])
 
   function patch(next: Partial<AlertDraft>) {
     onChange({ ...draft, ...next })
@@ -64,11 +100,18 @@ export function AlertTargetDialog({
 
   return (
     <div className="qy-modal-overlay" role="presentation">
-      <form className="qy-modal qy-alert-dialog" onSubmit={submit} aria-label="Create alert target">
+      <form
+        ref={dialogRef}
+        className="qy-modal qy-alert-dialog"
+        onSubmit={submit}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="qy-alert-dialog-title"
+      >
         <div className="qy-modal-header">
           <div>
             <span className="qy-overline qy-overline-signal">Alert target</span>
-            <h2>Set yield alert</h2>
+            <h2 id="qy-alert-dialog-title">Set yield alert</h2>
           </div>
           <button type="button" className="qy-icon-btn" onClick={onClose} aria-label="Close alert target">
             <X size={16} />
@@ -78,6 +121,7 @@ export function AlertTargetDialog({
           <label>
             <span>Name</span>
             <input className="qy-input" value={draft.name} maxLength={80} onChange={(event) => patch({ name: event.target.value })} />
+            <small>Use a name you will recognize when the alert arrives.</small>
           </label>
           <div className="qy-alert-grid">
             <label>
@@ -87,6 +131,7 @@ export function AlertTargetDialog({
             <label>
               <span>Minimum APY</span>
               <input className="qy-input" type="number" min={0} max={100} step={0.1} value={draft.minApy} onChange={(event) => patch({ minApy: Number(event.target.value) })} />
+              <small>Only notify when a matching pool is at or above this APY.</small>
             </label>
             <label>
               <span>Chain</span>
@@ -108,7 +153,7 @@ export function AlertTargetDialog({
               </select>
             </label>
             <label>
-              <span>Min confidence</span>
+              <span>Minimum safety score</span>
               <input className="qy-input" type="number" min={0} max={100} value={draft.minConfidence} onChange={(event) => patch({ minConfidence: Number(event.target.value) })} />
             </label>
           </div>

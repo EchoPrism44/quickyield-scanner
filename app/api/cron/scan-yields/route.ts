@@ -70,7 +70,19 @@ export async function GET(request: NextRequest) {
       else failures.push(result.reason)
     }
 
-    if (delivered) await recordAlertDelivery(alert.userId, alert.id, match.id, deliveryKey)
+    if (delivered) {
+      await recordAlertDelivery(alert.userId, alert.id, match.id, deliveryKey, {
+        alertId: alert.id,
+        alertName: alert.name,
+        opportunityId: match.id,
+        poolName: match.name,
+        platform: match.platform,
+        asset: match.asset,
+        chain: match.chain,
+        apy: match.apy,
+        channel: [telegram && 'Telegram', email && 'Email'].filter(Boolean).join(' + ') || 'Notification',
+      })
+    }
   }
 
   return NextResponse.json({

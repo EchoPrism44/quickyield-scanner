@@ -5,7 +5,8 @@ import { poolToOpportunity } from './scoring'
 import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
-const MAX_TRACKED_LIVE_POOLS = 500
+const DEFAULT_PAGE_SIZE = 50
+const MAX_PAGE_SIZE = 100
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
@@ -23,6 +24,7 @@ function applyFilters(opportunities: Opportunity[], filters: OpportunityFilters)
   const category = valid(filters.category, categories, 'All categories')
   const capital = Number.isFinite(filters.capital) ? Number(filters.capital) : 100
 
+  const savedIds = new Set(filters.savedIds ?? [])
   return opportunities
     .filter((item) => !q || [item.name, item.platform, item.category, item.chain, item.asset, item.symbol, item.notes].join(' ').toLowerCase().includes(q))
     .filter((item) => chain === 'All chains' || item.chain === chain)
@@ -30,7 +32,41 @@ function applyFilters(opportunities: Opportunity[], filters: OpportunityFilters)
     .filter((item) => time === 'Any time' || item.time === time)
     .filter((item) => category === 'All categories' || item.category === category)
     .filter((item) => item.minimum <= capital)
+    .filter((item) => !filters.preset || matchesPreset(item, filters.preset, savedIds))
     .sort((a, b) => b.confidence - a.confidence)
+    .map((item, index) => ({ ...item, rank: index + 1, rankReason: getRankReason(item) }))
+}
+
+function matchesPreset(item: Opportunity, preset: OpportunityFilters['preset'], savedIds: Set<string>) {
+  if (preset === 'saved') return savedIds.has(item.id)
+  if (preset === 'safe-stablecoins') return item.risk === 'Low' && item.category === 'Stablecoin lending' && /USDC|USDT|DAI/i.test(item.asset)
+  if (preset === 'eth-staking') return item.category === 'Staking' && /ETH|STETH/i.test(item.asset)
+  if (preset === 'solana-yield') return item.chain === 'Solana'
+  if (preset === 'high-apy') return item.apy >= 8
+  return true
+}
+
+export function getRankReason(item: Opportunity) {
+  if (item.risk === 'Low' && item.confidence >= 90) return 'High safety score with lower-risk screen.'
+  if (item.tvlUsd >= 1_000_000_000) return 'Large TVL gives this pool stronger liquidity context.'
+  if (item.volatility <= 0.5 && item.apy > 0) return 'APY has been relatively steady over the latest feed.'
+  if (item.apy >= 8) return 'Higher APY, but review risk and reward quality before acting.'
+  if (item.dataCompleteness >= 75) return 'Enough market-feed data to compare against similar pools.'
+  return 'Included after the current safety, liquidity, and data checks.'
+}
+
+function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
+  const page = Math.max(1, Math.floor(Number(filters.page) || 1))
+  const requestedPageSize = Math.floor(Number(filters.pageSize) || DEFAULT_PAGE_SIZE)
+  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, requestedPageSize))
+  const start = (page - 1) * pageSize
+  return {
+    opportunities: opportunities.slice(start, start + pageSize),
+    total: opportunities.length,
+    page,
+    pageSize,
+    hasMore: start + pageSize < opportunities.length,
+  }
 }
 
 async function fetchLiveOpportunities() {
@@ -40,13 +76,10 @@ async function fetchLiveOpportunities() {
   })
   if (!response.ok) throw new Error(`Market feed returned ${response.status}`)
   const payload = (await response.json()) as { data?: LlamaPool[] }
-  const allowedChains = new Set(['Base', 'Solana', 'Arbitrum', 'Ethereum'])
   const live = (payload.data ?? [])
-    .filter((pool) => allowedChains.has(pool.chain))
     .filter((pool) => Number(pool.tvlUsd) >= 1_000_000)
     .filter((pool) => Number(pool.apy ?? pool.apyBase ?? 0) > 0.3)
     .filter((pool) => Number(pool.apy ?? pool.apyBase ?? 0) <= 22)
-    .filter((pool) => /USDC|USDT|DAI|SOL|ETH|STETH/i.test(pool.symbol))
     .sort((a, b) => {
       const aApy = Number(a.apy ?? a.apyBase ?? 0)
       const bApy = Number(b.apy ?? b.apyBase ?? 0)
@@ -60,7 +93,6 @@ async function fetchLiveOpportunities() {
       const bScore = Number(b.tvlUsd) / 1_000_000 + bApy * 2.5 - bVol * 8 - bRewardShare * 12 + bCompleteness * 3
       return bScore - aScore
     })
-    .slice(0, MAX_TRACKED_LIVE_POOLS)
     .map(poolToOpportunity)
     .sort((a, b) => b.confidence - a.confidence || b.tvlUsd - a.tvlUsd)
     .map((item, index) => ({ ...item, rank: index + 1 }))
@@ -108,8 +140,9 @@ export async function scanAndCacheYields() {
 
 export async function getOpportunities(filters: OpportunityFilters = {}) {
   const scan = await scanAndCacheYields()
+  const filtered = applyFilters(scan.opportunities, filters)
   return {
     ...scan,
-    opportunities: applyFilters(scan.opportunities, filters),
+    ...paginate(filtered, filters),
   }
 }

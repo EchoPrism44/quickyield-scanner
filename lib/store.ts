@@ -3,7 +3,7 @@ import { ALERT_LIMIT, WATCHLIST_LIMIT, defaultSettings } from './constants'
 import { getDb, hasDatabase } from './db'
 import { memory } from './memory-store'
 import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, opportunitySnapshots, telegramConnectTokens, users, watchlistItems } from './schema'
-import type { AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, UserSettings } from './types'
+import type { AlertActivity, AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, UserSettings } from './types'
 
 function id(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`
@@ -371,7 +371,7 @@ export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
 
 export async function getCachedOpportunities() {
   if (!hasDatabase()) return memory.opportunities
-  const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt)).limit(500)
+  const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt))
   return rows.map((row) => JSON.parse(row.payloadJson) as Opportunity)
 }
 
@@ -425,9 +425,61 @@ export async function wasAlertDelivered(deliveryKey: string) {
   return rows.length > 0
 }
 
-export async function recordAlertDelivery(userId: string, alertId: string, opportunityId: string, deliveryKey: string) {
+export async function getAlertActivity(userId: string, limit = 12): Promise<AlertActivity[]> {
+  if (!hasDatabase()) return memory.deliveryRecords.filter((item) => item.userId === userId).slice(0, limit)
+
+  const db = getDb()
+  const rows = await db
+    .select()
+    .from(alertDeliveries)
+    .where(eq(alertDeliveries.userId, userId))
+    .orderBy(desc(alertDeliveries.createdAt))
+    .limit(limit)
+  if (rows.length === 0) return []
+
+  const [alerts, opportunities, channels] = await Promise.all([
+    getAlertRules(userId),
+    getCachedOpportunities(),
+    getNotificationChannels(userId),
+  ])
+  const alertMap = new Map(alerts.map((alert) => [alert.id, alert]))
+  const opportunityMap = new Map(opportunities.map((opportunity) => [opportunity.id, opportunity]))
+  const channelLabel = channels
+    .filter((channel) => channel.enabled && channel.verified)
+    .map((channel) => channel.type === 'telegram' ? 'Telegram' : 'Email')
+    .join(' + ') || 'Notification'
+
+  return rows.map((row) => {
+    const alert = alertMap.get(row.alertId)
+    const opportunity = opportunityMap.get(row.opportunityId)
+    return {
+      id: row.id,
+      alertId: row.alertId,
+      alertName: alert?.name ?? 'Alert rule',
+      opportunityId: row.opportunityId,
+      poolName: opportunity?.name ?? row.opportunityId,
+      platform: opportunity?.platform ?? 'Unknown pool',
+      asset: opportunity?.asset ?? alert?.asset ?? 'YIELD',
+      chain: opportunity?.chain ?? alert?.chain ?? 'All chains',
+      apy: opportunity?.apy ?? alert?.minApy ?? 0,
+      channel: channelLabel,
+      createdAt: row.createdAt.toISOString(),
+    } satisfies AlertActivity
+  })
+}
+
+export async function recordAlertDelivery(userId: string, alertId: string, opportunityId: string, deliveryKey: string, activity?: Omit<AlertActivity, 'id' | 'createdAt'>) {
   if (!hasDatabase()) {
     memory.deliveries.add(deliveryKey)
+    if (activity) {
+      memory.deliveryRecords.unshift({
+        ...activity,
+        id: id('activity'),
+        userId,
+        createdAt: new Date().toISOString(),
+      })
+      memory.deliveryRecords = memory.deliveryRecords.slice(0, 50)
+    }
     return
   }
   await getDb().insert(alertDeliveries).values({ id: id('delivery'), userId, alertId, opportunityId, deliveryKey }).onConflictDoNothing()

@@ -60,6 +60,7 @@ export type Opportunity = {
   protocolSlug: string
   source: 'Live' | 'Curated'
   notes: string
+  rankReason?: string
   flags: string[]
   lastSeenAt: string
   lastUpdated: string
@@ -93,6 +94,23 @@ export type OpportunityFilters = {
   time?: string
   q?: string
   capital?: number
+  preset?: OpportunityPreset
+  savedIds?: string[]
+  page?: number
+  pageSize?: number
+}
+
+export type OpportunityPreset = 'safe-stablecoins' | 'eth-staking' | 'solana-yield' | 'high-apy' | 'saved'
+
+export type OpportunitiesResult = {
+  opportunities: Opportunity[]
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
+  dataStatus: DataStatus
+  lastUpdated: string
+  fallbackReason?: string
 }
 
 export type UserSettings = {
@@ -155,6 +173,10 @@ export type AlertRule = {
 export type DashboardData = {
   user: DashboardUser
   opportunities: Opportunity[]
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
   dataStatus: DataStatus
   lastUpdated: string
   fallbackReason?: string
@@ -162,6 +184,21 @@ export type DashboardData = {
   alerts: AlertRule[]
   settings: UserSettings
   notifications: NotificationStatus
+}
+
+export type AlertActivity = {
+  id: string
+  userId?: string
+  alertId: string
+  alertName: string
+  opportunityId: string
+  poolName: string
+  platform: string
+  asset: string
+  chain: string
+  apy: number
+  channel: string
+  createdAt: string
 }
 
 export type PoolDetail = {
