@@ -95,7 +95,8 @@ export default function HomePage() {
           <div className="qy-fade-up qy-hero-copy">
             <h1 className="qy-h1">Find the yield worth checking.</h1>
             <p className="qy-hero-sub">
-              QuickYield is a non-custodial radar for DeFi yield research. Scan live pools, set target rules, and get Telegram alerts when a cleaner opportunity appears.
+              QuickYield is a private radar for DeFi yield research. Scan live pools, set target rules, and get Telegram alerts when a cleaner opportunity appears.
+
             </p>
             <div className="qy-hero-actions">
               <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">

@@ -153,7 +153,7 @@ export function AlertTargetDialog({
               </select>
             </label>
             <label>
-              <span>Minimum safety score</span>
+              <span>Min confidence</span>
               <input className="qy-input" type="number" min={0} max={100} value={draft.minConfidence} onChange={(event) => patch({ minConfidence: Number(event.target.value) })} />
             </label>
           </div>
