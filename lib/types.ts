@@ -31,6 +31,55 @@ export type OpportunitySnapshot = {
   tvlUsd: number
 }
 
+export type PoolHistoryPoint = OpportunitySnapshot & {
+  tvlFormatted: string
+  rewardShare: number
+}
+
+export type MarketMapCell = {
+  band: string
+  minApy: number
+  maxApy?: number
+  pools: number
+  lowerRisk: number
+  reviewRisk: number
+  totalTvl: number
+  avgSafety: number
+}
+
+export type ScannerHealth = {
+  poolsScanned: number
+  chainsCovered: number
+  livePools: number
+  curatedPools: number
+  snapshots24h: number
+  latestSnapshotAt?: string
+  freshnessMinutes?: number
+}
+
+export type AnalyticsData = {
+  history: Array<{
+    time: string
+    apy: number
+    baseApy: number
+    rewardApy: number
+    tvl: number
+    count: number
+  }>
+  chains: Array<{
+    chain: string
+    avgApy: number
+    avgSafety: number
+    totalTvl: number
+    opportunities: number
+    lowerRisk: number
+  }>
+  marketMap: MarketMapCell[]
+  scannerHealth: ScannerHealth
+  topPools: Pick<Opportunity, 'id' | 'platform' | 'asset' | 'chain' | 'apy' | 'tvlUsd' | 'confidence' | 'volatility'>[]
+  lastUpdated: string
+}
+
 export type Opportunity = {
   id: string
   rank: number

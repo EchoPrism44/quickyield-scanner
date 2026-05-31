@@ -21,6 +21,7 @@ import {
 import { categories, chains, timeCosts } from '../lib/constants'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
+import { AppIntro } from './app-intro'
 import { BrandLogo } from './brand-logo'
 import { ProtocolLogo } from './protocol-logo'
 import type { AlertActivity, AlertRule, DashboardData, DashboardUser, NotificationStatus, Opportunity, OpportunityPreset, UserSettings } from '../lib/types'
@@ -242,6 +243,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
 
   return (
     <div className="qy-app qy-terminal-app">
+      <AppIntro />
       <aside className="qy-aside" data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <BrandLogo href="/" />
@@ -419,6 +421,7 @@ function DiscoverView({
   triggeredAlerts: number
 }) {
   const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'volatility' | 'updated'>('confidence')
+  const [heatmapMetric, setHeatmapMetric] = useState<'apy' | 'safety'>('apy')
 
   const sorted = useMemo(() => {
     const items = [...data.opportunities]
@@ -439,6 +442,19 @@ function DiscoverView({
     .sort((a, b) => b.apy - a.apy)[0]
   const highestApy = [...data.opportunities].sort((a, b) => b.apy - a.apy)[0]
   const lastScan = new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const marketBands = ['0-4%', '4-8%', '8-12%', '12%+'].map((band) => {
+    const [min, max] = band === '12%+' ? [12, Infinity] : band.replace('%', '').split('-').map(Number)
+    const items = data.opportunities.filter((item) => item.apy >= min && item.apy < max)
+    const low = items.filter((item) => item.risk === 'Low').length
+    const avgSafety = items.length ? Math.round(items.reduce((sum, item) => sum + item.confidence, 0) / items.length) : 0
+    return { band, items, low, avgSafety }
+  })
+  const scannerUpdates = [
+    stablecoinBest ? `Stablecoin leader: ${stablecoinBest.asset} on ${stablecoinBest.platform} at ${stablecoinBest.apy.toFixed(2)}% APY` : 'Stablecoin leader will appear after the next scan.',
+    highestApy ? `Highest current APY: ${highestApy.asset} on ${highestApy.chain} at ${highestApy.apy.toFixed(2)}%` : 'Highest APY will appear after the next scan.',
+    `${saferCount} lower-risk pools match the current view.`,
+    data.fallbackReason ? `Fallback feed active: ${data.fallbackReason}` : `Live scanner refreshed at ${lastScan}.`,
+  ]
 
   return (
     <section className="qy-page qy-terminal-page" data-testid="discover-page">
@@ -526,19 +542,55 @@ function DiscoverView({
         ) : null}
       </div>
 
-      <div className="qy-market-map" aria-label="Market map">
-        {['0-4%', '4-8%', '8-12%', '12%+'].map((band) => {
-          const [min, max] = band === '12%+' ? [12, Infinity] : band.replace('%', '').split('-').map(Number)
-          const items = data.opportunities.filter((item) => item.apy >= min && item.apy < max)
-          const low = items.filter((item) => item.risk === 'Low').length
-          return (
-            <div key={band} className="qy-market-map-cell">
-              <span className="qy-overline">{band} APY</span>
-              <strong>{items.length}</strong>
-              <small>{low} lower risk</small>
+      <div className="qy-intel-grid">
+        <section className="qy-heatmap-panel" aria-label="Yield heatmap">
+          <div className="qy-intel-panel-head">
+            <div>
+              <span className="qy-overline">Market map</span>
+              <h2>Yield heatmap</h2>
             </div>
-          )
-        })}
+            <div className="qy-segmented-control" aria-label="Heatmap metric">
+              {(['apy', 'safety'] as const).map((metric) => (
+                <button
+                  key={metric}
+                  type="button"
+                  className={heatmapMetric === metric ? 'active' : ''}
+                  onClick={() => setHeatmapMetric(metric)}
+                  aria-pressed={heatmapMetric === metric}
+                >
+                  {metric === 'apy' ? 'APY' : 'Safety'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="qy-market-map">
+            {marketBands.map(({ band, items, low, avgSafety }, index) => (
+              <div key={band} className={`qy-market-map-cell heat-${index}`}>
+                <span className="qy-overline">{band} APY</span>
+                <strong>{heatmapMetric === 'apy' ? items.length : avgSafety || '--'}</strong>
+                <small>{heatmapMetric === 'apy' ? `${low} lower risk` : `${items.length} pools sampled`}</small>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="qy-intel-feed" aria-label="Scanner signal stream">
+          <div className="qy-intel-panel-head">
+            <div>
+              <span className="qy-overline">Scanner feed</span>
+              <h2>Signal stream</h2>
+            </div>
+            <span className={`qy-feed-status ${data.dataStatus === 'live' ? 'live' : 'fallback'}`}>{data.dataStatus}</span>
+          </div>
+          <div className="qy-feed-list">
+            {scannerUpdates.map((update, index) => (
+              <div key={update} className="qy-feed-row">
+                <span className="qy-feed-time">T-{index + 1}</span>
+                <p>{update}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
 
       <div className="qy-terminal-table-wrap qy-desktop-results">

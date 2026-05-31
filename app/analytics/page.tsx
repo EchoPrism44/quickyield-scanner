@@ -17,6 +17,8 @@ import {
 interface TimePoint {
   time: string
   apy: number
+  baseApy: number
+  rewardApy: number
   tvl: number
   count: number
 }
@@ -24,8 +26,10 @@ interface TimePoint {
 interface ChainData {
   chain: string
   avgApy: number
+  avgSafety: number
   totalTvl: number
   opportunities: number
+  lowerRisk: number
 }
 
 interface TopPool {
@@ -42,6 +46,23 @@ interface TopPool {
 interface AnalyticsData {
   history: TimePoint[]
   chains: ChainData[]
+  marketMap: Array<{
+    band: string
+    pools: number
+    lowerRisk: number
+    reviewRisk: number
+    totalTvl: number
+    avgSafety: number
+  }>
+  scannerHealth: {
+    poolsScanned: number
+    chainsCovered: number
+    livePools: number
+    curatedPools: number
+    snapshots24h: number
+    latestSnapshotAt?: string
+    freshnessMinutes?: number
+  }
   topPools: TopPool[]
   lastUpdated: string
 }
@@ -49,7 +70,14 @@ interface AnalyticsData {
 export const dynamic = 'force-dynamic'
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData>({ history: [], chains: [], topPools: [], lastUpdated: new Date().toISOString() })
+  const [data, setData] = useState<AnalyticsData>({
+    history: [],
+    chains: [],
+    marketMap: [],
+    scannerHealth: { poolsScanned: 0, chainsCovered: 0, livePools: 0, curatedPools: 0, snapshots24h: 0 },
+    topPools: [],
+    lastUpdated: new Date().toISOString(),
+  })
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -107,23 +135,54 @@ export default function AnalyticsPage() {
         <section className="qy-analytics-stats">
           <article className="qy-analytics-stat">
             <span className="qy-overline">Tracked pools</span>
-            <strong>{trackedCount}</strong>
-            <p>Current scanner universe.</p>
+            <strong>{data.scannerHealth.poolsScanned || trackedCount}</strong>
+            <p>{data.scannerHealth.chainsCovered || data.chains.length} chains covered.</p>
           </article>
           <article className="qy-analytics-stat">
             <span className="qy-overline">Average APY</span>
             <strong>{avgApy.toFixed(2)}%</strong>
-            <p>Most recent aggregate point.</p>
+            <p>Base {data.history.at(-1)?.baseApy?.toFixed(2) ?? '0.00'}% / rewards {data.history.at(-1)?.rewardApy?.toFixed(2) ?? '0.00'}%.</p>
           </article>
           <article className="qy-analytics-stat">
-            <span className="qy-overline">Total TVL</span>
+            <span className="qy-overline">Snapshots 24h</span>
+            <strong>{data.scannerHealth.snapshots24h}</strong>
+            <p>{data.scannerHealth.freshnessMinutes === undefined ? 'History starts after scans.' : `${data.scannerHealth.freshnessMinutes} min since latest snapshot.`}</p>
+          </article>
+          <article className="qy-analytics-stat">
+            <span className="qy-overline">Tracked TVL</span>
             <strong>{formatCurrency(totalTvl)}</strong>
-            <p>Across the active market table.</p>
+            <p>{data.scannerHealth.livePools} live / {data.scannerHealth.curatedPools} curated pools.</p>
           </article>
-          <article className="qy-analytics-stat">
-            <span className="qy-overline">Last updated</span>
-            <strong>{new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
-            <p>Latest completed scan.</p>
+        </section>
+
+        <section className="qy-analytics-grid">
+          <article className="qy-analytics-panel">
+            <div className="qy-analytics-panel-head">
+              <h2>APY risk matrix</h2>
+              <span className="qy-mono">Pools by APY band</span>
+            </div>
+            <div className="qy-analytics-market-map">
+              {data.marketMap.map((cell, index) => (
+                <div key={cell.band} className={`qy-market-map-cell heat-${index}`}>
+                  <span className="qy-overline">{cell.band}</span>
+                  <strong>{cell.pools}</strong>
+                  <small>{cell.lowerRisk} lower risk / {cell.avgSafety || '--'} safety</small>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="qy-analytics-panel">
+            <div className="qy-analytics-panel-head">
+              <h2>Scanner health</h2>
+              <span className="qy-mono">{new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            <div className="qy-health-grid">
+              <div><span>Live pools</span><strong>{data.scannerHealth.livePools}</strong></div>
+              <div><span>Curated fallback</span><strong>{data.scannerHealth.curatedPools}</strong></div>
+              <div><span>Chains</span><strong>{data.scannerHealth.chainsCovered}</strong></div>
+              <div><span>History points</span><strong>{data.scannerHealth.snapshots24h}</strong></div>
+            </div>
           </article>
         </section>
 
