@@ -21,6 +21,7 @@ import {
 import { categories, chains, timeCosts } from '../lib/constants'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
+import { AppIntro } from './app-intro'
 import { BrandLogo } from './brand-logo'
 import { ProtocolLogo } from './protocol-logo'
 import type { AlertActivity, AlertRule, DashboardData, DashboardUser, NotificationStatus, Opportunity, OpportunityPreset, UserSettings } from '../lib/types'
@@ -242,6 +243,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
 
   return (
     <div className="qy-app qy-terminal-app">
+      <AppIntro />
       <aside className="qy-aside" data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <BrandLogo href="/" />
