@@ -2,15 +2,23 @@ import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://quickyield.vercel.app')
+
 export const metadata: Metadata = {
-  title: 'QuickYield Intel - Crypto Yield Scanner',
+  metadataBase: new URL(siteUrl),
+  title: 'QuickYield - DeFi Yield Radar',
   description:
-    'QuickYield scans live and curated crypto yield signals with risk flags, APY context, fees, alerts, and beginner-safe disclosures.',
+    'QuickYield scans live DeFi yield pools with safety context, target rules, and Telegram alerts for non-custodial yield research.',
+  icons: {
+    icon: '/favicon.svg',
+  },
   openGraph: {
-    title: 'QuickYield Intel',
+    title: 'QuickYield - DeFi Yield Radar',
     description:
-      'Investigate crypto yield signals before you click. Live data, saved watchlists, alerts, and transparent risk context.',
+      'Scan DeFi yield pools, save targets, and get alerts when cleaner opportunities match your rules.',
     type: 'website',
+    images: ['/brand/quickyield-wordmark.svg'],
   },
 }
 

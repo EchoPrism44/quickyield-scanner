@@ -14,15 +14,22 @@ const radarRows = [
 ]
 
 const steps = [
-  { n: '01', icon: Radio, t: 'Scan', b: 'Pull live DeFiLlama yield data and narrow the universe to pools worth a closer look.' },
-  { n: '02', icon: Crosshair, t: 'Target', b: 'Set exact APY, asset, chain, risk, and confidence rules instead of watching everything.' },
-  { n: '03', icon: Bell, t: 'Alert', b: 'Send matching opportunities to Telegram or email when the hourly scan catches them.' },
-  { n: '04', icon: ShieldCheck, t: 'Research', b: 'Stay non-custodial. QuickYield shows signal; users still verify before moving funds.' },
+  { n: '01', icon: Radio, t: 'Scan', b: 'Pull live DeFiLlama yield data and narrow hundreds of pools into a ranked research queue.' },
+  { n: '02', icon: Crosshair, t: 'Target', b: 'Set APY, asset, chain, risk, and safety-score rules instead of checking every pool manually.' },
+  { n: '03', icon: Bell, t: 'Alert', b: 'Send matching opportunities to Telegram or email when an hourly scan catches your rule.' },
+  { n: '04', icon: ShieldCheck, t: 'Research', b: 'Stay non-custodial. QuickYield shows signal and risk context; users still verify before moving funds.' },
+]
+
+const riskFactors = [
+  { label: 'TVL / liquidity', detail: 'Is there enough market depth to make the yield worth researching?' },
+  { label: 'APY stability', detail: 'Does the yield look steady, or did it spike only in the latest feed?' },
+  { label: 'Reward quality', detail: 'Is the APY mostly base yield, or heavily driven by incentives?' },
+  { label: 'Data completeness', detail: 'How much history and market-feed context is available?' },
 ]
 
 function RadarPreview() {
   return (
-    <div className="qy-radar-panel" aria-label="QuickYield radar preview">
+    <div className="qy-radar-panel" aria-label="QuickYield dashboard preview">
       <div className="qy-radar-screen">
         <div className="qy-radar-rings" />
         <div className="qy-radar-cross qy-radar-cross-x" />
@@ -54,7 +61,7 @@ function RadarPreview() {
             </div>
             <div>
               <strong>{row.apy}</strong>
-              <span>{row.score} score</span>
+              <span>{row.score} safety</span>
             </div>
           </div>
         ))}
@@ -64,7 +71,7 @@ function RadarPreview() {
 }
 
 export default function HomePage() {
-  const [stats, setStats] = useState({ total: '1,500+', tvl: 'Live', screened: 'Live', avg: 'Live' })
+  const [stats, setStats] = useState({ total: '500+', chains: 'Major', scans: 'Hourly', alerts: 'Rules' })
 
   useEffect(() => {
     fetch('/api/opportunities?capital=100')
@@ -72,14 +79,12 @@ export default function HomePage() {
       .then((data: { opportunities?: Opportunity[]; total?: number }) => {
         const opportunities = data.opportunities ?? []
         if (!opportunities.length) return
-        const tvl = opportunities.reduce((sum, item) => sum + (item.tvlUsd || 0), 0)
-        const screened = opportunities.filter((item) => item.risk === 'Low').length
-        const avg = opportunities.reduce((sum, item) => sum + (item.apy || 0), 0) / opportunities.length
+        const chains = new Set(opportunities.map((item) => item.chain)).size
         setStats({
-          total: data.total ? data.total.toLocaleString() : opportunities.length.toString(),
-          tvl: tvl >= 1e9 ? `$${(tvl / 1e9).toFixed(1)}B` : `$${(tvl / 1e6).toFixed(0)}M`,
-          screened: screened.toString(),
-          avg: `${avg.toFixed(1)}%`,
+          total: data.total && data.total >= 500 ? `${data.total.toLocaleString()}+` : '500+',
+          chains: chains > 1 ? `${chains}+` : 'Major',
+          scans: 'Hourly',
+          alerts: 'Instant',
         })
       })
       .catch(() => {})
@@ -93,21 +98,21 @@ export default function HomePage() {
         <div className="qy-radar-bg" />
         <div className="qy-container qy-hero-body qy-radar-hero-body">
           <div className="qy-fade-up qy-hero-copy">
-            <h1 className="qy-h1">Find the yield worth checking.</h1>
+            <h1 className="qy-h1">Find Better Yield Opportunities. Before Everyone Else.</h1>
             <p className="qy-hero-sub">
-              QuickYield is a private radar for DeFi yield research. Scan live pools, set target rules, and get Telegram alerts when a cleaner opportunity appears.
-
+              QuickYield scans 500+ DeFi yield pools across major chains, lets users set personal rules, and sends Telegram or email alerts when matches appear.
             </p>
             <div className="qy-hero-actions">
               <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
-                Open QuickYield <ArrowRight size={16} strokeWidth={2.5} />
+                Start tracking <ArrowRight size={16} strokeWidth={2.5} />
               </Link>
-              <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg">See the radar</a>
+              <a href="#how" className="qy-btn qy-btn-secondary qy-btn-lg">See the workflow</a>
             </div>
             <div className="qy-hero-proof">
               <span>No wallet connection</span>
-              <span>Telegram alerts</span>
+              <span>No custody</span>
               <span>Research only</span>
+              <span>Telegram + email alerts</span>
             </div>
           </div>
 
@@ -120,10 +125,10 @@ export default function HomePage() {
       <section className="qy-stats">
         <div className="qy-stats-grid">
           {[
-            { l: 'Live universe', v: stats.total },
-            { l: 'Tracked TVL', v: stats.tvl },
-            { l: 'Screened pools', v: stats.screened },
-            { l: 'Avg APY', v: stats.avg },
+            { l: 'Tracked pools', v: stats.total },
+            { l: 'Chains covered', v: stats.chains },
+            { l: 'Scan cadence', v: stats.scans },
+            { l: 'Alert delivery', v: stats.alerts },
           ].map((stat, index) => (
             <div key={stat.l} className="qy-stats-cell qy-fade-up" style={{ animationDelay: `${index * 0.08}s` }}>
               <div className="qy-stats-value">{stat.v}</div>
@@ -136,8 +141,8 @@ export default function HomePage() {
       <section id="how" className="qy-section">
         <div className="qy-container">
           <div className="qy-section-head qy-section-head-wide">
-            <h2 className="qy-h2">A cleaner path from market noise to a target alert.</h2>
-            <p>Most yield pages show endless APY rows. QuickYield turns that into a repeatable research loop: scan, filter, target, notify.</p>
+            <h2 className="qy-h2">DeFiLlama shows everything. QuickYield shows what matters to you.</h2>
+            <p>QuickYield turns raw yield data into a repeatable research loop: scan, filter, risk-adjust, target, notify.</p>
           </div>
           <div className="qy-how-grid">
             {steps.map((step, index) => (
@@ -158,12 +163,12 @@ export default function HomePage() {
       <section id="features" className="qy-section" style={{ paddingTop: 0 }}>
         <div className="qy-container">
           <div className="qy-section-head qy-section-head-wide">
-            <h2 className="qy-h2">Built like a terminal, explained like a product.</h2>
+            <h2 className="qy-h2">Personalized yield intelligence, not another data dump.</h2>
           </div>
           <div className="qy-bento">
             <div className="qy-bento-card qy-bento-hero qy-noise qy-fade-up">
               <h3>Screen the market without pretending yield is risk-free.</h3>
-              <p>Sort by APY, TVL, volatility, or QuickYield score. Lower-risk screens are called out, and every pool opens into an internal research page.</p>
+              <p>Sort by APY, TVL, 24h movement, risk tier, chain, and safety score. Every pool opens into research context that explains why it ranked.</p>
               <div className="qy-bento-mini">
                 <div className="qy-bento-mini-head">Radar shortlist</div>
                 {[
@@ -184,15 +189,32 @@ export default function HomePage() {
 
             <div className="qy-bento-card qy-fade-up" style={{ animationDelay: '0.08s' }}>
               <Bell className="qy-icon" />
-              <h3>Real target rules</h3>
-              <p>Users choose APY, asset, chain, category, risk, and confidence before alerts go out.</p>
+              <h3>Rules that sound like your workflow</h3>
+              <p>Create targets such as USDC APY above 15% with risk at Medium or lower, then receive matches through Telegram or email.</p>
             </div>
 
             <div className="qy-bento-card green qy-fade-up" style={{ animationDelay: '0.16s' }}>
               <ShieldCheck className="qy-icon" />
-              <h3>No custody story</h3>
-              <p>We do not connect wallets, hold funds, or pretend a score replaces protocol due diligence.</p>
+              <h3>Research only, by design</h3>
+              <p>No wallet connection, no custody, no execution. QuickYield finds signal; users verify before moving funds.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="qy-section" style={{ paddingTop: 0 }}>
+        <div className="qy-container">
+          <div className="qy-section-head qy-section-head-wide">
+            <h2 className="qy-h2">Risk context before action.</h2>
+            <p>QuickYield explains the signal with transparent factors from available market data. It does not pretend to know audit status or protocol age unless reliable data is present.</p>
+          </div>
+          <div className="qy-risk-grid">
+            {riskFactors.map((factor) => (
+              <article key={factor.label} className="qy-risk-card">
+                <span className="qy-overline">{factor.label}</span>
+                <p>{factor.detail}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -208,7 +230,7 @@ export default function HomePage() {
               <div className="qy-phone-bubble">
                 <strong>STETH yield pool</strong>
                 <span>Lido on Ethereum</span>
-                <span>APY: 2.36% | Confidence: 96%</span>
+                <span>APY: 2.36% | Safety score: 96</span>
                 <span>Rule: STETH above 2%</span>
               </div>
             </div>
@@ -226,9 +248,9 @@ export default function HomePage() {
           <div className="qy-cta qy-noise qy-fade-up">
             <div className="qy-cta-glow" />
             <h2 className="qy-h2">Launch with a sharper signal.</h2>
-            <p>Private dashboard. Radar-style scanning. Target alerts. Research only.</p>
+            <p>500+ pool scanner. Personalized alerts. Transparent risk context. Research only.</p>
             <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
-              Get started <ArrowRight size={16} strokeWidth={2.5} />
+              Start tracking <ArrowRight size={16} strokeWidth={2.5} />
             </Link>
           </div>
         </div>
@@ -254,8 +276,8 @@ export default function HomePage() {
             <div>
               <h4>Resources</h4>
               <ul>
-                <li>1500+ pool scanner</li>
-                <li><Link href="/sign-in">Market overview</Link></li>
+                <li>500+ pool scanner</li>
+                <li>Telegram and email alerts</li>
               </ul>
             </div>
             <div>
@@ -268,7 +290,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="qy-footer-bottom">© 2026 QuickYield / Built for clarity in DeFi</div>
+        <div className="qy-footer-bottom">(c) 2026 QuickYield / Signal over noise</div>
       </footer>
     </main>
   )

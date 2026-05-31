@@ -36,7 +36,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
         <div className="qy-detail-back">
           <Link href="/dashboard" className="qy-btn qy-btn-secondary qy-btn-sm">
             <ArrowLeftRight size={14} />
-            Back to markets
+            Back to Discover
           </Link>
         </div>
 
@@ -54,7 +54,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
             <div className="qy-detail-stat-grid">
               <div className="qy-detail-stat"><span className="qy-overline">APY</span><strong>{opportunity.apy.toFixed(2)}%</strong></div>
               <div className="qy-detail-stat"><span className="qy-overline">TVL</span><strong>{opportunity.tvl}</strong></div>
-              <div className="qy-detail-stat"><span className="qy-overline">QuickYield score</span><strong>{opportunity.confidence}</strong></div>
+              <div className="qy-detail-stat"><span className="qy-overline">Safety score</span><strong>{opportunity.confidence}</strong></div>
               <div className="qy-detail-stat"><span className="qy-overline">24h move</span><strong>{opportunity.volatility.toFixed(2)}%</strong></div>
             </div>
 
@@ -85,7 +85,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
               <svg className="qy-detail-chart" viewBox="0 0 600 160" role="img" aria-label="APY history">
                 <path d="M8 152H592" stroke="rgba(255,255,255,0.08)" />
                 <path d="M8 32H592" stroke="rgba(255,255,255,0.05)" />
-                <polyline points={chartPoints} fill="none" stroke="#ff5a1f" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points={chartPoints} fill="none" stroke="#ff6b35" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             ) : (
               <div className="qy-empty">

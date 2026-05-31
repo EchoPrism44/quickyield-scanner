@@ -51,6 +51,7 @@ export const dynamic = 'force-dynamic'
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData>({ history: [], chains: [], topPools: [], lastUpdated: new Date().toISOString() })
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const refreshData = useCallback(async () => {
     setIsRefreshing(true)
@@ -66,6 +67,7 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     const initial = setTimeout(() => {
+      setMounted(true)
       void refreshData()
     }, 0)
     const interval = setInterval(refreshData, 60000)
@@ -91,11 +93,11 @@ export default function AnalyticsPage() {
         <div className="qy-analytics-head">
           <div>
             <span className="qy-overline qy-overline-signal">Market overview</span>
-            <h1 className="qy-h2">Terminal analytics</h1>
-            <p className="qy-analytics-sub">A control-room view for market breadth, chain exposure, top ranked pools, and APY history as snapshots accumulate.</p>
+            <h1 className="qy-h2">Market map</h1>
+            <p className="qy-analytics-sub">A compact view for market breadth, chain exposure, top ranked pools, and APY history as snapshots accumulate.</p>
           </div>
           <div className="qy-analytics-actions">
-            <Link href="/dashboard" className="qy-btn qy-btn-secondary">Back to terminal</Link>
+            <Link href="/dashboard" className="qy-btn qy-btn-secondary">Back to Discover</Link>
             <button type="button" className="qy-btn qy-btn-primary" onClick={refreshData} disabled={isRefreshing}>
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </button>
@@ -106,7 +108,7 @@ export default function AnalyticsPage() {
           <article className="qy-analytics-stat">
             <span className="qy-overline">Tracked pools</span>
             <strong>{trackedCount}</strong>
-            <p>Current terminal universe.</p>
+            <p>Current scanner universe.</p>
           </article>
           <article className="qy-analytics-stat">
             <span className="qy-overline">Average APY</span>
@@ -132,18 +134,20 @@ export default function AnalyticsPage() {
               <span className="qy-mono">{data.history.length > 1 ? 'Stored hourly points' : 'Current point'}</span>
             </div>
             <div className="qy-analytics-chart">
-              <ResponsiveContainer width="100%" height="100%" minWidth={280} minHeight={320}>
-                <LineChart data={data.history}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                  <XAxis dataKey="time" stroke="#a1a1aa" fontSize={12} />
-                  <YAxis stroke="#a1a1aa" fontSize={12} tickFormatter={(value) => `${value}%`} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}
-                    formatter={(value) => [`${Number(value ?? 0).toFixed(2)}%`, 'Avg APY']}
-                  />
-                  <Line type="monotone" dataKey="apy" stroke="#ff5a1f" strokeWidth={3} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%" minWidth={280} minHeight={320}>
+                  <LineChart data={data.history}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="time" stroke="#a1a1aa" fontSize={12} />
+                    <YAxis stroke="#a1a1aa" fontSize={12} tickFormatter={(value) => `${value}%`} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}
+                      formatter={(value) => [`${Number(value ?? 0).toFixed(2)}%`, 'Avg APY']}
+                    />
+                    <Line type="monotone" dataKey="apy" stroke="#ff6b35" strokeWidth={3} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : <div className="qy-chart-skeleton" aria-hidden="true" />}
             </div>
           </article>
 
@@ -153,18 +157,20 @@ export default function AnalyticsPage() {
               <span className="qy-mono">Current cache</span>
             </div>
             <div className="qy-analytics-chart">
-              <ResponsiveContainer width="100%" height="100%" minWidth={280} minHeight={320}>
-                <BarChart data={data.chains}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                  <XAxis dataKey="chain" stroke="#a1a1aa" fontSize={12} />
-                  <YAxis stroke="#a1a1aa" fontSize={12} tickFormatter={(value) => formatCurrency(Number(value))} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}
-                    formatter={(value) => [formatCurrency(Number(value ?? 0)), 'TVL']}
-                  />
-                  <Bar dataKey="totalTvl" fill="#00e599" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%" minWidth={280} minHeight={320}>
+                  <BarChart data={data.chains}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="chain" stroke="#a1a1aa" fontSize={12} />
+                    <YAxis stroke="#a1a1aa" fontSize={12} tickFormatter={(value) => formatCurrency(Number(value))} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}
+                      formatter={(value) => [formatCurrency(Number(value ?? 0)), 'TVL']}
+                    />
+                    <Bar dataKey="totalTvl" fill="#16f1a3" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : <div className="qy-chart-skeleton" aria-hidden="true" />}
             </div>
           </article>
         </section>
@@ -206,13 +212,13 @@ export default function AnalyticsPage() {
               <span>Pool</span>
               <span>APY</span>
               <span>TVL</span>
-              <span>QY score</span>
+              <span>Safety score</span>
               <span>Volatility</span>
             </div>
             {data.topPools.length === 0 ? (
               <div className="qy-empty">
                 <h3>No market scan yet</h3>
-                <p>Run the scanner or open Markets to populate ranked pools and analytics.</p>
+                <p>Run the scanner or open Discover to populate ranked pools and analytics.</p>
               </div>
             ) : data.topPools.map((item) => (
                 <Link key={item.id} href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-analytics-table-row">

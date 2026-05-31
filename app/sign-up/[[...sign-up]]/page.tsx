@@ -1,18 +1,16 @@
 import { SignUp } from '@clerk/nextjs'
 import Link from 'next/link'
+import { BrandLogo } from '../../../components/brand-logo'
 
 export default function SignUpPage() {
   if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
     return (
       <main className="qy-auth">
         <section className="qy-auth-card">
-          <Link href="/" className="qy-logo" style={{ marginBottom: 24 }}>
-            <span className="qy-logo-mark"><span /><span /><span /></span>
-            <span className="qy-logo-text">QuickYield</span>
-          </Link>
+          <BrandLogo href="/" className="qy-auth-logo" />
           <h1>Sign-up unavailable</h1>
           <p>
-            Clerk auth is not configured for this environment. Add the Clerk publishable and secret keys before accepting users into the private terminal.
+            Clerk auth is not configured for this environment. Add the Clerk publishable and secret keys before accepting users into the dashboard.
           </p>
           <Link className="qy-btn qy-btn-secondary qy-btn-lg" href="/" style={{ width: '100%' }}>
             Back to home

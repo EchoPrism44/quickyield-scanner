@@ -18,7 +18,7 @@ export type AlertDraft = {
 
 export function alertDraftFromOpportunity(item?: Opportunity, fallback?: { chain?: string; category?: string }): AlertDraft {
   return {
-    name: item ? `${item.asset} above ${Math.max(1, Math.floor(item.apy))}%` : 'New yield target',
+    name: item ? `${item.asset} APY > ${Math.max(1, Math.floor(item.apy))}%` : 'New yield target',
     chain: item?.chain ?? fallback?.chain ?? 'All chains',
     category: item?.category ?? fallback?.category ?? 'All categories',
     asset: item?.asset ?? '',
@@ -90,7 +90,7 @@ export function AlertTargetDialog({
     try {
       await onSubmit({
         ...draft,
-        name: draft.name.trim() || `${draft.asset || 'Yield'} above ${draft.minApy}%`,
+        name: draft.name.trim() || `${draft.asset || 'Yield'} APY > ${draft.minApy}%`,
         asset: draft.asset.trim(),
       })
     } finally {
@@ -153,8 +153,9 @@ export function AlertTargetDialog({
               </select>
             </label>
             <label>
-              <span>Min confidence</span>
+              <span>Minimum safety score</span>
               <input className="qy-input" type="number" min={0} max={100} value={draft.minConfidence} onChange={(event) => patch({ minConfidence: Number(event.target.value) })} />
+              <small>Higher scores mean the pool passed more of QuickYield's market-data checks.</small>
             </label>
           </div>
           <fieldset className="qy-alert-frequency">
@@ -165,6 +166,7 @@ export function AlertTargetDialog({
                 type="button"
                 className={`qy-chip ${draft.frequency === item ? 'active-signal' : ''}`}
                 onClick={() => patch({ frequency: item })}
+                aria-pressed={draft.frequency === item}
               >
                 {item}
               </button>

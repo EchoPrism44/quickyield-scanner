@@ -13,7 +13,7 @@ export function AlertEmail({ alert, opportunity }: { alert: AlertRule; opportuni
           <Heading style={{ color: '#38d5ff' }}>QuickYield alert matched</Heading>
           <Text>{opportunity.name} now matches your rule: {alert.name}.</Text>
           <Text>
-            APY: {opportunity.apy.toFixed(1)}% | Risk: {opportunity.risk} | Confidence: {opportunity.confidence}%
+            APY: {opportunity.apy.toFixed(1)}% | Risk: {opportunity.risk} | Safety score: {opportunity.confidence}
           </Text>
           <Text>
             QuickYield is informational only. Review fees, lockups, smart-contract risk, custody risk,
