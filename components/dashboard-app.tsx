@@ -19,9 +19,9 @@ import {
   Trash2,
 } from 'lucide-react'
 import { categories, chains, timeCosts } from '../lib/constants'
-import { formatTvl } from '../lib/scoring'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
+import { BrandLogo } from './brand-logo'
 import { ProtocolLogo } from './protocol-logo'
 import type { AlertActivity, AlertRule, DashboardData, DashboardUser, NotificationStatus, Opportunity, OpportunityPreset, UserSettings } from '../lib/types'
 
@@ -76,6 +76,10 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
     if (tab !== 'alerts') return
     void refreshActivity()
   }, [tab])
+
+  useEffect(() => {
+    void refreshActivity()
+  }, [])
 
   function opportunityParams(next = { chain, risk, time, category, q: query, capital, preset, page: 1 }) {
     const params = new URLSearchParams({
@@ -240,10 +244,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
     <div className="qy-app qy-terminal-app">
       <aside className="qy-aside" data-testid="dash-sidebar">
         <div className="qy-aside-head">
-          <Link href="/" className="qy-logo">
-            <span className="qy-logo-mark"><span /><span /><span /></span>
-            <span className="qy-logo-text">QuickYield</span>
-          </Link>
+          <BrandLogo href="/" />
         </div>
         <nav className="qy-aside-nav">
           {navItems.map(({ tab: itemTab, label, icon: Icon }) => (
@@ -305,6 +306,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               onToggleWatch={toggleWatch}
               onCreateAlert={openAlertBuilder}
               onLoadMore={loadMore}
+              triggeredAlerts={activity.length}
             />
           )}
           {tab === 'alerts' && (
@@ -393,6 +395,7 @@ function DiscoverView({
   onToggleWatch,
   onCreateAlert,
   onLoadMore,
+  triggeredAlerts,
 }: {
   data: DashboardData
   watched: Set<string>
@@ -413,6 +416,7 @@ function DiscoverView({
   onToggleWatch: (id: string) => Promise<void>
   onCreateAlert: (item: Opportunity) => void
   onLoadMore: () => void
+  triggeredAlerts: number
 }) {
   const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'volatility' | 'updated'>('confidence')
 
@@ -428,9 +432,13 @@ function DiscoverView({
     return items
   }, [data.opportunities, sortBy])
 
-  const totalTvl = data.opportunities.reduce((sum, item) => sum + item.tvlUsd, 0)
-  const avgScore = data.opportunities.length ? Math.round(data.opportunities.reduce((sum, item) => sum + item.confidence, 0) / data.opportunities.length) : 0
   const saferCount = data.opportunities.filter((item) => item.risk === 'Low').length
+  const stableAssets = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
+  const stablecoinBest = data.opportunities
+    .filter((item) => item.category.toLowerCase().includes('stable') || stableAssets.has(item.asset.toUpperCase()))
+    .sort((a, b) => b.apy - a.apy)[0]
+  const highestApy = [...data.opportunities].sort((a, b) => b.apy - a.apy)[0]
+  const lastScan = new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
   return (
     <section className="qy-page qy-terminal-page" data-testid="discover-page">
@@ -441,16 +449,33 @@ function DiscoverView({
           <p>Scan live pools, understand why they rank, save candidates, and set target alerts.</p>
         </div>
         <div className="qy-terminal-kpis">
+          <div className="qy-terminal-kpi"><span className="qy-overline">Best stablecoin yield</span><strong>{stablecoinBest ? `${stablecoinBest.apy.toFixed(2)}%` : '--'}</strong></div>
+          <div className="qy-terminal-kpi"><span className="qy-overline">Highest APY</span><strong>{highestApy ? `${highestApy.apy.toFixed(2)}%` : '--'}</strong></div>
           <div className="qy-terminal-kpi"><span className="qy-overline">Pools scanned</span><strong>{data.total}</strong></div>
-          <div className="qy-terminal-kpi"><span className="qy-overline">Last scan</span><strong>{new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong></div>
+          <div className="qy-terminal-kpi"><span className="qy-overline">Triggered alerts</span><strong>{triggeredAlerts}</strong></div>
         </div>
       </div>
 
       <div className="qy-discover-summary" aria-label="Current scan summary">
         <div><span className="qy-overline">Loaded now</span><strong>{data.opportunities.length} of {data.total}</strong></div>
         <div><span className="qy-overline">Matched safer pools</span><strong>{saferCount}</strong></div>
-        <div><span className="qy-overline">Loaded TVL</span><strong>{formatTvl(totalTvl)}</strong></div>
-        <div><span className="qy-overline">Avg safety score</span><strong>{avgScore}</strong></div>
+        <div><span className="qy-overline">Last scan</span><strong>{lastScan}</strong></div>
+        <div><span className="qy-overline">Data source</span><strong>{data.dataStatus === 'live' ? 'Live' : 'Fallback'}</strong></div>
+      </div>
+
+      <div className="qy-signal-path" aria-label="How QuickYield ranks and alerts">
+        <div>
+          <span className="qy-overline">Scanned</span>
+          <strong>500+ pools across major chains</strong>
+        </div>
+        <div>
+          <span className="qy-overline">Shown because</span>
+          <strong>APY, TVL, risk, and data checks match this view</strong>
+        </div>
+        <div>
+          <span className="qy-overline">Alert when</span>
+          <strong>Your asset, APY, chain, and risk rule matches</strong>
+        </div>
       </div>
 
       <div className="qy-preset-bar" aria-label="Yield radar presets">
@@ -518,12 +543,14 @@ function DiscoverView({
 
       <div className="qy-terminal-table-wrap qy-desktop-results">
         <div className="qy-terminal-table-head">
-          <span>Pool</span>
+          <span>Protocol</span>
+          <span>Asset</span>
           <button type="button" className={`qy-sort-link ${sortBy === 'apy' ? 'active' : ''}`} onClick={() => setSortBy('apy')}>APY</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'volatility' ? 'active' : ''}`} onClick={() => setSortBy('volatility')}>24h Change</button>
           <button type="button" className={`qy-sort-link ${sortBy === 'tvl' ? 'active' : ''}`} onClick={() => setSortBy('tvl')}>TVL</button>
-          <button type="button" className={`qy-sort-link ${sortBy === 'confidence' ? 'active' : ''}`} onClick={() => setSortBy('confidence')}>Safety score</button>
-          <button type="button" className={`qy-sort-link ${sortBy === 'volatility' ? 'active' : ''}`} onClick={() => setSortBy('volatility')}>Volatility</button>
-          <span>Actions</span>
+          <span>Risk</span>
+          <span>Chain</span>
+          <span>Action</span>
         </div>
 
         {sorted.length === 0 ? (
@@ -539,35 +566,42 @@ function DiscoverView({
               <div className="qy-terminal-pool-copy">
                 <div className="qy-asset-name">
                   <span>{item.platform}</span>
-                  <span className={`qy-tag-mini ${item.risk === 'Low' ? 'qy-risk-low' : 'qy-risk-medium'}`}>
-                    {item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}
-                  </span>
                 </div>
-                <div className="qy-asset-meta">{item.asset} / {item.chain} / {item.category}</div>
                 <div className="qy-rank-reason">{item.rankReason}</div>
               </div>
             </Link>
 
             <div className="qy-terminal-metric">
+              <strong>{item.asset}</strong>
+              <span className="qy-terminal-submetric">{item.category}</span>
+            </div>
+            <div className="qy-terminal-metric">
               <strong>{item.apy.toFixed(2)}%</strong>
               <SparklineCell poolId={item.id} />
-            </div>
-            <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
-            <div className="qy-terminal-metric">
-              <strong>{item.confidence}</strong>
-              <span className="qy-terminal-submetric">{item.dataCompleteness}% data</span>
             </div>
             <div className="qy-terminal-metric">
               <strong>{item.volatility.toFixed(2)}%</strong>
               <span className="qy-terminal-submetric">24h move</span>
             </div>
+            <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
+            <div className="qy-terminal-metric">
+              <span className={`qy-tag-mini ${item.risk === 'Low' ? 'qy-risk-low' : 'qy-risk-medium'}`}>
+                {item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}
+              </span>
+              <span className="qy-terminal-submetric">{item.confidence} safety</span>
+            </div>
+            <div className="qy-terminal-metric">
+              <strong>{item.chain}</strong>
+            </div>
             <div className="qy-terminal-actions">
               <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
                 View details
               </Link>
-              <button type="button" className="qy-icon-btn" onClick={() => onCreateAlert(item)} aria-label={`Create alert for ${item.platform} ${item.asset}`} title="Create alert"><Bell size={14} /></button>
+              <button type="button" className="qy-btn qy-btn-sm qy-btn-primary" onClick={() => onCreateAlert(item)} aria-label={`Set alert for ${item.platform} ${item.asset}`}>
+                Set alert
+              </button>
               <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
-                {watched.has(item.id) ? 'Saved' : '+ Watch'}
+                {watched.has(item.id) ? 'Saved' : 'Save'}
               </button>
             </div>
           </div>
@@ -589,13 +623,16 @@ function DiscoverView({
             </div>
             <div className="qy-pool-card-metrics">
               <div><span>APY</span><strong>{item.apy.toFixed(2)}%</strong></div>
+              <div><span>24h</span><strong>{item.volatility.toFixed(2)}%</strong></div>
               <div><span>TVL</span><strong>{item.tvl}</strong></div>
+              <div><span>Risk</span><strong>{item.risk}</strong></div>
+              <div><span>Chain</span><strong>{item.chain}</strong></div>
               <div><span>Safety</span><strong>{item.confidence}</strong></div>
             </div>
             <p className="qy-rank-reason">{item.rankReason}</p>
             <div className="qy-terminal-actions">
               <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">View details</Link>
-              <button type="button" className="qy-icon-btn" onClick={() => onCreateAlert(item)} aria-label={`Create alert for ${item.platform} ${item.asset}`}><Bell size={14} /></button>
+              <button type="button" className="qy-btn qy-btn-sm qy-btn-primary" onClick={() => onCreateAlert(item)} aria-label={`Set alert for ${item.platform} ${item.asset}`}>Set alert</button>
               <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
                 {watched.has(item.id) ? 'Saved' : 'Save'}
               </button>
@@ -634,7 +671,7 @@ function AlertsView({
         <div>
           <span className="qy-overline qy-overline-signal">Notifications</span>
           <h1>Alerts</h1>
-          <p>Private rules for yield changes you actually care about.</p>
+          <p>Rules for yield changes you actually care about, delivered by email or Telegram.</p>
         </div>
         <button type="button" className="qy-btn qy-btn-primary" onClick={onCreate}>
           <Target size={14} />
@@ -645,7 +682,7 @@ function AlertsView({
         <div className="qy-empty">
           <Bell className="qy-empty-icon" />
           <h3>No alerts yet</h3>
-          <p>Create a target with APY, asset, chain, risk, and confidence rules.</p>
+          <p>Create a target like USDC APY &gt; 15%, Risk &lt;= Medium.</p>
           <button type="button" className="qy-btn qy-btn-secondary qy-empty-action" onClick={onCreate}>
             <Target size={14} />
             Set first target
@@ -656,7 +693,7 @@ function AlertsView({
           <div className="qy-table-head" style={{ gridTemplateColumns: '4fr 2fr 2fr 2fr 1fr' }}>
             <span>Rule</span>
             <span>Asset</span>
-            <span>Min APY</span>
+            <span>Target</span>
             <span>Frequency</span>
             <span style={{ textAlign: 'right' }}>Actions</span>
           </div>
@@ -664,10 +701,10 @@ function AlertsView({
             <div key={alert.id} className="qy-table-row" style={{ gridTemplateColumns: '4fr 2fr 2fr 2fr 1fr', opacity: alert.enabled ? 1 : 0.55 }}>
               <div>
                 <div className="qy-asset-name">{alert.name}</div>
-                <div className="qy-asset-meta">{alert.chain} / {alert.category}</div>
+                <div className="qy-asset-meta">{alert.asset || 'Any asset'} APY &gt; {alert.minApy}%, Risk &lt;= {alert.maxRisk}</div>
               </div>
               <span className="qy-mono">{alert.asset}</span>
-              <span className="qy-num bold">{alert.minApy}%</span>
+              <span className="qy-num bold">{alert.minApy}% APY</span>
               <span className="qy-mono">{alert.frequency}</span>
               <div className="qy-actions">
                 <button type="button" className="qy-icon-btn" onClick={() => onToggle(alert)} aria-label={`${alert.enabled ? 'Pause' : 'Resume'} ${alert.name}`}>{alert.enabled ? <Bell size={14} /> : <BellOff size={14} />}</button>
@@ -696,7 +733,7 @@ function AlertsView({
                 </div>
                 <div className="qy-terminal-right">
                   <strong>{item.apy.toFixed(2)}%</strong>
-                  <span>{item.channel} · {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span>{item.channel} / {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
               </div>
             ))}
@@ -733,7 +770,7 @@ function SettingsView({
       <div className="qy-page-header">
         <span className="qy-overline qy-overline-signal">Account</span>
         <h1>Settings</h1>
-        <p>Private notification and sizing defaults for this account.</p>
+        <p>Notification and sizing defaults for this account.</p>
       </div>
 
       <div className="qy-settings-shell">

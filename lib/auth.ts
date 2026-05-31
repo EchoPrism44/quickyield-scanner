@@ -4,7 +4,11 @@ import { redirect } from 'next/navigation'
 export const LOCAL_USER_ID = 'local-beta-user'
 
 export function canUseLocalUser() {
-  return process.env.NODE_ENV !== 'production' && !process.env.CLERK_SECRET_KEY
+  return process.env.NODE_ENV !== 'production' && (
+    process.env.QUICKYIELD_LOCAL_DEMO === '1' ||
+    process.env.NEXT_PUBLIC_QUICKYIELD_LOCAL_DEMO === '1' ||
+    !process.env.CLERK_SECRET_KEY
+  )
 }
 
 export async function requireUserId() {

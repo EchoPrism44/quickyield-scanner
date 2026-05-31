@@ -1,15 +1,14 @@
+import { BrandLogo } from '../../components/brand-logo'
+
 export default function DashboardLoading() {
   return (
     <div className="qy-app">
       <aside className="qy-aside">
         <div className="qy-aside-head">
-          <div className="qy-logo">
-            <span className="qy-logo-mark"><span /><span /><span /></span>
-            <span className="qy-logo-text">QuickYield</span>
-          </div>
+          <BrandLogo />
         </div>
         <nav className="qy-aside-nav">
-          {['Opportunities', 'Watchlist', 'Alerts', 'Settings'].map((l) => (
+          {['Discover', 'Alerts', 'Settings'].map((l) => (
             <div key={l} className="qy-aside-link" style={{ opacity: 0.4 }}>
               {l}
             </div>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { BrandLogo } from './brand-logo'
 
 export function MarketingNav() {
   const [scrolled, setScrolled] = useState(false)
@@ -17,12 +18,7 @@ export function MarketingNav() {
       data-testid="marketing-nav"
     >
       <div className="qy-nav-inner">
-        <Link href="/" className="qy-logo" data-testid="qy-logo">
-          <span className="qy-logo-mark">
-            <span /><span /><span />
-          </span>
-          <span className="qy-logo-text">QuickYield</span>
-        </Link>
+        <BrandLogo href="/" className="qy-logo-nav" />
         <div className="qy-nav-links">
           <a href="#how" className="qy-nav-link">How it works</a>
           <a href="#features" className="qy-nav-link">Features</a>

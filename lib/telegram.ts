@@ -39,7 +39,7 @@ export async function sendTelegramAlert(chatId: string, alert: AlertRule, opport
   const text = [
     `QuickYield alert: ${opportunity.name}`,
     `${opportunity.platform} on ${opportunity.chain}`,
-    `APY: ${opportunity.apy.toFixed(2)}% | Confidence: ${opportunity.confidence}%`,
+    `APY: ${opportunity.apy.toFixed(2)}% | Safety score: ${opportunity.confidence}`,
     `Rule: ${alert.name}`,
     opportunity.actionUrl,
   ].join('\n')

@@ -4,7 +4,7 @@ import { useMemo, useState, type CSSProperties } from 'react'
 import Image from 'next/image'
 
 const accentPairs = [
-  ['#ff5a1f', '#ffb020'],
+  ['#ff6b35', '#ffb020'],
   ['#00e599', '#00a3ff'],
   ['#7c3aed', '#ff3366'],
   ['#38bdf8', '#22c55e'],
