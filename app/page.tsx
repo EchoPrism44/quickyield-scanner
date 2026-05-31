@@ -96,6 +96,12 @@ export default function HomePage() {
 
       <section className="qy-hero qy-radar-hero">
         <div className="qy-radar-bg" />
+        <div className="qy-data-rail qy-data-rail-left" aria-hidden="true">
+          {['ETH 2.36%', 'USDC 8.40%', 'SOL 7.10%', 'TVL $1.2B', 'SCAN OK', 'RISK LOW'].map((item) => <span key={item}>{item}</span>)}
+        </div>
+        <div className="qy-data-rail qy-data-rail-right" aria-hidden="true">
+          {['BASE LIVE', 'ARB LIVE', 'EMAIL OK', 'TG READY', 'APY +0.2', '500+ POOLS'].map((item) => <span key={item}>{item}</span>)}
+        </div>
         <div className="qy-container qy-hero-body qy-radar-hero-body">
           <div className="qy-fade-up qy-hero-copy">
             <h1 className="qy-h1">Find Better Yield Opportunities. Before Everyone Else.</h1>
