@@ -2,6 +2,7 @@ import { categories, chains, riskLevels, timeCosts } from './constants'
 import { curatedOpportunities } from './curated'
 import { cacheOpportunities, getCachedOpportunities, storeOpportunitySnapshots } from './store'
 import { poolToOpportunity } from './scoring'
+import { safetyGradeOf } from './grade'
 import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
@@ -34,7 +35,7 @@ function applyFilters(opportunities: Opportunity[], filters: OpportunityFilters)
     .filter((item) => item.minimum <= capital)
     .filter((item) => !filters.preset || matchesPreset(item, filters.preset, savedIds))
     .sort((a, b) => b.confidence - a.confidence)
-    .map((item, index) => ({ ...item, rank: index + 1, rankReason: getRankReason(item) }))
+    .map((item, index) => ({ ...item, rank: index + 1, rankReason: getRankReason(item), safety: safetyGradeOf(item) }))
 }
 
 function matchesPreset(item: Opportunity, preset: OpportunityFilters['preset'], savedIds: Set<string>) {

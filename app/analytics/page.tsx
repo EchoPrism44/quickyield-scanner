@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
             <p className="qy-analytics-sub">A compact view for market breadth, chain exposure, top ranked pools, and APY history as snapshots accumulate.</p>
           </div>
           <div className="qy-analytics-actions">
-            <Link href="/dashboard" className="qy-btn qy-btn-secondary">Back to Discover</Link>
+            <Link href="/terminal" className="qy-btn qy-btn-secondary">Back to Discover</Link>
             <button type="button" className="qy-btn qy-btn-primary" onClick={refreshData} disabled={isRefreshing}>
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </button>
@@ -280,7 +280,7 @@ export default function AnalyticsPage() {
                 <p>Run the scanner or open Discover to populate ranked pools and analytics.</p>
               </div>
             ) : data.topPools.map((item) => (
-                <Link key={item.id} href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-analytics-table-row">
+                <Link key={item.id} href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-analytics-table-row">
                   <span>{item.platform} / {item.asset} / {item.chain}</span>
                   <span className="qy-num">{item.apy.toFixed(2)}%</span>
                   <span className="qy-mono">{formatCurrency(item.tvlUsd)}</span>

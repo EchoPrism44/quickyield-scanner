@@ -12,6 +12,16 @@ export type QuickYieldScoreBreakdown = {
   completeness: number
 }
 
+export type SafetyGradeLetter = 'A' | 'B' | 'C' | 'D' | 'F'
+
+export type SafetyGrade = {
+  letter: SafetyGradeLetter
+  score: number
+  label: string
+  summary: string
+  weakest: string
+}
+
 export type ProtocolMeta = {
   slug: string
   name: string
@@ -120,6 +130,7 @@ export type Opportunity = {
   volatility: number
   dataCompleteness: number
   scoreBreakdown: QuickYieldScoreBreakdown
+  safety?: SafetyGrade
 }
 
 export type LlamaPool = {

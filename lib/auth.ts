@@ -17,7 +17,7 @@ export async function requireUserId() {
   return userId
 }
 
-export async function requireDashboardUserId(returnBackUrl = '/dashboard'): Promise<string> {
+export async function requireDashboardUserId(returnBackUrl = '/terminal'): Promise<string> {
   if (canUseLocalUser()) return LOCAL_USER_ID
   const session = await auth()
   if (!session.userId) {

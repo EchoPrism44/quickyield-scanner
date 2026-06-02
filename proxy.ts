@@ -10,7 +10,7 @@ export default clerkMiddleware(async (auth, req) => {
   )
   const publicApiRoutes = ['/api/opportunities', '/api/cron/scan-yields', '/api/telegram/webhook']
   const isPublicApi = publicApiRoutes.some((route) => pathname.startsWith(route))
-  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/analytics') || (pathname.startsWith('/api/') && !isPublicApi)
+  const isProtectedRoute = pathname.startsWith('/terminal') || pathname.startsWith('/analytics') || (pathname.startsWith('/api/') && !isPublicApi)
 
   if (isProtectedRoute && !localDemo) {
     await auth.protect()

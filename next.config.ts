@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
 
+  async redirects() {
+    return [
+      { source: '/dashboard', destination: '/terminal', permanent: true },
+      { source: '/dashboard/:path*', destination: '/terminal/:path*', permanent: true },
+    ]
+  },
+
   async headers() {
     return [
       {

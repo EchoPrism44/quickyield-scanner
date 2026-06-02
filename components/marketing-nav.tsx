@@ -22,7 +22,7 @@ export function MarketingNav() {
         <div className="qy-nav-links">
           <a href="#how" className="qy-nav-link">How it works</a>
           <a href="#features" className="qy-nav-link">Features</a>
-          <Link href="/sign-in" className="qy-nav-link">Dashboard</Link>
+          <Link href="/terminal" className="qy-nav-link">Terminal</Link>
         </div>
         <div className="qy-nav-actions">
           <Link href="/sign-in" className="qy-nav-signin" data-testid="nav-signin">Sign in</Link>
