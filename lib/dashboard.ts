@@ -5,7 +5,7 @@ import { ensureUser, getAlertRules, getNotificationStatus, getUserSettings, getW
 import type { DashboardData, DashboardUser } from './types'
 
 export async function getInitialDashboardData(): Promise<DashboardData> {
-  const userId = await requireDashboardUserId('/dashboard')
+  const userId = await requireDashboardUserId('/terminal')
   const clerkUser = canUseLocalUser() ? null : await currentUser()
   const email = clerkUser?.primaryEmailAddress?.emailAddress ?? ''
   const user: DashboardUser = canUseLocalUser()

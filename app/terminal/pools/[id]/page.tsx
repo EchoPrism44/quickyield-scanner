@@ -12,7 +12,7 @@ import type { Opportunity, PoolDetail } from '../../../../lib/types'
 export const dynamic = 'force-dynamic'
 
 export default async function PoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const userId = await requireDashboardUserId('/dashboard')
+  const userId = await requireDashboardUserId('/terminal')
   const { id } = await params
   let detail = await getPoolDetail(id)
   if (!detail) detail = await recoverPoolDetail(id)
@@ -34,7 +34,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
     <main className="qy-detail-page">
       <div className="qy-container">
         <div className="qy-detail-back">
-          <Link href="/dashboard" className="qy-btn qy-btn-secondary qy-btn-sm">
+          <Link href="/terminal" className="qy-btn qy-btn-secondary qy-btn-sm">
             <ArrowLeftRight size={14} />
             Back to Discover
           </Link>
@@ -164,7 +164,7 @@ function RelatedSection({ title, items }: { title: string; items: Opportunity[] 
       </div>
       <div className="qy-related-list">
         {items.map((item) => (
-          <Link key={item.id} href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-related-row">
+          <Link key={item.id} href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-related-row">
             <div className="qy-asset-cell">
               <ProtocolLogo name={item.platform} logoUrl={item.logoUrl} />
               <div>

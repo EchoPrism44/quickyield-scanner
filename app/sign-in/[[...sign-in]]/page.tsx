@@ -8,11 +8,14 @@ export default function SignInPage() {
       <main className="qy-auth">
         <section className="qy-auth-card">
           <BrandLogo href="/" className="qy-auth-logo" />
-          <h1>Sign-in unavailable</h1>
+          <h1>Try the demo terminal</h1>
           <p>
-            Clerk auth is not configured for this environment. Add <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--signal)' }}>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> and <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--signal)' }}>CLERK_SECRET_KEY</code> before opening the dashboard.
+            Sign-in isn&apos;t configured in this environment, but you can explore the full terminal in local-demo mode — no account needed.
           </p>
-          <Link className="qy-btn qy-btn-secondary qy-btn-lg" href="/" style={{ width: '100%' }}>
+          <Link className="qy-btn qy-btn-primary qy-btn-lg" href="/terminal" style={{ width: '100%' }}>
+            Open demo terminal
+          </Link>
+          <Link className="qy-btn qy-btn-secondary qy-btn-lg" href="/" style={{ width: '100%', marginTop: 10 }}>
             Back to home
           </Link>
         </section>
@@ -22,7 +25,7 @@ export default function SignInPage() {
 
   return (
     <main className="qy-auth">
-      <SignIn fallbackRedirectUrl="/dashboard" forceRedirectUrl="/dashboard" />
+      <SignIn fallbackRedirectUrl="/terminal" forceRedirectUrl="/terminal" />
     </main>
   )
 }

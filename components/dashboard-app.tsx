@@ -613,7 +613,7 @@ function DiscoverView({
           </div>
         ) : sorted.map((item) => (
           <div key={item.id} className="qy-terminal-row">
-            <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-terminal-pool">
+            <Link href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-terminal-pool">
               <ProtocolLogo name={item.platform} logoUrl={item.logoUrl} />
               <div className="qy-terminal-pool-copy">
                 <div className="qy-asset-name">
@@ -646,7 +646,7 @@ function DiscoverView({
               <strong>{item.chain}</strong>
             </div>
             <div className="qy-terminal-actions">
-              <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
+              <Link href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
                 View details
               </Link>
               <button type="button" className="qy-btn qy-btn-sm qy-btn-primary" onClick={() => onCreateAlert(item)} aria-label={`Set alert for ${item.platform} ${item.asset}`}>
@@ -683,7 +683,7 @@ function DiscoverView({
             </div>
             <p className="qy-rank-reason">{item.rankReason}</p>
             <div className="qy-terminal-actions">
-              <Link href={`/dashboard/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">View details</Link>
+              <Link href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">View details</Link>
               <button type="button" className="qy-btn qy-btn-sm qy-btn-primary" onClick={() => onCreateAlert(item)} aria-label={`Set alert for ${item.platform} ${item.asset}`}>Set alert</button>
               <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
                 {watched.has(item.id) ? 'Saved' : 'Save'}

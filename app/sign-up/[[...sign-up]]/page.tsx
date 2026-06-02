@@ -8,11 +8,14 @@ export default function SignUpPage() {
       <main className="qy-auth">
         <section className="qy-auth-card">
           <BrandLogo href="/" className="qy-auth-logo" />
-          <h1>Sign-up unavailable</h1>
+          <h1>Try the demo terminal</h1>
           <p>
-            Clerk auth is not configured for this environment. Add the Clerk publishable and secret keys before accepting users into the dashboard.
+            Sign-up isn&apos;t configured in this environment, but you can explore the full terminal in local-demo mode — no account needed.
           </p>
-          <Link className="qy-btn qy-btn-secondary qy-btn-lg" href="/" style={{ width: '100%' }}>
+          <Link className="qy-btn qy-btn-primary qy-btn-lg" href="/terminal" style={{ width: '100%' }}>
+            Open demo terminal
+          </Link>
+          <Link className="qy-btn qy-btn-secondary qy-btn-lg" href="/" style={{ width: '100%', marginTop: 10 }}>
             Back to home
           </Link>
         </section>
@@ -22,7 +25,7 @@ export default function SignUpPage() {
 
   return (
     <main className="qy-auth">
-      <SignUp fallbackRedirectUrl="/dashboard" forceRedirectUrl="/dashboard" />
+      <SignUp fallbackRedirectUrl="/terminal" forceRedirectUrl="/terminal" />
     </main>
   )
 }

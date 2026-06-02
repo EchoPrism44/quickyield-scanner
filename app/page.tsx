@@ -1,254 +1,165 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, Bell, Calculator, CheckCircle2, LineChart, Radio, ShieldCheck, Target } from 'lucide-react'
-import { BrandLogo } from '../components/brand-logo'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ArrowRight,
+  Bell,
+  Check,
+  Database,
+  Radio,
+  ShieldCheck,
+  Siren,
+  Target,
+  TrendingUp,
+} from 'lucide-react'
 import { MarketingNav } from '../components/marketing-nav'
 import type { Opportunity } from '../lib/types'
 
 const fallbackOpportunities: Opportunity[] = [
   {
-    id: 'landing-lido-steth',
-    rank: 1,
-    name: 'STETH yield pool',
-    platform: 'Lido',
-    category: 'ETH staking',
-    chain: 'Ethereum',
-    asset: 'STETH',
-    symbol: 'STETH',
-    apy: 2.36,
-    trend: 'flat',
-    trendValue: 0.08,
-    risk: 'Low',
-    minimum: 100,
-    time: 'Ongoing',
-    tvl: '$31.2B',
-    tvlUsd: 31200000000,
-    gas: 'Medium',
-    confidence: 96,
-    dailyLow: 2.22,
-    dailyHigh: 2.46,
-    action: 'View details',
-    actionUrl: 'https://lido.fi/',
-    officialUrl: 'https://lido.fi/',
-    sourceUrl: 'https://defillama.com/yields',
-    protocolSlug: 'lido',
-    source: 'Curated',
-    notes: 'High TVL and stable APY.',
-    rankReason: 'High TVL and stable APY',
-    flags: ['High TVL', 'Stable APY'],
-    lastSeenAt: new Date().toISOString(),
-    lastUpdated: new Date().toISOString(),
-    volatility: 8,
-    dataCompleteness: 94,
+    id: 'landing-lido-steth', rank: 1, name: 'STETH yield pool', platform: 'Lido',
+    category: 'ETH staking', chain: 'Ethereum', asset: 'STETH', symbol: 'STETH',
+    apy: 2.36, trend: 'flat', trendValue: 0.08, risk: 'Low', minimum: 100, time: 'Ongoing',
+    tvl: '$31.2B', tvlUsd: 31200000000, gas: 'Medium', confidence: 96, dailyLow: 2.22, dailyHigh: 2.46,
+    action: 'View details', actionUrl: 'https://lido.fi/', officialUrl: 'https://lido.fi/',
+    sourceUrl: 'https://defillama.com/yields', protocolSlug: 'lido', source: 'Curated',
+    notes: 'High TVL and stable APY.', rankReason: 'High TVL and stable APY', flags: ['High TVL', 'Stable APY'],
+    lastSeenAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), volatility: 8, dataCompleteness: 94,
     scoreBreakdown: { liquidity: 98, stability: 92, sustainability: 86, completeness: 94 },
   },
   {
-    id: 'landing-aave-usdc',
-    rank: 2,
-    name: 'USDC lending market',
-    platform: 'Aave',
-    category: 'Stablecoin lending',
-    chain: 'Base',
-    asset: 'USDC',
-    symbol: 'USDC',
-    apy: 8.4,
-    trend: 'up',
-    trendValue: 0.34,
-    risk: 'Medium',
-    minimum: 100,
-    time: '15 min',
-    tvl: '$487M',
-    tvlUsd: 487000000,
-    gas: 'Low',
-    confidence: 88,
-    dailyLow: 7.88,
-    dailyHigh: 8.62,
-    action: 'View details',
-    actionUrl: 'https://app.aave.com/',
-    officialUrl: 'https://aave.com/',
-    sourceUrl: 'https://defillama.com/yields',
-    protocolSlug: 'aave',
-    source: 'Curated',
-    notes: 'Higher APY, review reward quality.',
-    rankReason: 'Higher APY, review reward quality',
-    flags: ['Stablecoin', 'Review rewards'],
-    lastSeenAt: new Date().toISOString(),
-    lastUpdated: new Date().toISOString(),
-    volatility: 22,
-    dataCompleteness: 90,
+    id: 'landing-aave-usdc', rank: 2, name: 'USDC lending market', platform: 'Aave',
+    category: 'Stablecoin lending', chain: 'Base', asset: 'USDC', symbol: 'USDC',
+    apy: 8.4, trend: 'up', trendValue: 0.34, risk: 'Medium', minimum: 100, time: '15 min',
+    tvl: '$487M', tvlUsd: 487000000, gas: 'Low', confidence: 88, dailyLow: 7.88, dailyHigh: 8.62,
+    action: 'View details', actionUrl: 'https://app.aave.com/', officialUrl: 'https://aave.com/',
+    sourceUrl: 'https://defillama.com/yields', protocolSlug: 'aave', source: 'Curated',
+    notes: 'Higher APY, review reward quality.', rankReason: 'Higher APY, review reward quality', flags: ['Stablecoin', 'Review rewards'],
+    lastSeenAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), volatility: 22, dataCompleteness: 90,
     scoreBreakdown: { liquidity: 86, stability: 78, sustainability: 72, completeness: 90 },
   },
   {
-    id: 'landing-jito-sol',
-    rank: 3,
-    name: 'SOL staking yield',
-    platform: 'Jito',
-    category: 'Solana yield',
-    chain: 'Solana',
-    asset: 'SOL',
-    symbol: 'SOL',
-    apy: 7.1,
-    trend: 'up',
-    trendValue: 0.21,
-    risk: 'Medium',
-    minimum: 50,
-    time: 'Ongoing',
-    tvl: '$1.5B',
-    tvlUsd: 1500000000,
-    gas: 'Low',
-    confidence: 84,
-    dailyLow: 6.81,
-    dailyHigh: 7.24,
-    action: 'View details',
-    actionUrl: 'https://www.jito.network/',
-    officialUrl: 'https://www.jito.network/',
-    sourceUrl: 'https://defillama.com/yields',
-    protocolSlug: 'jito',
-    source: 'Curated',
-    notes: 'Strong TVL with moving APY.',
-    rankReason: 'Strong TVL with moving APY',
-    flags: ['Liquid staking', 'Moving APY'],
-    lastSeenAt: new Date().toISOString(),
-    lastUpdated: new Date().toISOString(),
-    volatility: 18,
-    dataCompleteness: 86,
+    id: 'landing-jito-sol', rank: 3, name: 'SOL staking yield', platform: 'Jito',
+    category: 'Solana yield', chain: 'Solana', asset: 'SOL', symbol: 'SOL',
+    apy: 7.1, trend: 'up', trendValue: 0.21, risk: 'Medium', minimum: 50, time: 'Ongoing',
+    tvl: '$1.5B', tvlUsd: 1500000000, gas: 'Low', confidence: 84, dailyLow: 6.81, dailyHigh: 7.24,
+    action: 'View details', actionUrl: 'https://www.jito.network/', officialUrl: 'https://www.jito.network/',
+    sourceUrl: 'https://defillama.com/yields', protocolSlug: 'jito', source: 'Curated',
+    notes: 'Strong TVL with moving APY.', rankReason: 'Strong TVL with moving APY', flags: ['Liquid staking', 'Moving APY'],
+    lastSeenAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), volatility: 18, dataCompleteness: 86,
     scoreBreakdown: { liquidity: 88, stability: 74, sustainability: 78, completeness: 86 },
+  },
+  {
+    id: 'landing-curve-crvusd', rank: 4, name: 'crvUSD pool', platform: 'Curve',
+    category: 'Stablecoin lending', chain: 'Ethereum', asset: 'crvUSD', symbol: 'crvUSD',
+    apy: 11.2, trend: 'down', trendValue: 0.42, risk: 'Medium', minimum: 100, time: '15 min',
+    tvl: '$214M', tvlUsd: 214000000, gas: 'High', confidence: 79, dailyLow: 10.6, dailyHigh: 12.1,
+    action: 'View details', actionUrl: 'https://curve.fi/', officialUrl: 'https://curve.fi/',
+    sourceUrl: 'https://defillama.com/yields', protocolSlug: 'curve', source: 'Curated',
+    notes: 'Incentive-heavy, watch sustainability.', rankReason: 'Incentive-heavy, watch sustainability', flags: ['Incentivized'],
+    lastSeenAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), volatility: 34, dataCompleteness: 82,
+    scoreBreakdown: { liquidity: 78, stability: 66, sustainability: 58, completeness: 82 },
+  },
+  {
+    id: 'landing-rocket-reth', rank: 5, name: 'rETH staking', platform: 'Rocket Pool',
+    category: 'ETH staking', chain: 'Ethereum', asset: 'rETH', symbol: 'rETH',
+    apy: 3.1, trend: 'up', trendValue: 0.05, risk: 'Low', minimum: 50, time: 'Ongoing',
+    tvl: '$2.8B', tvlUsd: 2800000000, gas: 'Medium', confidence: 91, dailyLow: 3.0, dailyHigh: 3.2,
+    action: 'View details', actionUrl: 'https://rocketpool.net/', officialUrl: 'https://rocketpool.net/',
+    sourceUrl: 'https://defillama.com/yields', protocolSlug: 'rocket-pool', source: 'Curated',
+    notes: 'Decentralized staking, stable APY.', rankReason: 'Decentralized staking, stable APY', flags: ['Liquid staking'],
+    lastSeenAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), volatility: 6, dataCompleteness: 92,
+    scoreBreakdown: { liquidity: 92, stability: 90, sustainability: 84, completeness: 92 },
   },
 ]
 
 const proofItems = ['No wallet connection', 'No custody', 'Research only', 'Telegram + email alerts']
-const railLeft = ['ETH 2.36%', 'USDC 8.40%', 'SOL 7.10%', 'TVL WATCH', 'SCAN OK', 'RISK CONTEXT']
-const railRight = ['BASE LIVE', 'ARB LIVE', 'EMAIL READY', 'TG READY', 'APY +0.2', '500+ POOLS']
+
+const problems = [
+  { icon: Database, t: 'Everything, all at once', b: 'DeFiLlama lists thousands of pools with no view on what is safe, sustainable, or right for you. Signal drowns in volume.' },
+  { icon: Siren, t: 'Noise over signal', b: 'Alpha chats and threads are loud, late, and unaccountable. By the time you hear it, the yield has already moved.' },
+  { icon: TrendingUp, t: 'High APY is often a trap', b: 'Headline rates are frequently mercenary incentives that collapse. Without context, the best number is the worst bet.' },
+]
 
 const steps = [
-  { n: '01', icon: Radio, t: 'Scan', b: 'Index hundreds of DeFi yield pools and keep the market feed moving in the background.' },
-  { n: '02', icon: Target, t: 'Set rules', b: 'Describe the opportunity you want: asset, APY threshold, chain, max risk, and safety score.' },
-  { n: '03', icon: Bell, t: 'Get alerted', b: 'QuickYield sends a Telegram or email alert only when a pool matches your rule.' },
-  { n: '04', icon: ShieldCheck, t: 'Research', b: 'Open the pool details, review risk context, and verify before taking any action elsewhere.' },
+  { n: '01', icon: Radio, t: 'Scan', b: 'We index 500+ DeFi yield pools across major chains and keep the feed live in the background.' },
+  { n: '02', icon: Target, t: 'Set rules', b: 'Describe what you want in plain language: asset, APY threshold, chain, and maximum risk.' },
+  { n: '03', icon: Bell, t: 'Get alerted', b: 'A Telegram or email alert fires only when a pool actually matches your rule — never spam.' },
+  { n: '04', icon: ShieldCheck, t: 'Research', b: 'Open the pool, read the Safety Grade and risk context, and verify before acting elsewhere.' },
 ]
 
-const riskFactors = [
-  { label: 'TVL / liquidity', detail: 'Is there enough market depth to make the yield worth researching?' },
-  { label: 'APY stability', detail: 'Does the yield look steady, or did it spike only in the latest feed?' },
-  { label: 'Reward sustainability', detail: 'Is the APY mostly base yield, or heavily driven by incentives?' },
-  { label: 'Data completeness', detail: 'How much history and market-feed context is available?' },
+const pillars = [
+  { t: 'Liquidity', b: 'Is there enough market depth for the yield to be real and exitable?' },
+  { t: 'APY stability', b: 'Is the rate steady over time, or did it spike only in the latest feed?' },
+  { t: 'Reward quality', b: 'Is it base yield, or propped up by incentives that will fade?' },
+  { t: 'Data completeness', b: 'How much history and market context backs the score?' },
 ]
 
-function formatTvl(value: number) {
-  if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(1)}B`
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(0)}M`
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
-  return `$${value.toFixed(0)}`
+function gradeFor(confidence: number): { letter: string; cls: string } {
+  if (confidence >= 90) return { letter: 'A', cls: 'ql-grade-a' }
+  if (confidence >= 80) return { letter: 'B', cls: 'ql-grade-b' }
+  if (confidence >= 68) return { letter: 'C', cls: 'ql-grade-c' }
+  return { letter: 'D', cls: 'ql-grade-d' }
 }
 
-function LandingFlowBackground() {
-  return (
-    <div className="qy-terminal-flow" aria-hidden="true">
-      <svg viewBox="0 0 1800 1000" preserveAspectRatio="none">
-        <path className="qy-flow-line qy-flow-orange" d="M-120 190 L410 190 L720 500 L1920 500" />
-        <path className="qy-flow-line qy-flow-green" d="M-120 450 L600 450 L850 210 L1920 210" />
-        <path className="qy-flow-line qy-flow-blue" d="M-120 790 L230 790 L340 900 L1920 900" />
-        <circle className="qy-flow-node qy-flow-node-a" cx="410" cy="190" r="6" />
-        <circle className="qy-flow-node qy-flow-node-b" cx="720" cy="500" r="6" />
-        <circle className="qy-flow-node qy-flow-node-c" cx="850" cy="210" r="6" />
-      </svg>
-      <span className="qy-particle qy-particle-a" />
-      <span className="qy-particle qy-particle-b" />
-      <span className="qy-particle qy-particle-c" />
-    </div>
-  )
+function trendText(item: Opportunity) {
+  const sign = item.trend === 'down' ? '-' : '+'
+  const cls = item.trend === 'down' ? 'ql-down' : 'ql-up'
+  return { text: `${sign}${Math.abs(item.trendValue).toFixed(2)}%`, cls }
 }
 
-function ScannerPreview({ opportunities }: { opportunities: Opportunity[] }) {
-  const rows = opportunities.slice(0, 4)
+function useCountUp(target: number, active: boolean, duration = 1100) {
+  const [value, setValue] = useState(0)
+  useEffect(() => {
+    if (!active) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (target <= 0 || reduce) {
+      const id = requestAnimationFrame(() => setValue(target))
+      return () => cancelAnimationFrame(id)
+    }
+    let raf = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setValue(Math.round(target * eased))
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, active, duration])
+  return value
+}
+
+function LiveTerminal({ rows }: { rows: Opportunity[] }) {
   return (
-    <div className="qy-scanner-preview" aria-label="QuickYield scanner preview">
-      <div className="qy-scanner-top">
-        <span className="qy-pill-dot" />
-        <span>Market feed synced</span>
-        <strong>500+ pools</strong>
+    <div className="ql-terminal ql-reveal" aria-label="Live yield scanner preview">
+      <div className="ql-terminal-bar">
+        <i /><i /><i />
+        <span>quickyield // live scanner</span>
+        <b><span className="ql-dot" />synced</b>
       </div>
-      <div className="qy-scanner-terminal">
-        {rows.map((item, index) => (
-          <div key={item.id} className="qy-scanner-row" style={{ animationDelay: `${index * 0.11}s` }}>
-            <div>
-              <strong>{item.platform}</strong>
-              <span>{item.asset} / {item.chain}</span>
+      <div className="ql-thead">
+        <span>Pool</span><span>APY</span><span>Grade</span><span>24h</span>
+      </div>
+      {rows.map((item, i) => {
+        const grade = gradeFor(item.confidence)
+        const t = trendText(item)
+        return (
+          <div className="ql-trow" key={item.id} style={{ animationDelay: `${i * 0.08}s` }}>
+            <div className="ql-asset">
+              <b>{item.platform}</b>
+              <small>{item.asset} · {item.chain}</small>
             </div>
-            <div>
-              <strong>{item.apy.toFixed(2)}%</strong>
-              <span>{item.rankReason || item.notes || 'Ranked for review'}</span>
-            </div>
+            <span className="ql-apy">{item.apy.toFixed(2)}%</span>
+            <span><span className={`ql-grade-chip ${grade.cls}`}>{grade.letter}</span></span>
+            <span className={t.cls}>{t.text}</span>
           </div>
-        ))}
-      </div>
-      <div className="qy-signal-stream">
-        {[
-          'Pool indexed',
-          'Risk context generated',
-          'Alert channel ready',
-          'No custody mode',
-        ].map((item) => (
-          <span key={item}>{item}</span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function YieldEstimator({ opportunities }: { opportunities: Opportunity[] }) {
-  const [selectedId, setSelectedId] = useState(opportunities[0]?.id ?? '')
-  const [capital, setCapital] = useState(1000)
-  const [days, setDays] = useState(30)
-  const selected = opportunities.find((item) => item.id === selectedId) ?? opportunities[0]
-  const selectedValue = selected?.id ?? ''
-  const estimate = selected ? (capital * selected.apy * (days / 365)) / 100 : 0
-
-  return (
-    <div className="qy-estimator">
-      <div className="qy-estimator-copy">
-        <Calculator className="qy-icon" />
-        <h2 className="qy-h2">Estimate the signal before you chase it.</h2>
-        <p>
-          Use the live opportunity feed to compare APY, TVL, and risk context. Estimates are for research only and are not financial advice.
-        </p>
-      </div>
-      <div className="qy-estimator-panel">
-        <label>
-          <span>Pool</span>
-          <select value={selectedValue} onChange={(event) => setSelectedId(event.target.value)}>
-            {opportunities.slice(0, 8).map((item) => (
-              <option key={item.id} value={item.id}>{item.platform} {item.asset} / {item.chain}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>Capital for estimate</span>
-          <input type="range" min="100" max="10000" step="100" value={capital} onChange={(event) => setCapital(Number(event.target.value))} />
-        </label>
-        <label>
-          <span>Timeframe</span>
-          <div className="qy-estimator-segments" role="group" aria-label="Estimate timeframe">
-            {[30, 180, 365].map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={days === value ? 'active' : ''}
-                aria-pressed={days === value}
-                onClick={() => setDays(value)}
-              >
-                {value === 365 ? '1Y' : `${value}D`}
-              </button>
-            ))}
-          </div>
-        </label>
-        <div className="qy-estimator-result">
-          <span>Estimated research yield</span>
-          <strong>${estimate.toFixed(2)}</strong>
-          <small>{selected ? `${selected.apy.toFixed(2)}% APY / ${formatTvl(selected.tvlUsd)} TVL / ${selected.risk} risk` : 'Waiting for market data'}</small>
-        </div>
+        )
+      })}
+      <div className="ql-terminal-foot">
+        scanning 500+ pools across major chains<span className="ql-cursor" />
       </div>
     </div>
   )
@@ -256,220 +167,273 @@ function YieldEstimator({ opportunities }: { opportunities: Opportunity[] }) {
 
 export default function HomePage() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>(fallbackOpportunities)
-  const [stats, setStats] = useState({ total: '500+', chains: 'Major', scans: 'Hourly', alerts: 'Ready' })
+  const [total, setTotal] = useState(500)
+  const [chainCount, setChainCount] = useState(8)
+  const [statsVisible, setStatsVisible] = useState(false)
+  const statsRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    fetch('/api/opportunities?capital=100&pageSize=8')
-      .then((response) => response.json())
+    fetch('/api/opportunities?capital=100&pageSize=12')
+      .then((r) => r.json())
       .then((data: { opportunities?: Opportunity[]; total?: number }) => {
         const items = data.opportunities ?? []
         if (!items.length) return
-        const chains = new Set(items.map((item) => item.chain)).size
         setOpportunities(items)
-        setStats({
-          total: data.total && data.total >= 500 ? `${data.total.toLocaleString()}+` : '500+',
-          chains: chains > 1 ? `${chains}+` : 'Major',
-          scans: 'Hourly',
-          alerts: 'Telegram + email',
-        })
+        setChainCount(new Set(items.map((i) => i.chain)).size || 8)
+        if (data.total && data.total > 0) setTotal(data.total)
       })
       .catch(() => {})
   }, [])
 
-  const topOpportunity = useMemo(() => opportunities[0] ?? fallbackOpportunities[0], [opportunities])
+  useEffect(() => {
+    const el = statsRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setStatsVisible(true); obs.disconnect() } }, { threshold: 0.4 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  const terminalRows = useMemo(() => opportunities.slice(0, 5), [opportunities])
+  const tickerRows = useMemo(() => {
+    const base = opportunities.slice(0, 8)
+    return [...base, ...base]
+  }, [opportunities])
+
+  const animatedTotal = useCountUp(total, statsVisible)
+  const animatedChains = useCountUp(chainCount, statsVisible)
 
   return (
-    <main>
+    <main className="ql">
+      <div className="ql-grain" aria-hidden="true" />
       <MarketingNav />
 
-      <section className="qy-hero qy-terminal-hero">
-        <LandingFlowBackground />
-        <div className="qy-data-rail qy-data-rail-left" aria-hidden="true">
-          {[...railLeft, ...railLeft].map((item, index) => <span key={`${item}-${index}`}>{item}</span>)}
-        </div>
-        <div className="qy-data-rail qy-data-rail-right" aria-hidden="true">
-          {[...railRight, ...railRight].map((item, index) => <span key={`${item}-${index}`}>{item}</span>)}
-        </div>
-
-        <div className="qy-container qy-terminal-hero-body">
-          <div className="qy-live-ticker" aria-label="Live scanner preview">
-            <span className="qy-pill-dot" />
-            <span>{topOpportunity.platform} {topOpportunity.asset}</span>
-            <strong>{topOpportunity.apy.toFixed(2)}% APY</strong>
-            <span>{topOpportunity.rankReason || 'Matched for review'}</span>
-          </div>
-
-          <div className="qy-terminal-logo-wrap qy-fade-up">
-            <BrandLogo className="qy-logo-hero qy-logo-animated" label="QuickYield" />
-          </div>
-
-          <div className="qy-terminal-hero-copy qy-fade-up-delay-2">
-            <h1 className="qy-h1">Find Better Yield Opportunities. Before Everyone Else.</h1>
-            <p className="qy-hero-sub">
-              QuickYield scans 500+ DeFi yield pools across major chains, lets users set personal rules, and sends Telegram or email alerts when matches appear.
+      {/* ---------------- Hero ---------------- */}
+      <section className="ql-hero">
+        <div className="ql-hero-aurora" aria-hidden="true" />
+        <div className="ql-wrap ql-hero-body">
+          <div>
+            <span className="ql-badge"><span className="ql-dot" />DeFi yield intelligence · beta</span>
+            <h1 className="ql-h1">The Bloomberg Terminal for <em>DeFi yield</em>.</h1>
+            <p className="ql-hero-sub">
+              QuickYield scans 500+ yield pools across major chains, grades them for safety, and alerts you the moment one matches your rules — before everyone else.
             </p>
-            <p className="qy-terminal-diff">
-              DeFiLlama shows everything. QuickYield shows what matters to you.
-            </p>
-            <div className="qy-hero-actions">
-              <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-glow qy-btn-lg">
-                Start tracking <ArrowRight size={16} strokeWidth={2.5} />
+            <div className="ql-cta-row">
+              <Link href="/terminal" className="ql-btn ql-btn--primary">
+                Launch terminal <ArrowRight size={16} strokeWidth={2.5} />
               </Link>
-              <Link href="/sign-in" className="qy-btn qy-btn-secondary qy-btn-lg">View dashboard</Link>
+              <a href="#how" className="ql-btn ql-btn--ghost">See how it works</a>
             </div>
-            <div className="qy-hero-proof">
-              {proofItems.map((item) => <span key={item}>{item}</span>)}
+            <div className="ql-proof">
+              {proofItems.map((p) => <span key={p}>{p}</span>)}
             </div>
           </div>
-
-          <ScannerPreview opportunities={opportunities} />
+          <LiveTerminal rows={terminalRows} />
         </div>
       </section>
 
-      <section className="qy-stats qy-terminal-stats">
-        <div className="qy-stats-grid">
-          {[
-            { l: 'Pools scanned', v: stats.total },
-            { l: 'Chains covered', v: stats.chains },
-            { l: 'Scan cadence', v: stats.scans },
-            { l: 'Alert delivery', v: stats.alerts },
-          ].map((stat, index) => (
-            <div key={stat.l} className="qy-stats-cell qy-fade-up" style={{ animationDelay: `${index * 0.08}s` }}>
-              <div className="qy-stats-value">{stat.v}</div>
-              <div className="qy-overline" style={{ marginTop: 4 }}>{stat.l}</div>
-            </div>
-          ))}
+      {/* ---------------- Ticker ---------------- */}
+      <div className="ql-tape" aria-hidden="true">
+        <div className="ql-tape-track">
+          {tickerRows.map((item, i) => {
+            const t = trendText(item)
+            return (
+              <span className="ql-tape-item" key={`${item.id}-${i}`}>
+                {item.asset} <b>{item.apy.toFixed(2)}%</b> <span className={t.cls}>{t.text}</span>
+              </span>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ---------------- Credibility strip ---------------- */}
+      <section className="ql-stats" ref={statsRef}>
+        <div className="ql-stats-grid">
+          <div className="ql-stat"><div className="ql-stat-v">{animatedTotal.toLocaleString()}+</div><div className="ql-stat-l">Pools scanned</div></div>
+          <div className="ql-stat"><div className="ql-stat-v">{animatedChains}+</div><div className="ql-stat-l">Chains covered</div></div>
+          <div className="ql-stat"><div className="ql-stat-v">Hourly</div><div className="ql-stat-l">Scan cadence</div></div>
+          <div className="ql-stat"><div className="ql-stat-v">2-way</div><div className="ql-stat-l">Telegram + email</div></div>
         </div>
       </section>
 
-      <section id="features" className="qy-section qy-section-tight">
-        <div className="qy-container">
-          <div className="qy-section-head qy-section-head-wide">
-            <h2 className="qy-h2">Personalized yield intelligence, not another data dump.</h2>
-            <p>QuickYield turns raw pool data into a focused loop: discover safer opportunities, understand the reason, and create alerts in plain language.</p>
+      {/* ---------------- Problem ---------------- */}
+      <section className="ql-section">
+        <div className="ql-wrap">
+          <div className="ql-head">
+            <span className="ql-eyebrow">The problem</span>
+            <h2 className="ql-h2">Yield hunting is loud, slow, and dangerous.</h2>
+            <p className="ql-lead">Three failure modes keep good capital out of good opportunities — and into bad ones.</p>
           </div>
-          <div className="qy-opportunity-preview">
-            {opportunities.slice(0, 3).map((item) => (
-              <article key={item.id} className="qy-opportunity-card">
-                <div>
-                  <span className="qy-overline">{item.chain}</span>
-                  <h3>{item.platform}</h3>
-                  <p>{item.asset} / {item.category}</p>
-                </div>
-                <div className="qy-opportunity-metrics">
-                  <strong>{item.apy.toFixed(2)}%</strong>
-                  <span>APY</span>
-                </div>
-                <div className="qy-opportunity-foot">
-                  <span>{formatTvl(item.tvlUsd)} TVL</span>
-                  <span>{item.risk} risk</span>
-                  <span>{item.confidence} safety</span>
-                </div>
-                <p className="qy-opportunity-reason">{item.rankReason || item.notes || 'Ranked for research review'}</p>
+          <div className="ql-cards-3">
+            {problems.map((p) => (
+              <article className="ql-card" key={p.t}>
+                <div className="ql-card-ic"><p.icon size={20} /></div>
+                <h3>{p.t}</h3>
+                <p>{p.b}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="qy-section qy-section-tight">
-        <div className="qy-container">
-          <YieldEstimator opportunities={opportunities} />
-        </div>
-      </section>
-
-      <section id="how" className="qy-section qy-section-tight">
-        <div className="qy-container">
-          <div className="qy-section-head qy-section-head-wide">
-            <h2 className="qy-h2">From market noise to your alert rule.</h2>
+      {/* ---------------- How it works ---------------- */}
+      <section className="ql-section ql-section--tight" id="how">
+        <div className="ql-wrap">
+          <div className="ql-head">
+            <span className="ql-eyebrow">How it works</span>
+            <h2 className="ql-h2">From market noise to a single alert.</h2>
           </div>
-          <div className="qy-how-grid">
-            {steps.map((step, index) => (
-              <div key={step.n} className="qy-how-step qy-fade-up" style={{ animationDelay: `${index * 0.08}s` }}>
-                <div className="qy-how-step-top">
-                  <span className="qy-how-step-num">{step.n}</span>
-                  <step.icon className="qy-how-step-icon" />
+          <div className="ql-steps">
+            {steps.map((s) => (
+              <div className="ql-step" key={s.n}>
+                <div className="ql-step-top">
+                  <span className="ql-step-n">{s.n}</span>
+                  <s.icon className="ql-step-ic" size={20} />
                 </div>
-                <h3>{step.t}</h3>
-                <p>{step.b}</p>
-                <span className="qy-how-underline" />
+                <h3>{s.t}</h3>
+                <p>{s.b}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="qy-section qy-section-tight">
-        <div className="qy-container">
-          <div className="qy-section-head qy-section-head-wide">
-            <h2 className="qy-h2">Risk context before action.</h2>
-            <p>QuickYield explains the signal with transparent factors from available market data. It does not pretend to know audit status or protocol age unless reliable data is present.</p>
+      {/* ---------------- Intelligence layer ---------------- */}
+      <section className="ql-section ql-section--tight" id="features">
+        <div className="ql-wrap ql-intel">
+          <div>
+            <span className="ql-eyebrow">The intelligence layer</span>
+            <h2 className="ql-h2">Every pool gets a Safety Grade.</h2>
+            <p className="ql-lead">
+              QuickYield doesn&apos;t just list yields — it scores them. The Safety Grade distills four transparent signals into one letter, so you can judge an opportunity in a glance and act with context.
+            </p>
+            <ul className="ql-intel-list">
+              {pillars.map((p) => (
+                <li key={p.t}><Check size={16} strokeWidth={3} /><span><b>{p.t}.</b> {p.b}</span></li>
+              ))}
+            </ul>
           </div>
-          <div className="qy-risk-grid">
-            {riskFactors.map((factor) => (
-              <article key={factor.label} className="qy-risk-card">
-                <span className="qy-overline">{factor.label}</span>
-                <p>{factor.detail}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="qy-section qy-section-tight">
-        <div className="qy-container">
-          <div className="qy-alert-demo">
-            <div className="qy-phone qy-fade-up">
-              <div className="qy-phone-top">QuickYield alert</div>
-              <div className="qy-phone-bubble">
-                <strong>{topOpportunity.asset} yield pool</strong>
-                <span>{topOpportunity.platform} on {topOpportunity.chain}</span>
-                <span>APY: {topOpportunity.apy.toFixed(2)}% | Safety score: {topOpportunity.confidence}</span>
-                <span>Rule: {topOpportunity.asset} above 2%</span>
+          <div className="ql-scorecard ql-reveal">
+            <div className="ql-scorecard-top">
+              <div className="ql-grade-badge">A</div>
+              <div>
+                <h4>Lido · STETH</h4>
+                <p>Ethereum · ETH staking</p>
               </div>
             </div>
-            <div className="qy-alert-demo-copy qy-fade-up-delay-2">
-              <LineChart className="qy-icon" />
-              <h3>Fast enough to feel alive. Calm enough to trust.</h3>
-              <p>Alerts are short, specific, and linked back to the research page. No fake urgency. No trade button. Just the signal and the context.</p>
+            <div className="ql-bars">
+              {[
+                { l: 'Liquidity', v: 98 },
+                { l: 'APY stability', v: 92 },
+                { l: 'Reward quality', v: 86 },
+                { l: 'Data completeness', v: 94 },
+              ].map((b) => (
+                <div className="ql-bar-row" key={b.l}>
+                  <div className="ql-bar-head"><span>{b.l}</span><b>{b.v}/100</b></div>
+                  <div className="ql-bar"><i style={{ width: `${b.v}%` }} /></div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="qy-section qy-section-tight">
-        <div className="qy-container">
-          <div className="qy-cta qy-noise qy-fade-up">
-            <div className="qy-cta-glow" />
-            <CheckCircle2 className="qy-cta-icon" />
-            <h2 className="qy-h2">Launch with a sharper signal.</h2>
-            <p>500+ pool scanner. Personalized alerts. Transparent risk context. Research only.</p>
-            <Link href="/sign-up" className="qy-btn qy-btn-primary qy-btn-lg qy-btn-glow qy-cta-btn">
-              Start tracking <ArrowRight size={16} strokeWidth={2.5} />
-            </Link>
+      {/* ---------------- Product preview ---------------- */}
+      <section className="ql-section ql-section--tight">
+        <div className="ql-wrap">
+          <div className="ql-head">
+            <span className="ql-eyebrow">The terminal</span>
+            <h2 className="ql-h2">A research desk, not a data dump.</h2>
+          </div>
+          <div className="ql-shot ql-reveal">
+            <div className="ql-shot-bar">
+              <i /><i /><i />
+              <span className="ql-shot-url">quickyield.app/terminal</span>
+            </div>
+            <div className="ql-shot-body">
+              <div className="ql-shot-side">
+                <div className="ql-shot-navitem on">Discover</div>
+                <div className="ql-shot-navitem">Watchlist</div>
+                <div className="ql-shot-navitem">Alerts</div>
+                <div className="ql-shot-navitem">Settings</div>
+              </div>
+              <div className="ql-shot-main">
+                {opportunities.slice(0, 6).map((item) => {
+                  const grade = gradeFor(item.confidence)
+                  const t = trendText(item)
+                  return (
+                    <div className="ql-shot-row" key={item.id}>
+                      <div className="ql-asset"><b style={{ color: 'var(--ink)' }}>{item.platform}</b> <span style={{ color: 'var(--ink-mute)' }}>{item.asset}</span></div>
+                      <span style={{ color: 'var(--ink)' }}>{item.apy.toFixed(2)}%</span>
+                      <span><span className={`ql-grade-chip ${grade.cls}`}>{grade.letter}</span></span>
+                      <span className={t.cls}>{t.text}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer className="qy-footer">
-        <div className="qy-container">
-          <div className="qy-footer-grid">
+      {/* ---------------- Trust band ---------------- */}
+      <section className="ql-section ql-section--tight">
+        <div className="ql-wrap">
+          <div className="ql-trust">
+            <span className="ql-eyebrow">Built on trust</span>
+            <h2 className="ql-h2">Research-grade, by design.</h2>
+            <div className="ql-trust-grid">
+              <div className="ql-trust-item">
+                <h4><ShieldCheck size={18} />No custody, ever</h4>
+                <p>QuickYield never touches your funds, keys, or wallet. There is no deposit, no trade button, no custody. It is research and alerting only.</p>
+              </div>
+              <div className="ql-trust-item">
+                <h4><Database size={18} />Transparent data</h4>
+                <p>Pool data is sourced from public DeFiLlama feeds and merged with our scoring. Every Safety Grade links back to the underlying signals.</p>
+              </div>
+              <div className="ql-trust-item">
+                <h4><Check size={18} />Not financial advice</h4>
+                <p>We surface context, not recommendations. You always verify with the protocol and decide for yourself before moving any capital.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- Final CTA ---------------- */}
+      <section className="ql-section ql-section--tight">
+        <div className="ql-wrap">
+          <div className="ql-final ql-reveal">
+            <span className="ql-eyebrow" style={{ justifyContent: 'center' }}>Get started free</span>
+            <h2 className="ql-h2">Find safer yield. Before everyone else.</h2>
+            <p>500+ pool scanner, transparent Safety Grades, and personal alerts — no wallet, no custody, no noise.</p>
+            <div className="ql-cta-row">
+              <Link href="/terminal" className="ql-btn ql-btn--primary">
+                Launch terminal <ArrowRight size={16} strokeWidth={2.5} />
+              </Link>
+              <Link href="/sign-up" className="ql-btn ql-btn--ghost">Create account</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- Footer ---------------- */}
+      <footer className="ql-footer">
+        <div className="ql-wrap">
+          <div className="ql-footer-grid">
             <div>
-              <BrandLogo />
-              <p style={{ marginTop: 12, color: 'var(--ink-dim)', fontSize: 12, maxWidth: 280 }}>
-                Research and alerting for DeFi yields. Not financial advice. No custody. Always verify with the protocol before moving funds.
-              </p>
+              <strong style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>QuickYield</strong>
+              <p className="ql-footer-blurb">Yield intelligence and alerting for DeFi. Research only. Not financial advice. No custody — always verify with the protocol before moving funds.</p>
             </div>
             <div>
-              <h4>Product</h4>
+              <h5>Product</h5>
               <ul>
-                <li><a href="#features">Features</a></li>
                 <li><a href="#how">How it works</a></li>
-                <li><Link href="/sign-in">Dashboard</Link></li>
+                <li><a href="#features">Safety Grade</a></li>
+                <li><Link href="/terminal">Launch terminal</Link></li>
               </ul>
             </div>
             <div>
-              <h4>Alerts</h4>
+              <h5>Alerts</h5>
               <ul>
                 <li>Telegram alerts</li>
                 <li>Email alerts</li>
@@ -477,16 +441,19 @@ export default function HomePage() {
               </ul>
             </div>
             <div>
-              <h4>Legal</h4>
+              <h5>Legal</h5>
               <ul>
-                <li>Informational only</li>
-                <li>No financial advice</li>
-                <li>No custody of funds</li>
+                <li><Link href="/legal/terms">Terms</Link></li>
+                <li><Link href="/legal/privacy">Privacy</Link></li>
+                <li><Link href="/legal/disclaimer">Disclaimer</Link></li>
               </ul>
             </div>
           </div>
+          <div className="ql-footer-base">
+            <span>© 2026 QuickYield</span>
+            <span>Signal over noise</span>
+          </div>
         </div>
-        <div className="qy-footer-bottom">(c) 2026 QuickYield / Signal over noise</div>
       </footer>
     </main>
   )

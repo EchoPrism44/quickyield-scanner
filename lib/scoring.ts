@@ -55,7 +55,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
   const protocol = getProtocolMeta(project)
   const platform = protocol.name || project
   const symbol = normalizeSymbol(pool.symbol)
-  const internalUrl = `/dashboard/pools/${encodeURIComponent(`live-${pool.pool}`)}`
+  const internalUrl = `/terminal/pools/${encodeURIComponent(`live-${pool.pool}`)}`
   const officialUrl = protocol.officialUrl ?? internalUrl
   const now = new Date().toISOString()
 

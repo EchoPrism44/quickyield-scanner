@@ -16,7 +16,7 @@ QuickYield is a Next.js SaaS beta for crypto yield research. It scans public DeF
 - Resend + React Email for alert emails
 - GitHub Actions for hourly scans
 - Telegram bot alerts for trader notifications
-- Framer Motion + Lucide icons + custom CSS aesthetic (Cabinet Grotesk + JetBrains Mono on Signal Orange)
+- Custom CSS design system with design tokens (`styles/tokens.css`) + Lucide icons — Inter / Inter Tight / JetBrains Mono on a Signal Orange dark theme
 
 ## Local Development
 
@@ -67,9 +67,10 @@ npm run db:push
 
 ## UI Overview
 
-The app ships with a distinctive dark aesthetic that maps directly to the product's positioning:
+A premium-minimalist **Bloomberg terminal** aesthetic that maps directly to the product's positioning ("The Bloomberg Terminal for DeFi yield"). Landing styles live in `styles/marketing.css` (`.ql-*` namespace); the app/dashboard styles use the `.qy-*` system in `app/globals.css`.
 
-- **Landing page** (`/`) — Animated hero with live preview, stats strip (real DeFiLlama numbers), 4-step "How it works", feature bento grid, testimonials, CTA, footer with disclaimers.
-- **Dashboard** (`/dashboard`) — Sidebar navigation across Opportunities, Watchlist, Alerts, and Settings. The Opportunities table supports filtering (chain, asset, risk, category, time), the beginner-safe quick toggle, and APY/TVL sorting.
+- **Landing page** (`/`) — Editorial hero with a live streaming terminal panel, ticker tape, count-up stats, the problem framing, a 4-step "How it works", the Safety-Grade intelligence section, a product preview, a trust band, CTA, and a minimal footer with legal links.
+- **Terminal** (`/terminal`) — The authed app. Sidebar navigation across Discover, Alerts, and Settings. The Discover table supports filtering (chain, asset, risk, category, time), presets, a yield heatmap, and APY/TVL/safety sorting. (Legacy `/dashboard` URLs 308-redirect here.)
+- **Legal** (`/legal/terms`, `/legal/privacy`, `/legal/disclaimer`) — Research-only / no-custody / not-financial-advice pages.
 
-All API routes, types, schema, and email templates are unchanged from the previous version — only the UI layer was rebuilt.
+Without environment variables the app runs in local-demo mode (see `lib/auth.ts`), so every route is testable with `npm run dev` and no keys.

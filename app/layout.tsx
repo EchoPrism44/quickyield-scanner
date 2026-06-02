@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
@@ -20,6 +20,11 @@ export const metadata: Metadata = {
     type: 'website',
     images: ['/brand/quickyield-wordmark.svg'],
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#0a0d12',
+  colorScheme: 'dark',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
