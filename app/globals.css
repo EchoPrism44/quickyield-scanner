@@ -1141,3 +1141,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-grade-banner > div { min-width: 0; }
 .qy-grade-banner strong { display: block; margin-top: 4px; font-family: var(--font-display); font-size: 18px; color: var(--ink); }
 .qy-grade-banner p { margin-top: 6px; color: var(--ink-dim); font-size: 13px; line-height: 1.5; }
+
+/* Watchlist deltas */
+.qy-wl-up { color: var(--up); }
+.qy-wl-down { color: var(--down); }
+.qy-wl-flat { color: var(--ink-mute); }
