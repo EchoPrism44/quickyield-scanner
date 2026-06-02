@@ -59,6 +59,7 @@ describe('store CRUD operations', () => {
       maxRisk: 'Low',
       minConfidence: 80,
       frequency: 'daily',
+      condition: 'apy-above',
       enabled: true,
       createdAt: new Date().toISOString(),
     }

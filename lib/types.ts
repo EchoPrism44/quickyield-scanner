@@ -3,6 +3,7 @@ export type TimeCost = '5 min' | '15 min' | 'Ongoing'
 export type Trend = 'up' | 'down' | 'flat'
 export type DataStatus = 'live' | 'fallback'
 export type AlertFrequency = 'instant' | 'daily' | 'weekly'
+export type AlertCondition = 'apy-above' | 'apy-below'
 export type NotificationChannelType = 'email' | 'telegram'
 
 export type QuickYieldScoreBreakdown = {
@@ -226,6 +227,7 @@ export type AlertRule = {
   maxRisk: RiskLevel
   minConfidence: number
   frequency: AlertFrequency
+  condition: AlertCondition
   enabled: boolean
   createdAt: string
 }

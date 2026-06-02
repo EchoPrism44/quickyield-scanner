@@ -26,6 +26,7 @@ function dbAlertToAlert(row: typeof alertRules.$inferSelect): AlertRule {
     maxRisk: row.maxRisk === 'Medium' ? 'Medium' : 'Low',
     minConfidence: row.minConfidence,
     frequency: row.frequency === 'instant' || row.frequency === 'weekly' ? row.frequency : 'daily',
+    condition: row.condition === 'apy-below' ? 'apy-below' : 'apy-above',
     enabled: row.enabled,
     createdAt: row.createdAt.toISOString(),
   }
@@ -264,6 +265,7 @@ export async function createAlertRule(userId: string, input: Omit<AlertRule, 'id
     maxRisk: alert.maxRisk,
     minConfidence: alert.minConfidence,
     frequency: alert.frequency,
+    condition: alert.condition,
     enabled: alert.enabled,
   })
   return { ok: true as const, alerts: await getAlertRules(userId) }
@@ -284,6 +286,7 @@ export async function updateAlertRule(userId: string, alertId: string, patch: Pa
     maxRisk: patch.maxRisk,
     minConfidence: patch.minConfidence,
     frequency: patch.frequency,
+    condition: patch.condition,
     enabled: patch.enabled,
   }).where(sql`${alertRules.id} = ${alertId} and ${alertRules.userId} = ${userId}`)
   return getAlertRules(userId)

@@ -52,10 +52,10 @@ export function AlertsView({
             <div key={alert.id} className="qy-table-row" style={{ gridTemplateColumns: '4fr 2fr 2fr 2fr 1fr', opacity: alert.enabled ? 1 : 0.55 }}>
               <div>
                 <div className="qy-asset-name">{alert.name}</div>
-                <div className="qy-asset-meta">{alert.asset || 'Any asset'} APY &gt; {alert.minApy}%, Risk &lt;= {alert.maxRisk}</div>
+                <div className="qy-asset-meta">{alert.asset || 'Any asset'} APY {alert.condition === 'apy-below' ? '≤' : '≥'} {alert.minApy}%, Risk &lt;= {alert.maxRisk}</div>
               </div>
               <span className="qy-mono">{alert.asset}</span>
-              <span className="qy-num bold">{alert.minApy}% APY</span>
+              <span className="qy-num bold">{alert.condition === 'apy-below' ? '≤' : '≥'} {alert.minApy}%</span>
               <span className="qy-mono">{alert.frequency}</span>
               <div className="qy-actions">
                 <button type="button" className="qy-icon-btn" onClick={() => onToggle(alert)} aria-label={`${alert.enabled ? 'Pause' : 'Resume'} ${alert.name}`}>{alert.enabled ? <Bell size={14} /> : <BellOff size={14} />}</button>

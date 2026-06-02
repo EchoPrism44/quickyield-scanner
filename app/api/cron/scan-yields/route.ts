@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { alertMatchesOpportunity } from '../../../../lib/alerts'
 import { sendAlertEmail } from '../../../../lib/email'
 import { scanAndCacheYields } from '../../../../lib/opportunities'
 import { getAlertRules, getNotificationChannels, recordAlertDelivery, wasAlertDelivered } from '../../../../lib/store'
@@ -27,17 +28,7 @@ export async function GET(request: NextRequest) {
   let duplicatesSkipped = 0
 
   for (const alert of alerts.filter((item) => item.enabled)) {
-    const match = scan.opportunities.find((item) => {
-      const riskOk = alert.maxRisk === 'Medium' || item.risk === 'Low'
-      return (
-        (!alert.chain || alert.chain === 'All chains' || item.chain === alert.chain) &&
-        (!alert.category || alert.category === 'All categories' || item.category === alert.category) &&
-        (!alert.asset || item.asset.toLowerCase().includes(alert.asset.toLowerCase())) &&
-        item.apy >= alert.minApy &&
-        item.confidence >= alert.minConfidence &&
-        riskOk
-      )
-    })
+    const match = scan.opportunities.find((item) => alertMatchesOpportunity(alert, item))
 
     if (!match) continue
     matched += 1
