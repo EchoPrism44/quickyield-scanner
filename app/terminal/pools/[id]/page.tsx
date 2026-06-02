@@ -5,6 +5,7 @@ import { ProtocolLogo } from '../../../../components/protocol-logo'
 import { PoolDetailActions } from '../../../../components/pool-detail-actions'
 import { requireDashboardUserId } from '../../../../lib/auth'
 import { getOpportunities, getRankReason } from '../../../../lib/opportunities'
+import { safetyGradeOf } from '../../../../lib/grade'
 import { formatTvl } from '../../../../lib/scoring'
 import { getOpportunitySnapshots, getPoolDetail, getWatchlist } from '../../../../lib/store'
 import type { Opportunity, PoolDetail } from '../../../../lib/types'
@@ -21,6 +22,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
   const watchlist = await getWatchlist(userId)
   const watched = watchlist.includes(detail.opportunity.id)
   const { opportunity, history, relatedByProtocol, relatedByAsset, relatedByChain } = detail
+  const grade = safetyGradeOf(opportunity)
 
   const minApy = history.length ? Math.min(...history.map((item) => item.apy)) : opportunity.apy
   const maxApy = history.length ? Math.max(...history.map((item) => item.apy)) : opportunity.apy
@@ -48,6 +50,15 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
                 <span className="qy-overline qy-overline-signal">Pool research</span>
                 <h1>{opportunity.platform}</h1>
                 <p>{opportunity.asset} / {opportunity.chain} / {opportunity.category}</p>
+              </div>
+            </div>
+
+            <div className="qy-grade-banner">
+              <span className={`qy-grade qy-grade-lg qy-grade-${grade.letter.toLowerCase()}`}>{grade.letter}</span>
+              <div>
+                <span className="qy-overline qy-overline-signal">QuickYield Safety Grade</span>
+                <strong>{grade.label} · {grade.score}/100</strong>
+                <p>{grade.summary}</p>
               </div>
             </div>
 

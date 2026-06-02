@@ -1118,3 +1118,26 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .qy-skeleton::after { animation: none; }
 }
+
+/* Safety Grade chips */
+.qy-grade {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 22px; padding: 0 6px; border-radius: 6px;
+  font-family: var(--font-display); font-weight: 700; font-size: 13px; line-height: 1;
+}
+.qy-grade-a { background: rgba(22, 241, 163, 0.15); color: var(--safe); }
+.qy-grade-b { background: rgba(120, 220, 160, 0.15); color: #7adfa0; }
+.qy-grade-c { background: rgba(255, 176, 32, 0.15); color: var(--warn); }
+.qy-grade-d { background: rgba(255, 107, 53, 0.16); color: var(--signal); }
+.qy-grade-f { background: rgba(255, 51, 102, 0.16); color: var(--risk); }
+.qy-grade-lg { min-width: 56px; height: 56px; border-radius: 12px; font-size: 30px; }
+.qy-grade-cell { display: inline-flex; align-items: center; gap: 8px; }
+.qy-grade-cell small { color: var(--ink-mute); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+.qy-grade-banner {
+  display: flex; align-items: center; gap: 16px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02); padding: 16px; margin-bottom: 20px;
+}
+.qy-grade-banner > div { min-width: 0; }
+.qy-grade-banner strong { display: block; margin-top: 4px; font-family: var(--font-display); font-size: 18px; color: var(--ink); }
+.qy-grade-banner p { margin-top: 6px; color: var(--ink-dim); font-size: 13px; line-height: 1.5; }

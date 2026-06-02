@@ -1,4 +1,5 @@
 import { getProtocolMeta, normalizeProtocolSlug } from './protocols'
+import { computeSafetyGrade } from './grade'
 import type { LlamaPool, Opportunity, RiskLevel } from './types'
 
 export function money(value: number) {
@@ -43,7 +44,9 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     96,
     Math.max(58, Math.round(62 + Math.log10(Math.max(tvl, 10_000)) * 4 - Math.max(0, apy - 12) * 1.6 - volatilityPenalty - rewardPenalty)),
   )
-  const liquidity = Math.min(100, Math.max(35, Math.round(50 + Math.log10(Math.max(tvl, 10_000)) * 8)))
+  // Spread liquidity across the realistic TVL range ($1M -> ~$3B) instead of
+  // saturating at ~100 for anything above a few hundred million.
+  const liquidity = Math.min(100, Math.max(30, Math.round(((Math.log10(Math.max(tvl, 1_000_000)) - 6) / 3.5) * 65 + 35)))
   const stability = Math.min(100, Math.max(20, Math.round(96 - Math.abs(apyPct1D ?? 0) * 6 - Math.max(0, apy - 10) * 1.4)))
   const sustainability = Math.min(100, Math.max(24, Math.round(88 - ((apyReward ?? 0) / Math.max(apy, 1)) * 50 - Math.max(0, apy - 12) * 2)))
   const completeness = [apyBase !== undefined, apyReward !== undefined, apyPct1D !== undefined, apyMean30d !== undefined].filter(Boolean).length * 25
@@ -107,5 +110,6 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
       sustainability,
       completeness,
     },
+    safety: computeSafetyGrade({ liquidity, stability, sustainability, completeness }),
   }
 }

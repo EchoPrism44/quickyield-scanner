@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { MarketingNav } from '../components/marketing-nav'
+import { computeSafetyGrade } from '../lib/grade'
 import type { Opportunity } from '../lib/types'
 
 const fallbackOpportunities: Opportunity[] = [
@@ -96,11 +97,9 @@ const pillars = [
   { t: 'Data completeness', b: 'How much history and market context backs the score?' },
 ]
 
-function gradeFor(confidence: number): { letter: string; cls: string } {
-  if (confidence >= 90) return { letter: 'A', cls: 'ql-grade-a' }
-  if (confidence >= 80) return { letter: 'B', cls: 'ql-grade-b' }
-  if (confidence >= 68) return { letter: 'C', cls: 'ql-grade-c' }
-  return { letter: 'D', cls: 'ql-grade-d' }
+function gradeFor(item: Opportunity): { letter: string; cls: string } {
+  const letter = (item.safety ?? computeSafetyGrade(item.scoreBreakdown)).letter
+  return { letter, cls: `ql-grade-${letter.toLowerCase()}` }
 }
 
 function trendText(item: Opportunity) {
@@ -144,7 +143,7 @@ function LiveTerminal({ rows }: { rows: Opportunity[] }) {
         <span>Pool</span><span>APY</span><span>Grade</span><span>24h</span>
       </div>
       {rows.map((item, i) => {
-        const grade = gradeFor(item.confidence)
+        const grade = gradeFor(item)
         const t = trendText(item)
         return (
           <div className="ql-trow" key={item.id} style={{ animationDelay: `${i * 0.08}s` }}>
@@ -358,7 +357,7 @@ export default function HomePage() {
               </div>
               <div className="ql-shot-main">
                 {opportunities.slice(0, 6).map((item) => {
-                  const grade = gradeFor(item.confidence)
+                  const grade = gradeFor(item)
                   const t = trendText(item)
                   return (
                     <div className="ql-shot-row" key={item.id}>

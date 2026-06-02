@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { categories, chains, timeCosts } from '../lib/constants'
 import { fetchSparkline, renderSparklineSvg } from '../lib/chart'
+import { safetyGradeOf } from '../lib/grade'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
 import { AppIntro } from './app-intro'
 import { BrandLogo } from './brand-logo'
@@ -362,6 +363,16 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   )
 }
 
+function GradeChip({ item, showLabel = true }: { item: Opportunity; showLabel?: boolean }) {
+  const g = safetyGradeOf(item)
+  return (
+    <span className="qy-grade-cell" title={`Safety Grade ${g.letter} (${g.score}/100) — ${g.summary}`}>
+      <span className={`qy-grade qy-grade-${g.letter.toLowerCase()}`}>{g.letter}</span>
+      {showLabel ? <small>{g.label}</small> : null}
+    </span>
+  )
+}
+
 function SparklineCell({ poolId }: { poolId: string }) {
   const [svg, setSvg] = useState<string | null>(null)
 
@@ -637,10 +648,8 @@ function DiscoverView({
             </div>
             <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
             <div className="qy-terminal-metric">
-              <span className={`qy-tag-mini ${item.risk === 'Low' ? 'qy-risk-low' : 'qy-risk-medium'}`}>
-                {item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}
-              </span>
-              <span className="qy-terminal-submetric">{item.confidence} safety</span>
+              <GradeChip item={item} />
+              <span className="qy-terminal-submetric">{item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}</span>
             </div>
             <div className="qy-terminal-metric">
               <strong>{item.chain}</strong>
@@ -671,7 +680,7 @@ function DiscoverView({
                   <p>{item.asset} / {item.chain}</p>
                 </div>
               </div>
-              <span className={`qy-tag-mini ${item.risk === 'Low' ? 'qy-risk-low' : 'qy-risk-medium'}`}>{item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}</span>
+              <GradeChip item={item} />
             </div>
             <div className="qy-pool-card-metrics">
               <div><span>APY</span><strong>{item.apy.toFixed(2)}%</strong></div>
