@@ -37,3 +37,6 @@ node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# TypeScript incremental build cache (generated, causes conflicts between branches)
+tsconfig.tsbuildinfo
