@@ -428,6 +428,7 @@ export default function HomePage() {
               <ul>
                 <li><a href="#how">How it works</a></li>
                 <li><a href="#features">Safety Grade</a></li>
+                <li><Link href="/yields">Best yields</Link></li>
                 <li><Link href="/terminal">Launch terminal</Link></li>
               </ul>
             </div>
