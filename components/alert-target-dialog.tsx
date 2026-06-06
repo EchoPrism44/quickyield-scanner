@@ -14,6 +14,7 @@ export type AlertDraft = {
   maxRisk: 'Low' | 'Medium'
   minConfidence: number
   frequency: 'instant' | 'daily' | 'weekly'
+  condition: 'apy-above' | 'apy-below'
 }
 
 export function alertDraftFromOpportunity(item?: Opportunity, fallback?: { chain?: string; category?: string }): AlertDraft {
@@ -26,7 +27,16 @@ export function alertDraftFromOpportunity(item?: Opportunity, fallback?: { chain
     maxRisk: item?.risk ?? 'Low',
     minConfidence: item ? Math.max(70, item.confidence - 5) : 75,
     frequency: 'daily',
+    condition: 'apy-above',
   }
+}
+
+function describeAlert(draft: AlertDraft): string {
+  const subject = draft.asset.trim() ? draft.asset.trim().toUpperCase() : 'any pool'
+  const direction = draft.condition === 'apy-below' ? 'drops to or below' : 'rises to or above'
+  const where = draft.chain && draft.chain !== 'All chains' ? `on ${draft.chain}` : 'on any chain'
+  const risk = draft.maxRisk === 'Low' ? 'lower-risk only' : 'low or medium risk'
+  return `Alert me when ${subject} APY ${direction} ${draft.minApy}% ${where}, ${risk}, safety ≥ ${draft.minConfidence}.`
 }
 
 export function AlertTargetDialog({
@@ -90,7 +100,7 @@ export function AlertTargetDialog({
     try {
       await onSubmit({
         ...draft,
-        name: draft.name.trim() || `${draft.asset || 'Yield'} APY > ${draft.minApy}%`,
+        name: draft.name.trim() || `${draft.asset || 'Yield'} APY ${draft.condition === 'apy-below' ? '<' : '>'} ${draft.minApy}%`,
         asset: draft.asset.trim(),
       })
     } finally {
@@ -118,6 +128,26 @@ export function AlertTargetDialog({
           </button>
         </div>
         <div className="qy-modal-body qy-alert-dialog-body">
+          <p className="qy-alert-preview" aria-live="polite">{describeAlert(draft)}</p>
+
+          <fieldset className="qy-alert-frequency">
+            <legend>Trigger when APY…</legend>
+            {([
+              { key: 'apy-above', label: 'Rises above' },
+              { key: 'apy-below', label: 'Drops below' },
+            ] as const).map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                className={`qy-chip ${draft.condition === item.key ? 'active-signal' : ''}`}
+                onClick={() => patch({ condition: item.key })}
+                aria-pressed={draft.condition === item.key}
+              >
+                {item.label}
+              </button>
+            ))}
+          </fieldset>
+
           <label>
             <span>Name</span>
             <input className="qy-input" value={draft.name} maxLength={80} onChange={(event) => patch({ name: event.target.value })} />
@@ -129,9 +159,9 @@ export function AlertTargetDialog({
               <input className="qy-input" value={draft.asset} maxLength={16} placeholder="USDC, ETH..." onChange={(event) => patch({ asset: event.target.value.toUpperCase() })} />
             </label>
             <label>
-              <span>Minimum APY</span>
+              <span>APY threshold (%)</span>
               <input className="qy-input" type="number" min={0} max={100} step={0.1} value={draft.minApy} onChange={(event) => patch({ minApy: Number(event.target.value) })} />
-              <small>Only notify when a matching pool is at or above this APY.</small>
+              <small>{draft.condition === 'apy-below' ? 'Notify when a matching pool falls to or below this APY (downside watch).' : 'Notify when a matching pool is at or above this APY.'}</small>
             </label>
             <label>
               <span>Chain</span>

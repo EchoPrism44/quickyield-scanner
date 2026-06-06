@@ -58,6 +58,7 @@ export const alertRules = pgTable('alert_rules', {
   maxRisk: text('max_risk').notNull(),
   minConfidence: integer('min_confidence').notNull(),
   frequency: text('frequency').notNull(),
+  condition: text('condition').default('apy-above').notNull(),
   enabled: boolean('enabled').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })

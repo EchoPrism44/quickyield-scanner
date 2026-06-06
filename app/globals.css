@@ -521,6 +521,15 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   color: var(--ink-mute); font-size: 10px;
 }
 .qy-alert-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.qy-alert-preview {
+  border: 1px solid rgba(255, 107, 53, 0.25);
+  background: rgba(255, 107, 53, 0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
 .qy-alert-frequency {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
   margin: 0; padding: 0; border: 0;
