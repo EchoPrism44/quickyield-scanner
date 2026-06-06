@@ -263,6 +263,34 @@ export type AlertActivity = {
   createdAt: string
 }
 
+export type Position = {
+  id: string
+  userId: string
+  opportunityId: string
+  platform: string
+  asset: string
+  chain: string
+  amountUsd: number
+  entryApy: number
+  createdAt: string
+}
+
+export type PositionView = Position & {
+  current: {
+    apy: number
+    tvl: string
+    safety: SafetyGrade
+    logoUrl?: string
+  } | null
+}
+
+export type PortfolioSummary = {
+  positionCount: number
+  totalUsd: number
+  blendedApy: number
+  projectedAnnualUsd: number
+}
+
 export type PoolDetail = {
   opportunity: Opportunity
   history: OpportunitySnapshot[]

@@ -3,16 +3,19 @@
 import { useEffect, useState } from 'react'
 import { fetchSparkline, renderSparklineSvg } from '../../lib/chart'
 import { safetyGradeOf } from '../../lib/grade'
-import type { Opportunity } from '../../lib/types'
+import type { Opportunity, SafetyGrade } from '../../lib/types'
 
-export function GradeChip({ item, showLabel = true }: { item: Opportunity; showLabel?: boolean }) {
-  const g = safetyGradeOf(item)
+export function GradeBadge({ grade, showLabel = true }: { grade: SafetyGrade; showLabel?: boolean }) {
   return (
-    <span className="qy-grade-cell" title={`Safety Grade ${g.letter} (${g.score}/100) — ${g.summary}`}>
-      <span className={`qy-grade qy-grade-${g.letter.toLowerCase()}`}>{g.letter}</span>
-      {showLabel ? <small>{g.label}</small> : null}
+    <span className="qy-grade-cell" title={`Safety Grade ${grade.letter} (${grade.score}/100) — ${grade.summary}`}>
+      <span className={`qy-grade qy-grade-${grade.letter.toLowerCase()}`}>{grade.letter}</span>
+      {showLabel ? <small>{grade.label}</small> : null}
     </span>
   )
+}
+
+export function GradeChip({ item, showLabel = true }: { item: Opportunity; showLabel?: boolean }) {
+  return <GradeBadge grade={safetyGradeOf(item)} showLabel={showLabel} />
 }
 
 export function SparklineCell({ poolId }: { poolId: string }) {
