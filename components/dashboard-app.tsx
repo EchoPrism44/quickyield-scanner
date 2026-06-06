@@ -312,6 +312,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               onConnectTelegram={connectTelegram}
               onSendTest={sendTestNotification}
               testingNotification={testingNotification}
+              digestEnabled={data.settings.digestEnabled ?? true}
             />
           )}
         </div>

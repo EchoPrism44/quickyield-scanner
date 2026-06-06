@@ -419,6 +419,22 @@ export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
     })))
 }
 
+export async function getAllUsersForDigest(): Promise<{ clerkUserId: string; email: string; watchlistIds: string[] }[]> {
+  if (!hasDatabase()) return []
+  const db = getDb()
+  const rows = await db.select().from(users)
+  const eligible = rows
+    .map((row) => ({ clerkUserId: row.clerkUserId, email: row.email, settings: parseSettings(row.settingsJson) }))
+    .filter((u) => u.settings.digestEnabled && u.email)
+  const results = await Promise.all(
+    eligible.map(async (u) => {
+      const watchlist = await getWatchlist(u.clerkUserId)
+      return { clerkUserId: u.clerkUserId, email: u.email as string, watchlistIds: watchlist }
+    }),
+  )
+  return results
+}
+
 export async function getCachedOpportunities() {
   if (!hasDatabase()) return memory.opportunities
   const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt))

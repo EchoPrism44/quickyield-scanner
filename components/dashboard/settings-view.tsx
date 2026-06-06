@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, ShieldCheck } from 'lucide-react'
+import { Bell, Mail, ShieldCheck } from 'lucide-react'
 import type { DashboardUser, NotificationStatus, UserSettings } from '../../lib/types'
 
 export function SettingsView({
@@ -13,6 +13,7 @@ export function SettingsView({
   onConnectTelegram,
   onSendTest,
   testingNotification,
+  digestEnabled,
 }: {
   user: DashboardUser
   notifications: NotificationStatus
@@ -23,6 +24,7 @@ export function SettingsView({
   onConnectTelegram: () => Promise<void>
   onSendTest: () => Promise<void>
   testingNotification: boolean
+  digestEnabled: boolean
 }) {
   return (
     <section className="qy-page" data-testid="settings-page">
@@ -99,6 +101,25 @@ export function SettingsView({
               <Bell size={14} />
               {testingNotification ? 'Sending...' : 'Send test alert'}
             </button>
+          </div>
+        </section>
+
+        <section className="qy-set-section">
+          <h3><Mail size={16} /> Weekly digest</h3>
+          <p>Every Sunday morning — your watchlist APYs, grade changes, and the top 3 safe picks of the week.</p>
+          <div className="qy-set-row">
+            <div className="qy-set-row-info">
+              <strong>Safe Yield digest</strong>
+              <span>Sent to {user.email} each Sunday at 08:00 UTC.</span>
+            </div>
+            <button
+              type="button"
+              className={`qy-toggle ${digestEnabled ? 'on' : ''}`}
+              role="switch"
+              aria-checked={digestEnabled}
+              aria-label="Toggle weekly digest"
+              onClick={() => onSave({ digestEnabled: !digestEnabled })}
+            />
           </div>
         </section>
 

@@ -11,6 +11,7 @@ export const defaultSettings = {
   category: 'All categories',
   emailOptIn: true,
   disclosureAccepted: false,
+  digestEnabled: true,
 }
 
 export const WATCHLIST_LIMIT = 25

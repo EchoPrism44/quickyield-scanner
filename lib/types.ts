@@ -182,6 +182,7 @@ export type UserSettings = {
   category: string
   emailOptIn: boolean
   disclosureAccepted: boolean
+  digestEnabled: boolean
 }
 
 export type DashboardUser = {

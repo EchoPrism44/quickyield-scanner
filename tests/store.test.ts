@@ -25,6 +25,7 @@ const defaultSettings: UserSettings = {
   category: 'All categories',
   emailOptIn: true,
   disclosureAccepted: false,
+  digestEnabled: true,
 }
 
 describe('store CRUD operations', () => {
