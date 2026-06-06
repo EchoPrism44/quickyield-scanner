@@ -14,7 +14,9 @@ function loadEnvFile(file: string) {
     if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1)
     }
-    if (process.env[match[1]] === undefined) process.env[match[1]] = value
+    // Skip empty values so a blank duplicate line can't clobber a real one
+    // (Vercel pulls sensitive vars like DATABASE_URL down empty).
+    if (value !== '') process.env[match[1]] = value
   }
 }
 loadEnvFile('.env.local')
