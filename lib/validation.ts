@@ -15,6 +15,11 @@ export const alertRuleInput = z.object({
 
 export const alertRulePatchInput = alertRuleInput.partial()
 
+export const positionInput = z.object({
+  opportunityId: z.string().trim().min(1),
+  amountUsd: z.coerce.number().min(1).max(100_000_000),
+})
+
 export const settingsInput = z.object({
   capital: z.coerce.number().min(25).max(100_000).optional(),
   chain: z.string().optional(),

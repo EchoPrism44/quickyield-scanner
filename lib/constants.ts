@@ -15,3 +15,4 @@ export const defaultSettings = {
 
 export const WATCHLIST_LIMIT = 25
 export const ALERT_LIMIT = 10
+export const POSITION_LIMIT = 30

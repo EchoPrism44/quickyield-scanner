@@ -1,9 +1,10 @@
 import { defaultSettings } from './constants'
-import type { AlertActivity, AlertRule, NotificationChannel, Opportunity, OpportunitySnapshot, UserSettings } from './types'
+import type { AlertActivity, AlertRule, NotificationChannel, Opportunity, OpportunitySnapshot, Position, UserSettings } from './types'
 
 export const memory = {
   opportunities: [] as Opportunity[],
   snapshots: new Map<string, OpportunitySnapshot[]>(),
+  positions: new Map<string, Position[]>(),
   watchlists: new Map<string, string[]>([['local-beta-user', ['curated-jito-sol', 'curated-aave-usdc-base']]]),
   settings: new Map<string, UserSettings>([['local-beta-user', defaultSettings]]),
   notificationChannels: new Map<string, NotificationChannel[]>([

@@ -63,6 +63,18 @@ export const alertRules = pgTable('alert_rules', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+export const positions = pgTable('positions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  opportunityId: text('opportunity_id').notNull(),
+  platform: text('platform').notNull(),
+  asset: text('asset').notNull(),
+  chain: text('chain').notNull(),
+  amountUsd: numeric('amount_usd').notNull(),
+  entryApy: numeric('entry_apy').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 export const alertDeliveries = pgTable('alert_deliveries', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(),

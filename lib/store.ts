@@ -1,9 +1,9 @@
 import { desc, eq, sql } from 'drizzle-orm'
-import { ALERT_LIMIT, WATCHLIST_LIMIT, defaultSettings } from './constants'
+import { ALERT_LIMIT, POSITION_LIMIT, WATCHLIST_LIMIT, defaultSettings } from './constants'
 import { getDb, hasDatabase } from './db'
 import { memory } from './memory-store'
-import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, opportunitySnapshots, telegramConnectTokens, users, watchlistItems } from './schema'
-import type { AlertActivity, AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, UserSettings } from './types'
+import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, opportunitySnapshots, positions, telegramConnectTokens, users, watchlistItems } from './schema'
+import type { AlertActivity, AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, Position, UserSettings } from './types'
 
 function id(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`
@@ -231,6 +231,53 @@ export async function removeWatchlistItem(userId: string, opportunityId: string)
   }
   await getDb().delete(watchlistItems).where(sql`${watchlistItems.userId} = ${userId} and ${watchlistItems.opportunityId} = ${opportunityId}`)
   return getWatchlist(userId)
+}
+
+export async function getPositions(userId: string): Promise<Position[]> {
+  if (!hasDatabase()) return memory.positions.get(userId) ?? []
+  const rows = await getDb().select().from(positions).where(eq(positions.userId, userId)).orderBy(desc(positions.createdAt))
+  return rows.map((row) => ({
+    id: row.id,
+    userId: row.userId,
+    opportunityId: row.opportunityId,
+    platform: row.platform,
+    asset: row.asset,
+    chain: row.chain,
+    amountUsd: Number(row.amountUsd),
+    entryApy: Number(row.entryApy),
+    createdAt: row.createdAt.toISOString(),
+  }))
+}
+
+export async function addPosition(userId: string, input: Omit<Position, 'id' | 'userId' | 'createdAt'>) {
+  const current = await getPositions(userId)
+  if (current.length >= POSITION_LIMIT) return { ok: false as const, error: `Beta portfolio limit is ${POSITION_LIMIT} positions.` }
+  const position: Position = { ...input, id: id('pos'), userId, createdAt: new Date().toISOString() }
+  if (!hasDatabase()) {
+    memory.positions.set(userId, [position, ...current])
+    return { ok: true as const, positions: await getPositions(userId) }
+  }
+  await getDb().insert(positions).values({
+    id: position.id,
+    userId,
+    opportunityId: position.opportunityId,
+    platform: position.platform,
+    asset: position.asset,
+    chain: position.chain,
+    amountUsd: String(position.amountUsd),
+    entryApy: String(position.entryApy),
+  })
+  return { ok: true as const, positions: await getPositions(userId) }
+}
+
+export async function removePosition(userId: string, positionId: string) {
+  if (!hasDatabase()) {
+    const next = (memory.positions.get(userId) ?? []).filter((item) => item.id !== positionId)
+    memory.positions.set(userId, next)
+    return next
+  }
+  await getDb().delete(positions).where(sql`${positions.id} = ${positionId} and ${positions.userId} = ${userId}`)
+  return getPositions(userId)
 }
 
 export async function getAlertRules(userId?: string) {
