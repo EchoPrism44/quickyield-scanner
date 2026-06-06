@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { AlertEmail } from '../emails/alert-email'
+import { DigestEmail } from '../emails/digest-email'
 import type { AlertRule, Opportunity } from './types'
 
 let resend: Resend | null = null
@@ -20,6 +21,25 @@ export async function sendAlertEmail(to: string | undefined, alert: AlertRule, o
     to,
     subject: `QuickYield alert: ${opportunity.name}`,
     react: AlertEmail({ alert, opportunity }),
+  })
+  if (result.error) return { sent: false as const, reason: result.error.message }
+  return { sent: true as const }
+}
+
+export async function sendDigestEmail(
+  to: string,
+  watchlistPools: (Opportunity & { grade?: string })[],
+  topPicks: (Opportunity & { grade?: string })[],
+  weekLabel: string,
+) {
+  const client = getResend()
+  if (!client) return { sent: false as const, reason: 'RESEND_API_KEY is not configured' }
+
+  const result = await client.emails.send({
+    from: process.env.RESEND_FROM ?? 'QuickYield <onboarding@resend.dev>',
+    to,
+    subject: `QuickYield: your weekly Safe Yield digest — ${weekLabel}`,
+    react: DigestEmail({ watchlistPools, topPicks, weekLabel }),
   })
   if (result.error) return { sent: false as const, reason: result.error.message }
   return { sent: true as const }
