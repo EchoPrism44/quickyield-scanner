@@ -19,6 +19,10 @@ const tickerRows = [
   { asset: 'SOL', chain: 'Solana', apy: '6.44%', grade: 'A' },
 ]
 
+// QuickYield QY monogram — kept in sync with public/brand/qy-mark.svg.
+const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 96" fill="none"><defs><linearGradient id="g" x1="10" y1="14" x2="112" y2="86" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB020"/><stop offset=".5" stop-color="#FF7A00"/><stop offset="1" stop-color="#FF6B35"/></linearGradient></defs><g stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><circle cx="46" cy="48" r="30"/><path d="M54 58 70 74"/><path d="M62 26 84 52 106 26"/><path d="M84 52 84 76"/></g></svg>`
+const markDataUri = `data:image/svg+xml;base64,${btoa(markSvg)}`
+
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -38,25 +42,11 @@ export default function OpengraphImage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, backgroundColor: accent }} />
 
         {/* brand row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 10,
-              backgroundColor: accent,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: bg,
-              fontSize: 30,
-              fontWeight: 800,
-            }}
-          >
-            Q
-          </div>
-          <div style={{ display: 'flex', fontSize: 30, fontWeight: 700, color: text, letterSpacing: -0.5 }}>
-            QuickYield
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <img src={markDataUri} width={66} height={53} alt="" />
+          <div style={{ display: 'flex', fontSize: 34, fontWeight: 700, letterSpacing: -1 }}>
+            <span style={{ color: text }}>Quick</span>
+            <span style={{ color: accent }}>Yield</span>
           </div>
           <div
             style={{
