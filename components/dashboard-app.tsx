@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { Bell, Bookmark, Radar, Settings as SettingsIcon } from 'lucide-react'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
-import { AppIntro } from './app-intro'
+import { Onboarding } from './onboarding'
 import { BrandLogo } from './brand-logo'
 import { DiscoverView } from './dashboard/discover-view'
 import { WatchlistView } from './dashboard/watchlist-view'
@@ -222,7 +222,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
 
   return (
     <div className="qy-app qy-terminal-app">
-      <AppIntro />
+      <Onboarding />
       <aside className="qy-aside" data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <BrandLogo href="/" />
