@@ -1,14 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 96" role="img" aria-label="QuickYield">
-  <rect width="430" height="96" rx="22" fill="#050505"/>
-  <path d="M43 21c-15.1 0-27 11.3-27 26.2C16 62.1 27.9 73.4 43 73.4c4.2 0 8.1-.9 11.5-2.6L66 82.3h16.2L64.1 64.2c3.8-4.6 5.9-10.4 5.9-17C70 32.3 58.1 21 43 21Zm0 12.3c8 0 14 5.8 14 13.9 0 2.9-.8 5.5-2.2 7.7L43.1 43.2H27.7l17.8 17.7c-.8.1-1.6.2-2.5.2-8.1 0-14.1-5.8-14.1-13.9S34.9 33.3 43 33.3Z" fill="url(#orange)"/>
-  <path d="M58.8 34.1H73l8.1 10.4 8.1-10.4H96L87.5 45 96 56h-6.8l-8.1-10.2L73 56h-6.8l8.5-11-15.9-10.9Z" fill="url(#orange)"/>
-  <text x="124" y="59" fill="#F4F4F5" font-family="Manrope, Inter, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="-1.2">Quick</text>
-  <text x="224" y="59" fill="url(#orange)" font-family="Manrope, Inter, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="-1.2">Yield</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 96" fill="none" role="img" aria-label="QuickYield">
   <defs>
-    <linearGradient id="orange" x1="16" y1="21" x2="372" y2="82" gradientUnits="userSpaceOnUse">
+    <linearGradient id="qyOrange" x1="10" y1="14" x2="112" y2="86" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FFB020"/>
-      <stop offset=".45" stop-color="#FF7A00"/>
+      <stop offset=".5" stop-color="#FF7A00"/>
+      <stop offset="1" stop-color="#FF6B35"/>
+    </linearGradient>
+    <linearGradient id="qyOrangeText" x1="300" y1="30" x2="410" y2="66" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB020"/>
+      <stop offset=".5" stop-color="#FF7A00"/>
       <stop offset="1" stop-color="#FF6B35"/>
     </linearGradient>
   </defs>
+  <g stroke="url(#qyOrange)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="46" cy="48" r="30"/>
+    <path d="M54 58 70 74"/>
+    <path d="M62 26 84 52 106 26"/>
+    <path d="M84 52 84 76"/>
+  </g>
+  <text x="140" y="60" fill="#F4F4F5" font-family="Manrope, Inter, Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="-1.5">Quick</text>
+  <text x="250" y="60" fill="url(#qyOrangeText)" font-family="Manrope, Inter, Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="-1.5">Yield</text>
 </svg>

@@ -186,121 +186,6 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   color: var(--ink); text-wrap: balance;
 }
 
-/* ============== App intro ============== */
-.qy-intro {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(255,107,53,0.16), transparent 28%),
-    radial-gradient(circle at 50% 58%, rgba(22,241,163,0.09), transparent 32%),
-    #05070a;
-}
-.qy-intro::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 72px 72px;
-  opacity: 0.65;
-}
-.qy-intro-skip {
-  position: absolute;
-  top: 22px;
-  right: 22px;
-  z-index: 2;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.04);
-  color: var(--ink-dim);
-  padding: 8px 13px;
-  font-size: 12px;
-  border-radius: 999px;
-}
-.qy-intro-skip:hover { color: var(--ink); border-color: rgba(255,255,255,0.24); }
-.qy-intro-orbit {
-  position: absolute;
-  width: min(520px, 82vw);
-  aspect-ratio: 1;
-  border-radius: 999px;
-  border: 1px solid rgba(255,107,53,0.16);
-  animation: qy-intro-spin 8s linear infinite;
-}
-.qy-intro-orbit span {
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: var(--signal);
-  box-shadow: 0 0 22px rgba(255,107,53,0.8);
-}
-.qy-intro-orbit span:first-child { top: -5px; left: 50%; }
-.qy-intro-orbit span:last-child { bottom: 14%; right: 4%; background: var(--safe); box-shadow: 0 0 22px rgba(22,241,163,0.7); }
-.qy-intro-panel {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  gap: 22px;
-  width: min(430px, calc(100vw - 40px));
-  padding: 36px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(8,12,18,0.78);
-  box-shadow: 0 34px 120px rgba(0,0,0,0.55);
-  backdrop-filter: blur(18px);
-}
-.qy-logo-intro {
-  transform: scale(1.25);
-  transform-origin: center;
-  margin: 8px 0;
-}
-.qy-intro-progress {
-  width: 100%;
-  height: 4px;
-  overflow: hidden;
-  background: rgba(255,255,255,0.08);
-}
-.qy-intro-progress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform-origin: left;
-  background: linear-gradient(90deg, var(--signal), var(--safe));
-  animation: qy-intro-progress 3.1s ease forwards;
-}
-.qy-intro-logs {
-  width: 100%;
-  display: grid;
-  gap: 8px;
-}
-.qy-intro-logs span {
-  color: var(--ink-mute);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  transition: color 0.2s, transform 0.2s;
-}
-.qy-intro-logs span.active {
-  color: var(--safe);
-  transform: translateX(4px);
-}
-@keyframes qy-intro-spin { to { transform: rotate(360deg); } }
-@keyframes qy-intro-progress {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .qy-intro-orbit,
-  .qy-intro-progress span {
-    animation: none;
-  }
-}
-
 /* ============== Dashboard layout ============== */
 .qy-app { display: flex; min-height: 100vh; background: var(--bg-page); }
 .qy-aside {
@@ -470,7 +355,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-sparkline-placeholder { color: var(--ink-mute); font-family: var(--font-mono); font-size: 10px; }
 
 /* Modal overlay */
-.qy-modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.qy-modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(3,6,10,0.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+@media (prefers-reduced-motion: reduce) { .qy-modal-overlay { backdrop-filter: none; -webkit-backdrop-filter: none; } }
 .qy-modal { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; max-width: 520px; width: 100%; max-height: 80vh; overflow-y: auto; }
 .qy-modal-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 24px; border-bottom: 1px solid var(--line); }
 .qy-modal-header h2 { font-family: var(--font-display); font-size: 18px; color: var(--ink); margin: 0; }

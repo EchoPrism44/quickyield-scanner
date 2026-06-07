@@ -1,3 +1,35 @@
+export type PoolChartPoint = {
+  /** Unix ms timestamp. */
+  t: number
+  apy: number
+  tvlUsd: number
+}
+
+/**
+ * Real per-pool history straight from DeFiLlama (daily points, back to pool
+ * inception). Gives genuine 30d/90d depth immediately, instead of waiting for
+ * our own snapshots to accumulate. Returns [] for curated pools or on failure.
+ */
+export async function fetchPoolChart(poolId: string): Promise<PoolChartPoint[]> {
+  const apiPoolId = poolId.replace(/^live-/, '')
+  if (poolId.startsWith('curated-')) return []
+  try {
+    const r = await fetch(`https://yields.llama.fi/chart/${apiPoolId}`, {
+      signal: AbortSignal.timeout(6000),
+      next: { revalidate: 3600 },
+    })
+    if (!r.ok) return []
+    const json = await r.json()
+    const data = json.data as { timestamp: string; apy: number | null; tvlUsd: number | null }[] | undefined
+    if (!data || data.length === 0) return []
+    return data
+      .map((d) => ({ t: new Date(d.timestamp).getTime(), apy: Number(d.apy ?? 0), tvlUsd: Number(d.tvlUsd ?? 0) }))
+      .filter((d) => Number.isFinite(d.t))
+  } catch {
+    return []
+  }
+}
+
 export async function fetchSparkline(poolId: string): Promise<number[]> {
   const apiPoolId = poolId.replace(/^live-/, '')
   try {
