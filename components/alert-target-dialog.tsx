@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Bell, X } from 'lucide-react'
 import { categories, chains } from '../lib/constants'
-import type { Opportunity } from '../lib/types'
+import type { AlertCondition, Opportunity } from '../lib/types'
 
 export type AlertDraft = {
   name: string
@@ -14,7 +14,32 @@ export type AlertDraft = {
   maxRisk: 'Low' | 'Medium'
   minConfidence: number
   frequency: 'instant' | 'daily' | 'weekly'
-  condition: 'apy-above' | 'apy-below'
+  condition: AlertCondition
+}
+
+const conditionOptions: { key: AlertCondition; label: string }[] = [
+  { key: 'apy-above', label: 'APY rises above' },
+  { key: 'apy-below', label: 'APY drops below' },
+  { key: 'apy-drop', label: 'APY drops fast' },
+  { key: 'tvl-drop', label: 'TVL drains' },
+  { key: 'reward-spike', label: 'Reward-reliant' },
+]
+
+/** Per-condition copy for the threshold input and its helper text. */
+function thresholdMeta(condition: AlertCondition): { label: string; help: string } {
+  switch (condition) {
+    case 'apy-below':
+      return { label: 'APY threshold (%)', help: 'Notify when a matching pool falls to or below this APY (downside watch).' }
+    case 'apy-drop':
+      return { label: 'Drop in 24h (pts)', help: 'Notify when APY falls by at least this many points in a day — a sudden yield collapse.' }
+    case 'tvl-drop':
+      return { label: 'TVL drop (%)', help: 'Notify when the pool loses at least this share of TVL since the last scan — a liquidity exit.' }
+    case 'reward-spike':
+      return { label: 'Reward share (%)', help: 'Notify when incentive tokens make up at least this share of APY — often an unsustainable trap.' }
+    case 'apy-above':
+    default:
+      return { label: 'APY threshold (%)', help: 'Notify when a matching pool is at or above this APY.' }
+  }
 }
 
 export function alertDraftFromOpportunity(item?: Opportunity, fallback?: { chain?: string; category?: string }): AlertDraft {
@@ -33,10 +58,23 @@ export function alertDraftFromOpportunity(item?: Opportunity, fallback?: { chain
 
 function describeAlert(draft: AlertDraft): string {
   const subject = draft.asset.trim() ? draft.asset.trim().toUpperCase() : 'any pool'
-  const direction = draft.condition === 'apy-below' ? 'drops to or below' : 'rises to or above'
   const where = draft.chain && draft.chain !== 'All chains' ? `on ${draft.chain}` : 'on any chain'
   const risk = draft.maxRisk === 'Low' ? 'lower-risk only' : 'low or medium risk'
-  return `Alert me when ${subject} APY ${direction} ${draft.minApy}% ${where}, ${risk}, safety ≥ ${draft.minConfidence}.`
+  const gates = `, ${risk}, safety ≥ ${draft.minConfidence}`
+
+  switch (draft.condition) {
+    case 'apy-below':
+      return `Alert me when ${subject} APY drops to or below ${draft.minApy}% ${where}${gates}.`
+    case 'apy-drop':
+      return `Alert me when ${subject} APY falls ${draft.minApy}+ points in 24h ${where}.`
+    case 'tvl-drop':
+      return `Alert me when ${subject} loses ${draft.minApy}%+ of its TVL since the last scan ${where}.`
+    case 'reward-spike':
+      return `Alert me when ${subject} relies on reward tokens for ${draft.minApy}%+ of its APY ${where}.`
+    case 'apy-above':
+    default:
+      return `Alert me when ${subject} APY rises to or above ${draft.minApy}% ${where}${gates}.`
+  }
 }
 
 export function AlertTargetDialog({
@@ -131,11 +169,8 @@ export function AlertTargetDialog({
           <p className="qy-alert-preview" aria-live="polite">{describeAlert(draft)}</p>
 
           <fieldset className="qy-alert-frequency">
-            <legend>Trigger when APY…</legend>
-            {([
-              { key: 'apy-above', label: 'Rises above' },
-              { key: 'apy-below', label: 'Drops below' },
-            ] as const).map((item) => (
+            <legend>Trigger when…</legend>
+            {conditionOptions.map((item) => (
               <button
                 key={item.key}
                 type="button"
@@ -159,9 +194,9 @@ export function AlertTargetDialog({
               <input className="qy-input" value={draft.asset} maxLength={16} placeholder="USDC, ETH..." onChange={(event) => patch({ asset: event.target.value.toUpperCase() })} />
             </label>
             <label>
-              <span>APY threshold (%)</span>
+              <span>{thresholdMeta(draft.condition).label}</span>
               <input className="qy-input" type="number" min={0} max={100} step={0.1} value={draft.minApy} onChange={(event) => patch({ minApy: Number(event.target.value) })} />
-              <small>{draft.condition === 'apy-below' ? 'Notify when a matching pool falls to or below this APY (downside watch).' : 'Notify when a matching pool is at or above this APY.'}</small>
+              <small>{thresholdMeta(draft.condition).help}</small>
             </label>
             <label>
               <span>Chain</span>

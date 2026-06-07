@@ -2,9 +2,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { alertMatchesOpportunity } from '../../../../lib/alerts'
 import { sendAlertEmail } from '../../../../lib/email'
 import { scanAndCacheYields } from '../../../../lib/opportunities'
-import { getAlertRules, getNotificationChannels, recordAlertDelivery, wasAlertDelivered } from '../../../../lib/store'
+import { getAlertRules, getNotificationChannels, getOpportunitySnapshots, recordAlertDelivery, wasAlertDelivered } from '../../../../lib/store'
 import { sendTelegramAlert } from '../../../../lib/telegram'
-import type { AlertRule } from '../../../../lib/types'
+import type { AlertRule, Opportunity } from '../../../../lib/types'
+
+/**
+ * Find the first opportunity matching an alert. For tvl-drop we need the pool's
+ * TVL at the previous scan, so we look up its snapshot history (the current scan
+ * was already persisted by scanAndCacheYields, so index -2 is the prior value).
+ */
+async function findMatch(alert: AlertRule, opportunities: Opportunity[]): Promise<Opportunity | undefined> {
+  if (alert.condition !== 'tvl-drop') {
+    return opportunities.find((item) => alertMatchesOpportunity(alert, item))
+  }
+  for (const item of opportunities) {
+    const snaps = await getOpportunitySnapshots(item.id, 2)
+    const previousTvlUsd = snaps.length >= 2 ? snaps[snaps.length - 2].tvlUsd : undefined
+    if (alertMatchesOpportunity(alert, item, { previousTvlUsd })) return item
+  }
+  return undefined
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -28,11 +45,11 @@ export async function GET(request: NextRequest) {
   let duplicatesSkipped = 0
 
   for (const alert of alerts.filter((item) => item.enabled)) {
-    const match = scan.opportunities.find((item) => alertMatchesOpportunity(alert, item))
+    const match = await findMatch(alert, scan.opportunities)
 
     if (!match) continue
     matched += 1
-    const deliveryKey = `${alert.id}:${match.id}:${Math.round(match.apy * 10)}`
+    const deliveryKey = `${alert.id}:${match.id}:${alert.condition}:${Math.round(match.apy * 10)}`
     if (await wasAlertDelivered(deliveryKey)) {
       duplicatesSkipped += 1
       continue

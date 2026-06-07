@@ -26,7 +26,9 @@ function dbAlertToAlert(row: typeof alertRules.$inferSelect): AlertRule {
     maxRisk: row.maxRisk === 'Medium' ? 'Medium' : 'Low',
     minConfidence: row.minConfidence,
     frequency: row.frequency === 'instant' || row.frequency === 'weekly' ? row.frequency : 'daily',
-    condition: row.condition === 'apy-below' ? 'apy-below' : 'apy-above',
+    condition: (['apy-below', 'apy-drop', 'tvl-drop', 'reward-spike'] as const).includes(row.condition as never)
+      ? (row.condition as AlertRule['condition'])
+      : 'apy-above',
     enabled: row.enabled,
     createdAt: row.createdAt.toISOString(),
   }

@@ -3,7 +3,7 @@ export type TimeCost = '5 min' | '15 min' | 'Ongoing'
 export type Trend = 'up' | 'down' | 'flat'
 export type DataStatus = 'live' | 'fallback'
 export type AlertFrequency = 'instant' | 'daily' | 'weekly'
-export type AlertCondition = 'apy-above' | 'apy-below'
+export type AlertCondition = 'apy-above' | 'apy-below' | 'apy-drop' | 'tvl-drop' | 'reward-spike'
 export type NotificationChannelType = 'email' | 'telegram'
 
 export type QuickYieldScoreBreakdown = {

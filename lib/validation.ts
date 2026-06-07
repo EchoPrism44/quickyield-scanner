@@ -9,7 +9,7 @@ export const alertRuleInput = z.object({
   maxRisk: z.enum(['Low', 'Medium']).default('Low'),
   minConfidence: z.coerce.number().min(0).max(100).default(80),
   frequency: z.enum(['instant', 'daily', 'weekly']).default('daily'),
-  condition: z.enum(['apy-above', 'apy-below']).default('apy-above'),
+  condition: z.enum(['apy-above', 'apy-below', 'apy-drop', 'tvl-drop', 'reward-spike']).default('apy-above'),
   enabled: z.boolean().default(true),
 })
 
