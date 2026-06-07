@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation'
 import { ArrowLeftRight, ExternalLink } from 'lucide-react'
 import { ProtocolLogo } from '../../../../components/protocol-logo'
 import { PoolDetailActions } from '../../../../components/pool-detail-actions'
+import { PoolHistoryChart } from '../../../../components/pool-history-chart'
 import { requireDashboardUserId } from '../../../../lib/auth'
+import { fetchPoolChart, type PoolChartPoint } from '../../../../lib/chart'
 import { getOpportunities, getRankReason } from '../../../../lib/opportunities'
 import { safetyGradeOf } from '../../../../lib/grade'
 import { formatTvl } from '../../../../lib/scoring'
@@ -24,13 +26,12 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
   const { opportunity, history, relatedByProtocol, relatedByAsset, relatedByChain } = detail
   const grade = safetyGradeOf(opportunity)
 
-  const minApy = history.length ? Math.min(...history.map((item) => item.apy)) : opportunity.apy
-  const maxApy = history.length ? Math.max(...history.map((item) => item.apy)) : opportunity.apy
-  const chartPoints = history.map((item, index) => {
-    const x = history.length === 1 ? 8 : 8 + (index / (history.length - 1)) * 584
-    const y = 152 - (((item.apy - minApy) / (maxApy - minApy || 1)) * 120)
-    return `${x},${y}`
-  }).join(' ')
+  // Prefer real DeFiLlama history (months of depth); fall back to our snapshots.
+  const liveChart = await fetchPoolChart(opportunity.id)
+  const chartData: PoolChartPoint[] = liveChart.length >= 2
+    ? liveChart
+    : history.map((item) => ({ t: new Date(item.capturedAt).getTime(), apy: item.apy, tvlUsd: item.tvlUsd }))
+  const chartSource: 'live' | 'snapshots' = liveChart.length >= 2 ? 'live' : 'snapshots'
 
   return (
     <main className="qy-detail-page">
@@ -89,21 +90,10 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
         <section className="qy-detail-layout">
           <article className="qy-detail-panel">
             <div className="qy-detail-panel-head">
-              <h2>Stored APY history</h2>
-              <span className="qy-mono">{history.length} snapshots</span>
+              <h2>APY &amp; TVL history</h2>
+              <span className="qy-mono">{chartSource === 'live' ? 'DeFiLlama' : `${history.length} snapshots`}</span>
             </div>
-            {history.length > 1 ? (
-              <svg className="qy-detail-chart" viewBox="0 0 600 160" role="img" aria-label="APY history">
-                <path d="M8 152H592" stroke="rgba(255,255,255,0.08)" />
-                <path d="M8 32H592" stroke="rgba(255,255,255,0.05)" />
-                <polyline points={chartPoints} fill="none" stroke="#ff6b35" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            ) : (
-              <div className="qy-empty">
-                <h3>History is still building</h3>
-                <p>Hourly snapshots will make this panel richer as the cron job keeps running.</p>
-              </div>
-            )}
+            <PoolHistoryChart data={chartData} source={chartSource} />
             <div className="qy-detail-history-caption">
               <span>30d avg {opportunity.apyMean30d?.toFixed(2) ?? 'N/A'}%</span>
               <span>Base APY {opportunity.apyBase?.toFixed(2) ?? 'N/A'}%</span>
