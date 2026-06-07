@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useState, type CSSProperties } from 'react'
-import Image from 'next/image'
 
 const accentPairs = [
   ['#ff6b35', '#ffb020'],
@@ -47,7 +46,7 @@ export function ProtocolLogo({
       title={name}
     >
       {showImage && logoUrl ? (
-        <Image src={logoUrl} alt={`${name} logo`} width={size} height={size} onError={() => setImageFailed(true)} />
+        <img src={logoUrl} alt={`${name} logo`} width={size} height={size} loading="lazy" onError={() => setImageFailed(true)} />
       ) : (
         <span className="qy-protocol-fallback">{initials || '?'}</span>
       )}
