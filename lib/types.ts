@@ -68,6 +68,35 @@ export type ScannerHealth = {
   freshnessMinutes?: number
 }
 
+export type GradeBucket = {
+  letter: SafetyGradeLetter
+  count: number
+  pct: number
+}
+
+/** A pool whose APY or TVL moved notably — the "what changed" view. */
+export type MoverRow = {
+  id: string
+  platform: string
+  asset: string
+  chain: string
+  apy: number
+  grade?: SafetyGradeLetter
+  /** Signed change: APY points (24h) for apy movers, TVL % for tvl movers. */
+  change: number
+}
+
+/** A pool ranked by how steady its yield has been. */
+export type StabilityRow = {
+  id: string
+  platform: string
+  asset: string
+  chain: string
+  apy: number
+  grade?: SafetyGradeLetter
+  volatility: number
+}
+
 export type AnalyticsData = {
   history: Array<{
     time: string
@@ -88,6 +117,12 @@ export type AnalyticsData = {
   marketMap: MarketMapCell[]
   scannerHealth: ScannerHealth
   topPools: Pick<Opportunity, 'id' | 'platform' | 'asset' | 'chain' | 'apy' | 'tvlUsd' | 'confidence' | 'volatility'>[]
+  gradeDistribution: GradeBucket[]
+  apyGainers: MoverRow[]
+  apyLosers: MoverRow[]
+  tvlOutflows: MoverRow[]
+  mostStable: StabilityRow[]
+  leastStable: StabilityRow[]
   lastUpdated: string
 }
 

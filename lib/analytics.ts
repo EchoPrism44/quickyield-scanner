@@ -1,7 +1,25 @@
 import { getOpportunities } from './opportunities'
 import { formatTvl } from './scoring'
 import { getAlertActivity, getAlertRules, getCachedOpportunities, getOpportunitySnapshots } from './store'
-import type { AnalyticsData, MarketMapCell, Opportunity, PoolHistoryPoint, ScannerHealth } from './types'
+import type { AnalyticsData, GradeBucket, MarketMapCell, MoverRow, Opportunity, PoolHistoryPoint, ScannerHealth, SafetyGradeLetter, StabilityRow } from './types'
+
+const GRADE_LETTERS: SafetyGradeLetter[] = ['A', 'B', 'C', 'D', 'F']
+
+function moverRow(item: Opportunity, change: number): MoverRow {
+  return { id: item.id, platform: item.platform, asset: item.asset, chain: item.chain, apy: item.apy, grade: item.safety?.letter, change }
+}
+
+function stabilityRow(item: Opportunity): StabilityRow {
+  return { id: item.id, platform: item.platform, asset: item.asset, chain: item.chain, apy: item.apy, grade: item.safety?.letter, volatility: item.volatility }
+}
+
+function buildGradeDistribution(opportunities: Opportunity[]): GradeBucket[] {
+  const total = opportunities.length || 1
+  return GRADE_LETTERS.map((letter) => {
+    const count = opportunities.filter((item) => item.safety?.letter === letter).length
+    return { letter, count, pct: Math.round((count / total) * 100) }
+  })
+}
 
 function formatHourLabel(timestamp: string) {
   return new Date(timestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
@@ -71,6 +89,12 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
         snapshots24h: 0,
       },
       topPools: [],
+      gradeDistribution: buildGradeDistribution([]),
+      apyGainers: [],
+      apyLosers: [],
+      tvlOutflows: [],
+      mostStable: [],
+      leastStable: [],
       lastUpdated: new Date().toISOString(),
     }
   }
@@ -138,6 +162,42 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
     .sort()
     .at(-1) ?? new Date().toISOString()
 
+  // What changed: APY movers from DeFiLlama's 24h change.
+  const withDailyChange = opportunities.filter((item) => item.apyPct1D !== undefined)
+  const apyGainers = withDailyChange
+    .slice()
+    .sort((a, b) => (b.apyPct1D ?? 0) - (a.apyPct1D ?? 0))
+    .slice(0, 6)
+    .filter((item) => (item.apyPct1D ?? 0) > 0)
+    .map((item) => moverRow(item, item.apyPct1D ?? 0))
+  const apyLosers = withDailyChange
+    .slice()
+    .sort((a, b) => (a.apyPct1D ?? 0) - (b.apyPct1D ?? 0))
+    .slice(0, 6)
+    .filter((item) => (item.apyPct1D ?? 0) < 0)
+    .map((item) => moverRow(item, item.apyPct1D ?? 0))
+
+  // TVL outflows: compare each pool's oldest vs newest stored snapshot.
+  const tvlChanges = opportunities
+    .map((item, index) => {
+      const snaps = snapshotLists[index]
+      if (!snaps || snaps.length < 2) return null
+      const first = snaps[0].tvlUsd
+      const last = snaps[snaps.length - 1].tvlUsd
+      if (first <= 0) return null
+      return moverRow(item, ((last - first) / first) * 100)
+    })
+    .filter((row): row is MoverRow => row !== null)
+  const tvlOutflows = tvlChanges
+    .filter((row) => row.change < 0)
+    .sort((a, b) => a.change - b.change)
+    .slice(0, 6)
+
+  // Stability: steadiest decent-yield pools vs the most volatile to watch.
+  const ranked = opportunities.slice().sort((a, b) => a.volatility - b.volatility)
+  const mostStable = ranked.filter((item) => item.apy >= 3).slice(0, 6).map(stabilityRow)
+  const leastStable = ranked.slice().reverse().slice(0, 6).map(stabilityRow)
+
   return {
     history,
     chains,
@@ -157,6 +217,12 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
         confidence: item.confidence,
         volatility: item.volatility,
       })),
+    gradeDistribution: buildGradeDistribution(opportunities),
+    apyGainers,
+    apyLosers,
+    tvlOutflows,
+    mostStable,
+    leastStable,
     lastUpdated,
   }
 }
