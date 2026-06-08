@@ -162,6 +162,8 @@ export type Opportunity = {
   apyBase?: number
   apyReward?: number
   apyPct1D?: number
+  apyPct7D?: number
+  apyPct30D?: number
   apyMean30d?: number
   volatility: number
   dataCompleteness: number
@@ -180,6 +182,8 @@ export type LlamaPool = {
   apyReward?: number
   apyMean30d?: number
   apyPct1D?: number
+  apyPct7D?: number
+  apyPct30D?: number
   stablecoin?: boolean
 }
 

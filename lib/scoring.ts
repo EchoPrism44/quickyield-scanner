@@ -35,6 +35,8 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
   const apyBase = pool.apyBase === undefined ? undefined : Number(pool.apyBase)
   const apyReward = pool.apyReward === undefined ? undefined : Number(pool.apyReward)
   const apyPct1D = pool.apyPct1D === undefined ? undefined : Number(pool.apyPct1D)
+  const apyPct7D = pool.apyPct7D === undefined ? undefined : Number(pool.apyPct7D)
+  const apyPct30D = pool.apyPct30D === undefined ? undefined : Number(pool.apyPct30D)
   const apyMean30d = pool.apyMean30d === undefined ? undefined : Number(pool.apyMean30d)
   const tvl = Number(pool.tvlUsd || 0)
   const volatilityPenalty = Math.abs(Number(pool.apyPct1D ?? 0)) * 1.4
@@ -101,6 +103,8 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     apyBase,
     apyReward,
     apyPct1D,
+    apyPct7D,
+    apyPct30D,
     apyMean30d,
     volatility: Number(Math.abs(apyPct1D ?? 0).toFixed(2)),
     dataCompleteness: completeness,

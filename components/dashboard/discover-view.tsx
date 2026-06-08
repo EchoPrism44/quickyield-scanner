@@ -17,6 +17,13 @@ const presetItems: { key: OpportunityPreset | 'all'; label: string }[] = [
   { key: 'saved', label: 'Saved' },
 ]
 
+/** Signed APY change, colored like CMC (green up / red down). */
+function Delta({ value }: { value?: number }) {
+  if (value === undefined || Number.isNaN(value)) return <span className="qy-terminal-submetric">—</span>
+  const cls = value > 0.01 ? 'qy-wl-up' : value < -0.01 ? 'qy-wl-down' : 'qy-wl-flat'
+  return <strong className={cls}>{value > 0 ? '+' : ''}{value.toFixed(2)}%</strong>
+}
+
 export function DiscoverView({
   data,
   watched,
@@ -60,7 +67,7 @@ export function DiscoverView({
   onLoadMore: () => void
   triggeredAlerts: number
 }) {
-  const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'volatility' | 'updated'>('confidence')
+  const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'change1d' | 'change7d' | 'updated'>('confidence')
   const [heatmapMetric, setHeatmapMetric] = useState<'apy' | 'safety'>('apy')
 
   const sorted = useMemo(() => {
@@ -68,7 +75,8 @@ export function DiscoverView({
     items.sort((a, b) => {
       if (sortBy === 'apy') return b.apy - a.apy
       if (sortBy === 'tvl') return b.tvlUsd - a.tvlUsd
-      if (sortBy === 'volatility') return a.volatility - b.volatility
+      if (sortBy === 'change1d') return (b.apyPct1D ?? -Infinity) - (a.apyPct1D ?? -Infinity)
+      if (sortBy === 'change7d') return (b.apyPct7D ?? -Infinity) - (a.apyPct7D ?? -Infinity)
       if (sortBy === 'updated') return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
       return b.confidence - a.confidence
     })
@@ -145,6 +153,20 @@ export function DiscoverView({
           >
             {item.key === 'saved' ? <Bookmark size={13} /> : null}
             {item.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="qy-chain-chips" aria-label="Filter by chain">
+        {chains.map((item) => (
+          <button
+            key={item}
+            type="button"
+            className={`qy-chip ${chain === item ? 'active-signal' : ''}`}
+            onClick={() => onChain(item)}
+            aria-pressed={chain === item}
+          >
+            {item}
           </button>
         ))}
       </div>
@@ -238,7 +260,8 @@ export function DiscoverView({
           <span>Protocol</span>
           <span>Asset</span>
           <button type="button" className={`qy-sort-link ${sortBy === 'apy' ? 'active' : ''}`} onClick={() => setSortBy('apy')}>APY</button>
-          <button type="button" className={`qy-sort-link ${sortBy === 'volatility' ? 'active' : ''}`} onClick={() => setSortBy('volatility')}>24h Change</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'change1d' ? 'active' : ''}`} onClick={() => setSortBy('change1d')}>24h</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'change7d' ? 'active' : ''}`} onClick={() => setSortBy('change7d')}>7d</button>
           <button type="button" className={`qy-sort-link ${sortBy === 'tvl' ? 'active' : ''}`} onClick={() => setSortBy('tvl')}>TVL</button>
           <span>Grade</span>
           <span>Chain</span>
@@ -272,8 +295,12 @@ export function DiscoverView({
               <SparklineCell poolId={item.id} />
             </div>
             <div className="qy-terminal-metric">
-              <strong>{item.volatility.toFixed(2)}%</strong>
-              <span className="qy-terminal-submetric">24h move</span>
+              <Delta value={item.apyPct1D} />
+              <span className="qy-terminal-submetric">24h</span>
+            </div>
+            <div className="qy-terminal-metric">
+              <Delta value={item.apyPct7D} />
+              <span className="qy-terminal-submetric">7d</span>
             </div>
             <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
             <div className="qy-terminal-metric">
@@ -313,9 +340,9 @@ export function DiscoverView({
             </div>
             <div className="qy-pool-card-metrics">
               <div><span>APY</span><strong>{item.apy.toFixed(2)}%</strong></div>
-              <div><span>24h</span><strong>{item.volatility.toFixed(2)}%</strong></div>
+              <div><span>24h</span><Delta value={item.apyPct1D} /></div>
+              <div><span>7d</span><Delta value={item.apyPct7D} /></div>
               <div><span>TVL</span><strong>{item.tvl}</strong></div>
-              <div><span>Risk</span><strong>{item.risk}</strong></div>
               <div><span>Chain</span><strong>{item.chain}</strong></div>
               <div><span>Safety</span><strong>{item.confidence}</strong></div>
             </div>
