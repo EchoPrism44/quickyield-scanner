@@ -67,7 +67,7 @@ export function DiscoverView({
   onLoadMore: () => void
   triggeredAlerts: number
 }) {
-  const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'change1d' | 'change7d' | 'updated'>('confidence')
+  const [sortBy, setSortBy] = useState<'confidence' | 'apy' | 'tvl' | 'change1d' | 'change7d' | 'change30d' | 'updated'>('confidence')
   const [heatmapMetric, setHeatmapMetric] = useState<'apy' | 'safety'>('apy')
 
   const sorted = useMemo(() => {
@@ -77,6 +77,7 @@ export function DiscoverView({
       if (sortBy === 'tvl') return b.tvlUsd - a.tvlUsd
       if (sortBy === 'change1d') return (b.apyPct1D ?? -Infinity) - (a.apyPct1D ?? -Infinity)
       if (sortBy === 'change7d') return (b.apyPct7D ?? -Infinity) - (a.apyPct7D ?? -Infinity)
+      if (sortBy === 'change30d') return (b.apyPct30D ?? -Infinity) - (a.apyPct30D ?? -Infinity)
       if (sortBy === 'updated') return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
       return b.confidence - a.confidence
     })
@@ -89,7 +90,13 @@ export function DiscoverView({
     .filter((item) => item.category.toLowerCase().includes('stable') || stableAssets.has(item.asset.toUpperCase()))
     .sort((a, b) => b.apy - a.apy)[0]
   const highestApy = [...data.opportunities].sort((a, b) => b.apy - a.apy)[0]
+  const avgApy = data.opportunities.length
+    ? data.opportunities.reduce((sum, item) => sum + item.apy, 0) / data.opportunities.length
+    : 0
+  const totalTvlUsd = data.opportunities.reduce((sum, item) => sum + item.tvlUsd, 0)
+  const fmtTvl = (v: number) => (v >= 1e9 ? `$${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `$${(v / 1e6).toFixed(0)}M` : `$${Math.round(v)}`)
   const lastScan = new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const sortArrow = (key: typeof sortBy) => (sortBy === key ? ' ▾' : '')
   const marketBands = ['0-4%', '4-8%', '8-12%', '12%+'].map((band) => {
     const [min, max] = band === '12%+' ? [12, Infinity] : band.replace('%', '').split('-').map(Number)
     const items = data.opportunities.filter((item) => item.apy >= min && item.apy < max)
@@ -121,8 +128,10 @@ export function DiscoverView({
       </div>
 
       <div className="qy-discover-summary" aria-label="Current scan summary">
-        <div><span className="qy-overline">Loaded now</span><strong>{data.opportunities.length} of {data.total}</strong></div>
+        <div><span className="qy-overline">Avg APY</span><strong>{avgApy.toFixed(2)}%</strong></div>
+        <div><span className="qy-overline">Total TVL tracked</span><strong>{fmtTvl(totalTvlUsd)}</strong></div>
         <div><span className="qy-overline">Matched safer pools</span><strong>{saferCount}</strong></div>
+        <div><span className="qy-overline">Loaded now</span><strong>{data.opportunities.length} of {data.total}</strong></div>
         <div><span className="qy-overline">Last scan</span><strong>{lastScan}</strong></div>
         <div><span className="qy-overline">Data source</span><strong>{data.dataStatus === 'live' ? 'Live' : 'Fallback'}</strong></div>
       </div>
@@ -259,12 +268,12 @@ export function DiscoverView({
         <div className="qy-terminal-table-head">
           <span>Protocol</span>
           <span>Asset</span>
-          <button type="button" className={`qy-sort-link ${sortBy === 'apy' ? 'active' : ''}`} onClick={() => setSortBy('apy')}>APY</button>
-          <button type="button" className={`qy-sort-link ${sortBy === 'change1d' ? 'active' : ''}`} onClick={() => setSortBy('change1d')}>24h</button>
-          <button type="button" className={`qy-sort-link ${sortBy === 'change7d' ? 'active' : ''}`} onClick={() => setSortBy('change7d')}>7d</button>
-          <button type="button" className={`qy-sort-link ${sortBy === 'tvl' ? 'active' : ''}`} onClick={() => setSortBy('tvl')}>TVL</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'apy' ? 'active' : ''}`} onClick={() => setSortBy('apy')}>APY{sortArrow('apy')}</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'change1d' ? 'active' : ''}`} onClick={() => setSortBy('change1d')}>24h{sortArrow('change1d')}</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'change7d' ? 'active' : ''}`} onClick={() => setSortBy('change7d')}>7d{sortArrow('change7d')}</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'change30d' ? 'active' : ''}`} onClick={() => setSortBy('change30d')}>30d{sortArrow('change30d')}</button>
+          <button type="button" className={`qy-sort-link ${sortBy === 'tvl' ? 'active' : ''}`} onClick={() => setSortBy('tvl')}>TVL{sortArrow('tvl')}</button>
           <span>Grade</span>
-          <span>Chain</span>
           <span>Action</span>
         </div>
 
@@ -288,7 +297,7 @@ export function DiscoverView({
 
             <div className="qy-terminal-metric">
               <strong>{item.asset}</strong>
-              <span className="qy-terminal-submetric">{item.category}</span>
+              <span className="qy-terminal-submetric">{item.chain}</span>
             </div>
             <div className="qy-terminal-metric">
               <strong>{item.apy.toFixed(2)}%</strong>
@@ -302,13 +311,14 @@ export function DiscoverView({
               <Delta value={item.apyPct7D} />
               <span className="qy-terminal-submetric">7d</span>
             </div>
+            <div className="qy-terminal-metric">
+              <Delta value={item.apyPct30D} />
+              <span className="qy-terminal-submetric">30d</span>
+            </div>
             <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
             <div className="qy-terminal-metric">
               <GradeChip item={item} />
               <span className="qy-terminal-submetric">{item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}</span>
-            </div>
-            <div className="qy-terminal-metric">
-              <strong>{item.chain}</strong>
             </div>
             <div className="qy-terminal-actions">
               <Link href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
@@ -342,9 +352,9 @@ export function DiscoverView({
               <div><span>APY</span><strong>{item.apy.toFixed(2)}%</strong></div>
               <div><span>24h</span><Delta value={item.apyPct1D} /></div>
               <div><span>7d</span><Delta value={item.apyPct7D} /></div>
+              <div><span>30d</span><Delta value={item.apyPct30D} /></div>
               <div><span>TVL</span><strong>{item.tvl}</strong></div>
               <div><span>Chain</span><strong>{item.chain}</strong></div>
-              <div><span>Safety</span><strong>{item.confidence}</strong></div>
             </div>
             <p className="qy-rank-reason">{item.rankReason}</p>
             <div className="qy-terminal-actions">

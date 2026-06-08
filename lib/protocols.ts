@@ -43,14 +43,12 @@ export function llamaProtocolIcon(slug: string) {
 export function getProtocolMeta(project: string): ProtocolMeta {
   const normalized = normalizeProtocolSlug(project)
   const match = protocolCatalog.find((item) => [item.slug, ...(item.aliases ?? [])].some((alias) => normalized === alias || normalized.includes(alias)))
-  if (match) {
-    return { ...match, logoUrl: match.logoUrl ?? llamaProtocolIcon(match.slug) }
-  }
+  if (match) return match
 
   return {
     slug: normalized || 'protocol',
     name: project,
-    logoUrl: llamaProtocolIcon(normalized || 'protocol'),
+    logoUrl: undefined,
     officialUrl: undefined,
   }
 }

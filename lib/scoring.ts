@@ -1,4 +1,4 @@
-import { getProtocolMeta, normalizeProtocolSlug } from './protocols'
+import { getProtocolMeta, llamaProtocolIcon, normalizeProtocolSlug } from './protocols'
 import { computeSafetyGrade } from './grade'
 import type { LlamaPool, Opportunity, RiskLevel } from './types'
 
@@ -60,6 +60,9 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
   const protocol = getProtocolMeta(project)
   const platform = protocol.name || project
   const symbol = normalizeSymbol(pool.symbol)
+  // Raw DeFiLlama slug — matches the icon CDN and /protocols directory exactly
+  // (incl. dotted slugs like "ether.fi-stake"), unlike our normalized form.
+  const rawSlug = pool.project
   const internalUrl = `/terminal/pools/${encodeURIComponent(`live-${pool.pool}`)}`
   const officialUrl = protocol.officialUrl ?? internalUrl
   const now = new Date().toISOString()
@@ -89,8 +92,8 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     actionUrl: officialUrl,
     officialUrl,
     sourceUrl: officialUrl,
-    logoUrl: protocol.logoUrl,
-    protocolSlug: protocol.slug || normalizeProtocolSlug(project),
+    logoUrl: protocol.logoUrl ?? llamaProtocolIcon(rawSlug),
+    protocolSlug: rawSlug || protocol.slug || normalizeProtocolSlug(project),
     source: 'Live',
     notes: `Market-feed yield pool for ${pool.symbol} on ${pool.chain}. Verify protocol details before depositing.`,
     flags: [
