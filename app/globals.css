@@ -263,7 +263,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 }
 .qy-chip:hover { color: var(--ink); }
 .qy-chip.active { border-color: rgba(0, 229, 153, 0.4); background: rgba(0, 229, 153, 0.1); color: var(--safe); }
-.qy-chip.active-signal { border-color: rgba(255, 107, 53, 0.4); background: rgba(255, 107, 53, 0.1); color: var(--signal); }
+.qy-chip.active-signal { border-color: var(--line-hover); background: rgba(255, 255, 255, 0.08); color: var(--ink); font-weight: 600; }
 .qy-sort {
   margin-left: auto; display: flex; align-items: center; gap: 8px;
 }
@@ -330,7 +330,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-risk-low { color: var(--safe); border: 1px solid rgba(0, 229, 153, 0.3); background: rgba(0, 229, 153, 0.1); }
 .qy-risk-medium { color: var(--signal); border: 1px solid rgba(255, 107, 53, 0.3); background: rgba(255, 107, 53, 0.1); }
 .qy-risk-high { color: var(--risk); border: 1px solid rgba(255, 51, 102, 0.3); background: rgba(255, 51, 102, 0.1); }
-.qy-num { font-family: var(--font-mono); font-size: 12px; text-align: right; color: var(--ink-dim); }
+.qy-num { font-family: var(--font-mono); font-size: 12px; text-align: right; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
 .qy-num.bold { font-size: 14px; font-weight: 500; color: var(--ink); }
 .qy-apy-high { color: #16a34a; }
 .qy-apy-mid { color: #ca8a04; }
@@ -766,10 +766,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-terminal-row:hover { background: rgba(255,255,255,0.02); }
 .qy-terminal-pool { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .qy-terminal-pool-copy { min-width: 0; }
-.qy-terminal-metric { display: flex; flex-direction: column; gap: 3px; }
-.qy-terminal-metric strong { font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
+.qy-terminal-metric { display: flex; flex-direction: column; gap: 2px; }
+.qy-terminal-metric strong { font-family: var(--font-mono); font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .qy-terminal-right { text-align: right; justify-self: end; }
-.qy-terminal-submetric { color: var(--ink-mute); font-size: 11px; }
+.qy-terminal-submetric { color: var(--ink-mute); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
 .qy-terminal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap; }
 .qy-rank-reason {
   margin-top: 5px;
@@ -1023,8 +1023,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 /* Safety Grade chips */
 .qy-grade {
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 24px; height: 22px; padding: 0 6px; border-radius: 6px;
-  font-family: var(--font-display); font-weight: 700; font-size: 13px; line-height: 1;
+  min-width: 30px; height: 28px; padding: 0 7px; border-radius: 7px;
+  font-family: var(--font-display); font-weight: 800; font-size: 15px; line-height: 1;
+  border: 1px solid currentColor;
 }
 .qy-grade-a { background: rgba(22, 241, 163, 0.15); color: var(--safe); }
 .qy-grade-b { background: rgba(120, 220, 160, 0.15); color: #7adfa0; }
