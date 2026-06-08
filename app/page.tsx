@@ -7,6 +7,7 @@ import {
   Bell,
   Check,
   Database,
+  Mail,
   Radio,
   ShieldCheck,
   Siren,
@@ -336,6 +337,38 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ---------------- Stay ahead (alerts + digest) ---------------- */}
+      <section className="ql-section ql-section--tight" id="alerts">
+        <div className="ql-wrap">
+          <div className="ql-head">
+            <span className="ql-eyebrow">Stay ahead</span>
+            <h2 className="ql-h2">Know the moment yield moves — or turns.</h2>
+          </div>
+          <div className="ql-steps ql-steps--two">
+            <div className="ql-step">
+              <div className="ql-step-top">
+                <Bell className="ql-step-ic" size={20} />
+              </div>
+              <h3>Real-time alerts</h3>
+              <p>
+                Set plain-language rules — APY rises or drops, TVL drains, rewards spike — and get a Telegram or email
+                alert the moment a pool actually matches. Only real signal, never spam.
+              </p>
+            </div>
+            <div className="ql-step">
+              <div className="ql-step-top">
+                <Mail className="ql-step-ic" size={20} />
+              </div>
+              <h3>Weekly Safe Yield digest</h3>
+              <p>
+                Every Sunday, a single email with your watchlist&apos;s APY and grade moves plus the top safer picks you
+                aren&apos;t tracking yet. Stay current without watching the screen — one toggle to opt out.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- Product preview ---------------- */}
       <section className="ql-section ql-section--tight">
         <div className="ql-wrap">
@@ -429,6 +462,7 @@ export default function HomePage() {
                 <li><a href="#how">How it works</a></li>
                 <li><a href="#features">Safety Grade</a></li>
                 <li><Link href="/yields">Best yields</Link></li>
+                <li><Link href="/docs">Documentation</Link></li>
                 <li><Link href="/terminal">Launch terminal</Link></li>
               </ul>
             </div>

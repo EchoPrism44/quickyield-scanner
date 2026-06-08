@@ -248,6 +248,7 @@
 }
 @media (min-width: 640px) { .ql-steps { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1000px) { .ql-steps { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1000px) { .ql-steps.ql-steps--two { grid-template-columns: repeat(2, 1fr); } }
 .ql-step { position: relative; background: var(--bg-surface); padding: var(--sp-5); transition: background var(--dur); }
 .ql-step:hover { background: var(--bg-elevated); }
 .ql-step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-5); }
