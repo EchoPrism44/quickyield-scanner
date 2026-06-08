@@ -132,23 +132,6 @@ export function DiscoverView({
         <div><span className="qy-overline">Total TVL tracked</span><strong>{fmtTvl(totalTvlUsd)}</strong></div>
         <div><span className="qy-overline">Matched safer pools</span><strong>{saferCount}</strong></div>
         <div><span className="qy-overline">Loaded now</span><strong>{data.opportunities.length} of {data.total}</strong></div>
-        <div><span className="qy-overline">Last scan</span><strong>{lastScan}</strong></div>
-        <div><span className="qy-overline">Data source</span><strong>{data.dataStatus === 'live' ? 'Live' : 'Fallback'}</strong></div>
-      </div>
-
-      <div className="qy-signal-path" aria-label="How QuickYield ranks and alerts">
-        <div>
-          <span className="qy-overline">Scanned</span>
-          <strong>500+ pools across major chains</strong>
-        </div>
-        <div>
-          <span className="qy-overline">Shown because</span>
-          <strong>APY, TVL, risk, and data checks match this view</strong>
-        </div>
-        <div>
-          <span className="qy-overline">Alert when</span>
-          <strong>Your asset, APY, chain, and risk rule matches</strong>
-        </div>
       </div>
 
       <div className="qy-preset-bar" aria-label="Yield radar presets">
@@ -185,10 +168,6 @@ export function DiscoverView({
           <span><Search size={14} /> Search</span>
           <input className="qy-input qy-market-search" placeholder="Pool, asset, protocol" value={query} onChange={(event) => onQuery(event.target.value)} />
         </label>
-        <label>
-          <span>Chain</span>
-          <select className="qy-input" value={chain} onChange={(event) => onChain(event.target.value)}>{chains.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-        </label>
         <button type="button" className="qy-btn qy-btn-secondary qy-btn-sm" onClick={onAdvancedOpen} aria-expanded={advancedOpen}>
           <SlidersHorizontal size={14} />
           Advanced filters
@@ -211,57 +190,6 @@ export function DiscoverView({
             </label>
           </div>
         ) : null}
-      </div>
-
-      <div className="qy-intel-grid">
-        <section className="qy-heatmap-panel" aria-label="Yield heatmap">
-          <div className="qy-intel-panel-head">
-            <div>
-              <span className="qy-overline">Market map</span>
-              <h2>Yield heatmap</h2>
-            </div>
-            <div className="qy-segmented-control" aria-label="Heatmap metric">
-              {(['apy', 'safety'] as const).map((metric) => (
-                <button
-                  key={metric}
-                  type="button"
-                  className={heatmapMetric === metric ? 'active' : ''}
-                  onClick={() => setHeatmapMetric(metric)}
-                  aria-pressed={heatmapMetric === metric}
-                >
-                  {metric === 'apy' ? 'APY' : 'Safety'}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="qy-market-map">
-            {marketBands.map(({ band, items, low, avgSafety }, index) => (
-              <div key={band} className={`qy-market-map-cell heat-${index}`}>
-                <span className="qy-overline">{band} APY</span>
-                <strong>{heatmapMetric === 'apy' ? items.length : avgSafety || '--'}</strong>
-                <small>{heatmapMetric === 'apy' ? `${low} lower risk` : `${items.length} pools sampled`}</small>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="qy-intel-feed" aria-label="Scanner signal stream">
-          <div className="qy-intel-panel-head">
-            <div>
-              <span className="qy-overline">Scanner feed</span>
-              <h2>Signal stream</h2>
-            </div>
-            <span className={`qy-feed-status ${data.dataStatus === 'live' ? 'live' : 'fallback'}`}>{data.dataStatus}</span>
-          </div>
-          <div className="qy-feed-list">
-            {scannerUpdates.map((update, index) => (
-              <div key={update} className="qy-feed-row">
-                <span className="qy-feed-time">T-{index + 1}</span>
-                <p>{update}</p>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
 
       <div className="qy-terminal-table-wrap qy-desktop-results">
@@ -375,6 +303,57 @@ export function DiscoverView({
           </button>
         </div>
       ) : null}
+
+      <div className="qy-intel-grid">
+        <section className="qy-heatmap-panel" aria-label="Yield heatmap">
+          <div className="qy-intel-panel-head">
+            <div>
+              <span className="qy-overline">Market map</span>
+              <h2>Yield heatmap</h2>
+            </div>
+            <div className="qy-segmented-control" aria-label="Heatmap metric">
+              {(['apy', 'safety'] as const).map((metric) => (
+                <button
+                  key={metric}
+                  type="button"
+                  className={heatmapMetric === metric ? 'active' : ''}
+                  onClick={() => setHeatmapMetric(metric)}
+                  aria-pressed={heatmapMetric === metric}
+                >
+                  {metric === 'apy' ? 'APY' : 'Safety'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="qy-market-map">
+            {marketBands.map(({ band, items, low, avgSafety }, index) => (
+              <div key={band} className={`qy-market-map-cell heat-${index}`}>
+                <span className="qy-overline">{band} APY</span>
+                <strong>{heatmapMetric === 'apy' ? items.length : avgSafety || '--'}</strong>
+                <small>{heatmapMetric === 'apy' ? `${low} lower risk` : `${items.length} pools sampled`}</small>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="qy-intel-feed" aria-label="Scanner signal stream">
+          <div className="qy-intel-panel-head">
+            <div>
+              <span className="qy-overline">Scanner feed</span>
+              <h2>Signal stream</h2>
+            </div>
+            <span className={`qy-feed-status ${data.dataStatus === 'live' ? 'live' : 'fallback'}`}>{data.dataStatus}</span>
+          </div>
+          <div className="qy-feed-list">
+            {scannerUpdates.map((update, index) => (
+              <div key={update} className="qy-feed-row">
+                <span className="qy-feed-time">T-{index + 1}</span>
+                <p>{update}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </section>
   )
 }

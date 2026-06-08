@@ -34,9 +34,31 @@ export const viewport: Viewport = {
   colorScheme: 'dark',
 }
 
+const clerkAppearance = {
+  variables: {
+    colorPrimary: '#ff6b35',
+    colorBackground: '#10151c',
+    colorText: '#f5f6f8',
+    colorTextSecondary: '#a6adba',
+    colorInputBackground: '#0a0d12',
+    colorInputText: '#f5f6f8',
+    colorNeutral: '#ffffff',
+    borderRadius: '10px',
+    fontFamily: 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
+  },
+  elements: {
+    card: { backgroundColor: '#10151c', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 80px rgba(0,0,0,0.5)' },
+    headerTitle: { color: '#f5f6f8' },
+    headerSubtitle: { color: '#a6adba' },
+    socialButtonsBlockButton: { borderColor: 'rgba(255,255,255,0.12)' },
+    formButtonPrimary: { backgroundColor: '#ff6b35', color: '#07090d', textTransform: 'none' as const, fontWeight: 600 },
+    footerActionLink: { color: '#ff6b35' },
+  },
+}
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={clerkAppearance}>
       <html lang="en">
         <body>{children}</body>
       </html>
