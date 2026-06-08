@@ -35,15 +35,22 @@ export function normalizeProtocolSlug(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+/** DeFiLlama icon CDN — works for almost any protocol slug, no key required. */
+export function llamaProtocolIcon(slug: string) {
+  return `https://icons.llamao.fi/icons/protocols/${slug}?w=48&h=48`
+}
+
 export function getProtocolMeta(project: string): ProtocolMeta {
   const normalized = normalizeProtocolSlug(project)
   const match = protocolCatalog.find((item) => [item.slug, ...(item.aliases ?? [])].some((alias) => normalized === alias || normalized.includes(alias)))
-  if (match) return match
+  if (match) {
+    return { ...match, logoUrl: match.logoUrl ?? llamaProtocolIcon(match.slug) }
+  }
 
   return {
     slug: normalized || 'protocol',
     name: project,
-    logoUrl: undefined,
+    logoUrl: llamaProtocolIcon(normalized || 'protocol'),
     officialUrl: undefined,
   }
 }

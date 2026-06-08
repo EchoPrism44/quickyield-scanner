@@ -1,5 +1,6 @@
 import { categories, chains, riskLevels, timeCosts } from './constants'
 import { curatedOpportunities } from './curated'
+import { getProtocolUrlIndex } from './llama-protocols'
 import { cacheOpportunities, getCachedOpportunities, storeOpportunitySnapshots } from './store'
 import { poolToOpportunity } from './scoring'
 import { safetyGradeOf } from './grade'
@@ -99,6 +100,17 @@ async function fetchLiveOpportunities() {
     .map((item, index) => ({ ...item, rank: index + 1 }))
 
   if (live.length === 0) throw new Error('No live pools matched the safety screen')
+
+  // Enrich pools whose protocol site we don't have from the curated catalog
+  // with DeFiLlama's official URL directory (cached, best-effort).
+  const urlIndex = await getProtocolUrlIndex()
+  if (urlIndex.size > 0) {
+    return live.map((item) => {
+      if (item.officialUrl.startsWith('http')) return item
+      const url = urlIndex.get(item.protocolSlug)
+      return url ? { ...item, officialUrl: url, actionUrl: url, sourceUrl: url } : item
+    })
+  }
   return live
 }
 
