@@ -7,7 +7,7 @@ export const users = pgTable('users', {
   settingsJson: text('settings_json').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-})
+}).enableRLS()
 
 export const opportunitiesCache = pgTable('opportunities_cache', {
   id: text('id').primaryKey(),
@@ -21,7 +21,7 @@ export const opportunitiesCache = pgTable('opportunities_cache', {
   riskLevel: text('risk_level').notNull(),
   confidence: integer('confidence').notNull(),
   lastSeenAt: timestamp('last_seen_at').defaultNow().notNull(),
-})
+}).enableRLS()
 
 export const opportunitySnapshots = pgTable('opportunity_snapshots', {
   id: text('id').primaryKey(),
@@ -34,7 +34,7 @@ export const opportunitySnapshots = pgTable('opportunity_snapshots', {
   apyMean30d: numeric('apy_mean_30d'),
   tvlUsd: numeric('tvl_usd').notNull(),
   payloadJson: text('payload_json'),
-})
+}).enableRLS()
 
 export const watchlistItems = pgTable(
   'watchlist_items',
@@ -45,7 +45,7 @@ export const watchlistItems = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => [uniqueIndex('watchlist_user_opportunity_idx').on(table.userId, table.opportunityId)],
-)
+).enableRLS()
 
 export const alertRules = pgTable('alert_rules', {
   id: text('id').primaryKey(),
@@ -61,7 +61,7 @@ export const alertRules = pgTable('alert_rules', {
   condition: text('condition').default('apy-above').notNull(),
   enabled: boolean('enabled').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+}).enableRLS()
 
 export const positions = pgTable('positions', {
   id: text('id').primaryKey(),
@@ -73,7 +73,7 @@ export const positions = pgTable('positions', {
   amountUsd: numeric('amount_usd').notNull(),
   entryApy: numeric('entry_apy').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+}).enableRLS()
 
 export const alertDeliveries = pgTable('alert_deliveries', {
   id: text('id').primaryKey(),
@@ -82,7 +82,7 @@ export const alertDeliveries = pgTable('alert_deliveries', {
   opportunityId: text('opportunity_id').notNull(),
   deliveryKey: text('delivery_key').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+}).enableRLS()
 
 export const notificationChannels = pgTable(
   'notification_channels',
@@ -98,7 +98,7 @@ export const notificationChannels = pgTable(
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (table) => [uniqueIndex('notification_user_type_destination_idx').on(table.userId, table.type, table.destination)],
-)
+).enableRLS()
 
 export const telegramConnectTokens = pgTable('telegram_connect_tokens', {
   token: text('token').primaryKey(),
@@ -106,7 +106,7 @@ export const telegramConnectTokens = pgTable('telegram_connect_tokens', {
   expiresAt: timestamp('expires_at').notNull(),
   usedAt: timestamp('used_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+}).enableRLS()
 
 export const interactionEvents = pgTable('interaction_events', {
   id: text('id').primaryKey(),
@@ -114,4 +114,4 @@ export const interactionEvents = pgTable('interaction_events', {
   name: text('name').notNull(),
   payloadJson: text('payload_json').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+}).enableRLS()
