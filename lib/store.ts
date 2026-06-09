@@ -417,8 +417,19 @@ export async function storeOpportunitySnapshots(opportunities: Opportunity[]) {
       apyPct1D: item.apyPct1D === undefined ? null : String(item.apyPct1D),
       apyMean30d: item.apyMean30d === undefined ? null : String(item.apyMean30d),
       tvlUsd: String(item.tvlUsd),
-      payloadJson: JSON.stringify(item),
     })))
+}
+
+/**
+ * Retention: snapshots accumulate ~pool-count rows per scan and are only used
+ * for short-window analytics + tvl-drop comparison (pool charts use DeFiLlama
+ * directly). Drop anything older than the window to keep the table bounded.
+ */
+export async function pruneOldSnapshots(maxAgeDays = 14) {
+  if (!hasDatabase()) return
+  await getDb()
+    .delete(opportunitySnapshots)
+    .where(sql`${opportunitySnapshots.capturedAt} < now() - make_interval(days => ${maxAgeDays})`)
 }
 
 export async function getAllUsersForDigest(): Promise<{ clerkUserId: string; email: string; watchlistIds: string[] }[]> {
