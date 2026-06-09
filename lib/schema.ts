@@ -33,7 +33,6 @@ export const opportunitySnapshots = pgTable('opportunity_snapshots', {
   apyPct1D: numeric('apy_pct_1d'),
   apyMean30d: numeric('apy_mean_30d'),
   tvlUsd: numeric('tvl_usd').notNull(),
-  payloadJson: text('payload_json'),
 }).enableRLS()
 
 export const watchlistItems = pgTable(

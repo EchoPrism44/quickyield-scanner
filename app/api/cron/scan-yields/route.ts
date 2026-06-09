@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { alertMatchesOpportunity } from '../../../../lib/alerts'
 import { sendAlertEmail } from '../../../../lib/email'
 import { scanAndCacheYields } from '../../../../lib/opportunities'
-import { getAlertRules, getNotificationChannels, getOpportunitySnapshots, recordAlertDelivery, wasAlertDelivered } from '../../../../lib/store'
+import { getAlertRules, getNotificationChannels, getOpportunitySnapshots, pruneOldSnapshots, recordAlertDelivery, wasAlertDelivered } from '../../../../lib/store'
 import { sendTelegramAlert } from '../../../../lib/telegram'
 import type { AlertRule, Opportunity } from '../../../../lib/types'
 
@@ -91,6 +91,13 @@ export async function GET(request: NextRequest) {
         channel: [telegram && 'Telegram', email && 'Email'].filter(Boolean).join(' + ') || 'Notification',
       })
     }
+  }
+
+  // Keep the snapshots table bounded (it grows by ~pool-count rows per scan).
+  try {
+    await pruneOldSnapshots()
+  } catch (error) {
+    failures.push(`Snapshot prune failed: ${error instanceof Error ? error.message : 'unknown'}`)
   }
 
   return NextResponse.json({
