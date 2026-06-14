@@ -1,6 +1,28 @@
 import { getProtocolMeta, llamaProtocolIcon, normalizeProtocolSlug } from './protocols'
 import { computeSafetyGrade } from './grade'
-import type { LlamaPool, Opportunity, RiskLevel } from './types'
+import type { LlamaPool, Opportunity, QuickYieldScoreBreakdown, RiskLevel } from './types'
+
+/** Inputs to the four Safety-Grade dimensions — shared by the live scan and the backtest. */
+export type ScoreInputs = {
+  apy: number
+  apyBase?: number
+  apyReward?: number
+  apyPct1D?: number
+  apyMean30d?: number
+  tvl: number
+}
+
+/**
+ * The four transparent scoring dimensions. Extracted so the historical backtest
+ * recomputes grades with the EXACT same model the live scan uses.
+ */
+export function computeScoreBreakdown(i: ScoreInputs): QuickYieldScoreBreakdown {
+  const liquidity = Math.min(100, Math.max(30, Math.round(((Math.log10(Math.max(i.tvl, 1_000_000)) - 6) / 3.5) * 65 + 35)))
+  const stability = Math.min(100, Math.max(20, Math.round(96 - Math.abs(i.apyPct1D ?? 0) * 6 - Math.max(0, i.apy - 10) * 1.4)))
+  const sustainability = Math.min(100, Math.max(24, Math.round(88 - ((i.apyReward ?? 0) / Math.max(i.apy, 1)) * 50 - Math.max(0, i.apy - 12) * 2)))
+  const completeness = [i.apyBase !== undefined, i.apyReward !== undefined, i.apyPct1D !== undefined, i.apyMean30d !== undefined].filter(Boolean).length * 25
+  return { liquidity, stability, sustainability, completeness }
+}
 
 export function money(value: number) {
   return new Intl.NumberFormat('en-US', {
@@ -46,12 +68,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
     96,
     Math.max(58, Math.round(62 + Math.log10(Math.max(tvl, 10_000)) * 4 - Math.max(0, apy - 12) * 1.6 - volatilityPenalty - rewardPenalty)),
   )
-  // Spread liquidity across the realistic TVL range ($1M -> ~$3B) instead of
-  // saturating at ~100 for anything above a few hundred million.
-  const liquidity = Math.min(100, Math.max(30, Math.round(((Math.log10(Math.max(tvl, 1_000_000)) - 6) / 3.5) * 65 + 35)))
-  const stability = Math.min(100, Math.max(20, Math.round(96 - Math.abs(apyPct1D ?? 0) * 6 - Math.max(0, apy - 10) * 1.4)))
-  const sustainability = Math.min(100, Math.max(24, Math.round(88 - ((apyReward ?? 0) / Math.max(apy, 1)) * 50 - Math.max(0, apy - 12) * 2)))
-  const completeness = [apyBase !== undefined, apyReward !== undefined, apyPct1D !== undefined, apyMean30d !== undefined].filter(Boolean).length * 25
+  const { liquidity, stability, sustainability, completeness } = computeScoreBreakdown({ apy, apyBase, apyReward, apyPct1D, apyMean30d, tvl })
   const dailyEstimate = apy / 365
   const project = pool.project
     .split('-')
