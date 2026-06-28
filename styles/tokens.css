@@ -23,18 +23,21 @@
   --ink-dim: #a6adba;
   --ink-mute: #6b7280;
 
+  /* Brand */
+  --brand-green: #00E676;
+
   /* Accent + semantic (kept compatible with existing usage) */
   --signal: #ff6b35;
   --signal-hover: #ef5722;
   --signal-glow: rgba(255, 107, 53, 0.18);
-  --safe: #16f1a3;
+  --safe: #00E676;
   --risk: #ff3366;
   --warn: #ffb020;
 
   /* Bloomberg-style directional data colors */
-  --up: #16f1a3;
+  --up: #00E676;
   --down: #ff4d6d;
-  --up-soft: rgba(22, 241, 163, 0.12);
+  --up-soft: rgba(0, 230, 118, 0.12);
   --down-soft: rgba(255, 77, 109, 0.12);
 
   /* Type scale (fluid where it earns it) */

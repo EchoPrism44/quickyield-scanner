@@ -14,7 +14,7 @@
   --signal: #ff6b35;
   --signal-hover: #ef5722;
   --signal-glow: rgba(255, 107, 53, 0.18);
-  --safe: #16f1a3;
+  --safe: #00E676;
   --risk: #ff3366;
   --warn: #ffb020;
   --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
@@ -96,8 +96,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: #050505;
-  box-shadow: 0 0 0 1px rgba(255, 122, 0, 0.28), 0 10px 28px rgba(255, 107, 53, 0.16);
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(0, 230, 118, 0.22), 0 10px 28px rgba(0, 230, 118, 0.14);
   overflow: hidden;
 }
 .qy-logo-mark img {
@@ -114,7 +114,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   color: var(--ink);
 }
 .qy-logo-text span:last-child {
-  color: var(--signal);
+  color: var(--brand-green);
 }
 .qy-auth-logo {
   margin-bottom: 24px;
