@@ -30,29 +30,29 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a0d14',
-  colorScheme: 'dark',
+  themeColor: '#f8f9fa',
+  colorScheme: 'light',
 }
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: '#00d9ff',
-    colorBackground: '#0f1419',
-    colorText: '#e8e8e8',
-    colorTextSecondary: '#8a9199',
-    colorInputBackground: '#151c28',
-    colorInputText: '#e8e8e8',
-    colorNeutral: '#0f1419',
+    colorPrimary: '#0066cc',
+    colorBackground: '#ffffff',
+    colorText: '#1a1d23',
+    colorTextSecondary: '#626670',
+    colorInputBackground: '#f8f9fa',
+    colorInputText: '#1a1d23',
+    colorNeutral: '#ffffff',
     borderRadius: '8px',
     fontFamily: 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
   },
   elements: {
-    card: { backgroundColor: '#0f1419', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 0 32px rgba(0,217,255,0.15)' },
-    headerTitle: { color: '#e8e8e8' },
-    headerSubtitle: { color: '#8a9199' },
-    socialButtonsBlockButton: { borderColor: 'rgba(255,255,255,0.12)' },
-    formButtonPrimary: { backgroundColor: '#00d9ff', color: '#0a0d14', textTransform: 'none' as const, fontWeight: 700 },
-    footerActionLink: { color: '#00d9ff' },
+    card: { backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' },
+    headerTitle: { color: '#1a1d23' },
+    headerSubtitle: { color: '#626670' },
+    socialButtonsBlockButton: { borderColor: 'rgba(0,0,0,0.12)' },
+    formButtonPrimary: { backgroundColor: '#0066cc', color: '#ffffff', textTransform: 'none' as const, fontWeight: 600 },
+    footerActionLink: { color: '#0066cc' },
   },
 }
 
