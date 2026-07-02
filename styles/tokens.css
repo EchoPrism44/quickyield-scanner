@@ -6,39 +6,39 @@
    ============================================================ */
 
 :root {
-  /* Professional enterprise palette (light mode) */
-  --bg-base: #f8f9fa;
-  --bg-page: #f8f9fa;
-  --bg-surface: #ffffff;
-  --bg-elevated: #f1f3f6;
-  --bg-inset: rgba(0, 0, 0, 0.02);
+  /* Bloomberg Terminal Dark Mode Palette */
+  --bg-base: #0a0d14;
+  --bg-page: #0a0d14;
+  --bg-surface: #0f1419;
+  --bg-elevated: #151c28;
+  --bg-inset: rgba(255, 255, 255, 0.02);
 
   /* Lines / hairlines */
-  --line: rgba(0, 0, 0, 0.08);
-  --line-strong: rgba(0, 0, 0, 0.12);
-  --line-hover: rgba(0, 0, 0, 0.15);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --line-hover: rgba(255, 255, 255, 0.15);
 
   /* Ink */
-  --ink: #1a1d23;
-  --ink-dim: #626670;
-  --ink-mute: #8b92a0;
+  --ink: #e8e8e8;
+  --ink-dim: #8a9199;
+  --ink-mute: #5c6470;
 
   /* Brand */
-  --brand-green: #12a150;
+  --brand-green: #00e676;
 
-  /* Accent + semantic colors */
-  --signal: #0066cc;
-  --signal-hover: #0052a3;
-  --signal-glow: rgba(0, 102, 204, 0.12);
-  --safe: #12a150;
-  --risk: #d63649;
-  --warn: #d98a00;
+  /* Accent + semantic colors - Bloomberg cyan */
+  --signal: #00d9ff;
+  --signal-hover: #00f0ff;
+  --signal-glow: rgba(0, 217, 255, 0.25);
+  --safe: #00e676;
+  --risk: #ff4757;
+  --warn: #ffa502;
 
   /* Bloomberg-style directional data colors */
-  --up: #00E676;
-  --down: #ff4d6d;
+  --up: #00e676;
+  --down: #ff4757;
   --up-soft: rgba(0, 230, 118, 0.12);
-  --down-soft: rgba(255, 77, 109, 0.12);
+  --down-soft: rgba(255, 71, 87, 0.12);
 
   /* Type scale (fluid where it earns it) */
   --fs-overline: 11px;
@@ -73,10 +73,10 @@
   --r-pill: 9999px;
 
   /* Elevation */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 0 2px rgba(0, 102, 204, 0.2), 0 8px 24px rgba(0, 102, 204, 0.25);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 217, 255, 0.12);
+  --shadow-lg: 0 16px 48px rgba(0, 217, 255, 0.15);
+  --shadow-glow: 0 0 0 2px rgba(0, 217, 255, 0.3), 0 0 32px rgba(0, 217, 255, 0.4);
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
