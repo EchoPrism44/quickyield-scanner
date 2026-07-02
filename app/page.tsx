@@ -15,6 +15,8 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { MarketingNav } from '../components/marketing-nav'
+import { AlertsShowcase } from '../components/marketing/alerts-showcase'
+import { DiscoverShowcase } from '../components/marketing/discover-showcase'
 import { computeSafetyGrade } from '../lib/grade'
 import type { Opportunity } from '../lib/types'
 
@@ -337,7 +339,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- Stay ahead (alerts + digest) ---------------- */}
+      {/* ---------------- Stay ahead (alerts + digest) with live showcases ---------------- */}
       <section className="ql-section ql-section--tight" id="alerts">
         <div className="ql-wrap">
           <div className="ql-head">
@@ -365,6 +367,12 @@ export default function HomePage() {
                 aren&apos;t tracking yet. Stay current without watching the screen — one toggle to opt out.
               </p>
             </div>
+          </div>
+
+          {/* Live Alerts & Discover Showcase */}
+          <div className="ql-showcases-grid ql-reveal" style={{ marginTop: 'var(--sp-8)' }}>
+            <AlertsShowcase items={opportunities} />
+            <DiscoverShowcase items={opportunities} />
           </div>
         </div>
       </section>
