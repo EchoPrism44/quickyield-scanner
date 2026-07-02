@@ -134,6 +134,24 @@ function useCountUp(target: number, active: boolean, duration = 1100) {
   return value
 }
 
+function useScrollAnimation(ref: React.RefObject<HTMLElement>) {
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('ql-in-view')
+          observer.unobserve(entry.target)
+        }
+      },
+      { threshold: 0.2 }
+    )
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [ref])
+}
+
 function LiveTerminal({ rows }: { rows: Opportunity[] }) {
   return (
     <div className="ql-terminal ql-reveal" aria-label="Live yield scanner preview">

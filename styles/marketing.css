@@ -483,6 +483,45 @@
   25% { opacity: 0.3; }
 }
 
+/* Gradient text animations */
+.ql-h1 em {
+  background: linear-gradient(90deg, #00d9ff, #00f0ff, #00d9ff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ql-gradient-shift 4s ease infinite;
+}
+
+@keyframes ql-gradient-shift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+/* Shine effect on text */
+.ql-h2, .ql-h1 {
+  position: relative;
+  overflow: hidden;
+}
+
+.ql-h2::before, .ql-h1::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+  animation: ql-shine 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes ql-shine {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ql-tape-track, .ql-dot, .ql-cursor, .ql-trow, .ql-reveal,
   .ql-hero-aurora, .ql-card, .ql-step, .ql-stat {
@@ -492,6 +531,9 @@
   .ql-card:hover .ql-card-ic {
     transform: none;
     filter: none;
+  }
+  .ql-h1 em, .ql-h2::before, .ql-h1::before {
+    animation: none !important;
   }
 }
 
@@ -732,6 +774,16 @@
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+/* Scroll-triggered reveal animation */
+.ql-section {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.ql-section.ql-in-view {
+  opacity: 1;
 }
 
 /* Showcases Grid */
