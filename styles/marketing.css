@@ -42,8 +42,8 @@
   border: 1px solid transparent; transition: all var(--dur) var(--ease-out);
   white-space: nowrap; cursor: pointer;
 }
-.ql-btn--primary { background: var(--signal); color: #0a0d12; box-shadow: var(--shadow-glow); }
-.ql-btn--primary:hover { background: #ff7d4d; transform: translateY(-1px); }
+.ql-btn--primary { background: var(--signal); color: #fff; box-shadow: var(--shadow-glow); }
+.ql-btn--primary:hover { background: var(--signal-hover); transform: translateY(-1px); }
 .ql-btn--ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
 .ql-btn--ghost:hover { border-color: var(--line-hover); background: rgba(255, 255, 255, 0.03); }
 .ql-btn--sm { height: 38px; padding-inline: 16px; font-size: var(--fs-xs); }
@@ -54,7 +54,7 @@
 .ql-tape {
   position: relative; z-index: 2;
   border-block: 1px solid var(--line);
-  background: rgba(7, 9, 13, 0.7);
+  background: var(--bg-elevated);
   overflow: hidden; white-space: nowrap;
 }
 .ql-tape-track {
@@ -83,11 +83,11 @@
 .ql-hero-aurora::after { content: ""; position: absolute; border-radius: 50%; filter: blur(80px); }
 .ql-hero-aurora::before {
   width: 640px; height: 540px; top: -190px; left: -130px;
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.30), transparent 64%);
+  background: radial-gradient(circle, rgba(0, 102, 204, 0.15), transparent 64%);
 }
 .ql-hero-aurora::after {
   width: 600px; height: 520px; right: -170px; bottom: -210px;
-  background: radial-gradient(circle, rgba(22, 241, 163, 0.16), transparent 66%);
+  background: radial-gradient(circle, rgba(18, 161, 80, 0.1), transparent 66%);
 }
 
 /* Fine film grain over the whole page */
@@ -141,9 +141,9 @@
 
 /* ---- live terminal panel ---- */
 .ql-terminal {
-  border: 1px solid var(--line-strong); border-radius: var(--r-lg);
-  background: linear-gradient(180deg, rgba(16, 21, 28, 0.92), rgba(8, 11, 15, 0.96));
-  box-shadow: var(--shadow-lg), 0 0 80px -40px rgba(255, 107, 53, 0.4);
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 .ql-terminal-bar {
@@ -170,7 +170,7 @@
 }
 .ql-thead span:nth-child(n+2), .ql-trow span:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
 .ql-trow {
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid var(--line);
   font-family: var(--font-mono); font-size: var(--fs-xs);
   animation: ql-rowin 0.5s var(--ease-out) backwards;
 }
@@ -234,7 +234,7 @@
 .ql-card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
 .ql-card-ic {
   display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-sm);
-  background: rgba(255, 107, 53, 0.1); color: var(--signal); margin-bottom: var(--sp-4);
+  background: rgba(0, 102, 204, 0.08); color: var(--signal); margin-bottom: var(--sp-4);
 }
 .ql-card h3 { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--ink); letter-spacing: -0.01em; }
 .ql-card p { margin-top: 8px; color: var(--ink-dim); font-size: var(--fs-sm); line-height: 1.6; }
@@ -268,8 +268,8 @@
 .ql-intel-list b { color: var(--ink); font-weight: 600; }
 
 .ql-scorecard {
-  border: 1px solid var(--line-strong); border-radius: var(--r-lg);
-  background: linear-gradient(180deg, var(--bg-surface), rgba(8, 11, 15, 0.6));
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--bg-surface);
   box-shadow: var(--shadow-md); overflow: hidden;
 }
 .ql-scorecard-top {

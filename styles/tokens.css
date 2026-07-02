@@ -6,33 +6,33 @@
    ============================================================ */
 
 :root {
-  /* Refined neutral ramp (dark canvas) */
-  --bg-base: #07090d;
-  --bg-page: #0a0d12;
-  --bg-surface: #10151c;
-  --bg-elevated: #161d27;
-  --bg-inset: rgba(255, 255, 255, 0.02);
+  /* Professional enterprise palette (light mode) */
+  --bg-base: #f8f9fa;
+  --bg-page: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f1f3f6;
+  --bg-inset: rgba(0, 0, 0, 0.02);
 
   /* Lines / hairlines */
-  --line: rgba(255, 255, 255, 0.07);
-  --line-strong: rgba(255, 255, 255, 0.12);
-  --line-hover: rgba(255, 255, 255, 0.22);
+  --line: rgba(0, 0, 0, 0.08);
+  --line-strong: rgba(0, 0, 0, 0.12);
+  --line-hover: rgba(0, 0, 0, 0.15);
 
   /* Ink */
-  --ink: #f5f6f8;
-  --ink-dim: #a6adba;
-  --ink-mute: #6b7280;
+  --ink: #1a1d23;
+  --ink-dim: #626670;
+  --ink-mute: #8b92a0;
 
   /* Brand */
-  --brand-green: #00E676;
+  --brand-green: #12a150;
 
-  /* Accent + semantic (kept compatible with existing usage) */
-  --signal: #ff6b35;
-  --signal-hover: #ef5722;
-  --signal-glow: rgba(255, 107, 53, 0.18);
-  --safe: #00E676;
-  --risk: #ff3366;
-  --warn: #ffb020;
+  /* Accent + semantic colors */
+  --signal: #0066cc;
+  --signal-hover: #0052a3;
+  --signal-glow: rgba(0, 102, 204, 0.12);
+  --safe: #12a150;
+  --risk: #d63649;
+  --warn: #d98a00;
 
   /* Bloomberg-style directional data colors */
   --up: #00E676;
@@ -73,10 +73,10 @@
   --r-pill: 9999px;
 
   /* Elevation */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 16px 48px -16px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 34px 100px -24px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 0 1px rgba(255, 107, 53, 0.4), 0 8px 40px -8px rgba(255, 107, 53, 0.45);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 0 2px rgba(0, 102, 204, 0.2), 0 8px 24px rgba(0, 102, 204, 0.25);
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
