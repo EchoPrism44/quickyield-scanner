@@ -228,16 +228,89 @@
 @media (min-width: 820px) { .ql-cards-3 { grid-template-columns: repeat(3, 1fr); } }
 .ql-card {
   border: 1px solid var(--line); border-radius: var(--r-lg);
-  background: var(--bg-surface); padding: var(--sp-5);
-  transition: border-color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.03), transparent);
+  padding: var(--sp-6);
+  transition: all var(--dur) var(--ease-out);
+  position: relative;
+  overflow: hidden;
 }
-.ql-card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+
+.ql-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 217, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.ql-card:hover {
+  border-color: rgba(0, 217, 255, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 217, 255, 0.15);
+}
+
+.ql-card:hover::before {
+  opacity: 1;
+}
+
 .ql-card-ic {
-  display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-sm);
-  background: rgba(0, 217, 255, 0.12); color: var(--signal); margin-bottom: var(--sp-4);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-md);
+  background: rgba(0, 217, 255, 0.15);
+  color: var(--signal);
+  margin-bottom: var(--sp-4);
+  transition: all 0.3s ease;
+  font-size: 24px;
 }
-.ql-card h3 { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--ink); letter-spacing: -0.01em; }
-.ql-card p { margin-top: 8px; color: var(--ink-dim); font-size: var(--fs-sm); line-height: 1.6; }
+
+.ql-card:hover .ql-card-ic {
+  background: rgba(0, 217, 255, 0.25);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(0, 217, 255, 0.4));
+}
+
+.ql-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin-bottom: var(--sp-2);
+}
+
+.ql-card-desc {
+  color: var(--ink-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  margin-bottom: var(--sp-4);
+}
+
+.ql-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: var(--sp-4);
+  border-top: 1px solid rgba(0, 217, 255, 0.1);
+}
+
+.ql-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(0, 217, 255, 0.08);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--signal);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 
 /* ============================================================
    How it works
@@ -385,6 +458,58 @@
   25% { transform: translateY(-30px) translateX(20px); }
   50% { transform: translateY(-60px) translateX(-20px); }
   75% { transform: translateY(-30px) translateX(30px); }
+}
+
+/* Animated background orbs */
+.ql-orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ql-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #00d9ff, transparent);
+  top: -100px;
+  right: -50px;
+  animation: ql-orb-float-1 15s ease-in-out infinite;
+}
+
+.ql-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #00e676, transparent);
+  bottom: -50px;
+  left: 100px;
+  animation: ql-orb-float-2 18s ease-in-out infinite;
+}
+
+.ql-orb-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #00d9ff, transparent);
+  top: 50%;
+  left: -100px;
+  animation: ql-orb-float-3 20s ease-in-out infinite;
+}
+
+@keyframes ql-orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -40px) scale(1.1); }
+}
+
+@keyframes ql-orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 50px) scale(0.9); }
+}
+
+@keyframes ql-orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, 30px) scale(1.05); }
 }
 
 /* Staggered card animations */
@@ -798,6 +923,284 @@
   .ql-showcases-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================================
+   Comparison Table
+   ============================================================ */
+.ql-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.ql-comparison-table thead {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--line);
+}
+
+.ql-comparison-table th {
+  padding: var(--sp-4) var(--sp-3);
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: var(--fs-overline);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+}
+
+.ql-comparison-table td {
+  padding: var(--sp-4) var(--sp-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: var(--fs-sm);
+  color: var(--ink-dim);
+}
+
+.ql-comparison-table tr:hover td {
+  background: rgba(0, 217, 255, 0.05);
+}
+
+.ql-comparison-check {
+  color: var(--up);
+  font-weight: 600;
+}
+
+.ql-comparison-cross {
+  color: var(--down);
+  opacity: 0.5;
+}
+
+.ql-comparison-partial {
+  color: var(--warn);
+  opacity: 0.8;
+}
+
+/* ============================================================
+   Risk Metrics Cards
+   ============================================================ */
+.ql-risk-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-5);
+}
+
+.ql-risk-card {
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.05), rgba(0, 217, 255, 0.02));
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  transition: all 0.3s ease;
+  animation: ql-card-enter 0.6s var(--ease-out) backwards;
+}
+
+.ql-risk-card:nth-child(1) { animation-delay: 0s; }
+.ql-risk-card:nth-child(2) { animation-delay: 0.1s; }
+.ql-risk-card:nth-child(3) { animation-delay: 0.2s; }
+.ql-risk-card:nth-child(4) { animation-delay: 0.3s; }
+
+.ql-risk-card:hover {
+  border-color: rgba(0, 217, 255, 0.4);
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 217, 255, 0.05));
+  box-shadow: 0 8px 24px rgba(0, 217, 255, 0.1);
+}
+
+.ql-risk-card h4 {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--signal);
+  margin-bottom: var(--sp-3);
+}
+
+.ql-risk-card p {
+  color: var(--ink-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  margin-bottom: var(--sp-4);
+}
+
+.ql-gauge {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.ql-gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--signal), var(--up));
+  border-radius: var(--r-pill);
+  animation: ql-gauge-fill 2s ease-out;
+}
+
+@keyframes ql-gauge-fill {
+  from { width: 0%; }
+}
+
+/* ============================================================
+   Testimonials Section
+   ============================================================ */
+.ql-testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-6);
+}
+
+.ql-testimonial {
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  transition: all 0.3s ease;
+  animation: ql-card-enter 0.6s var(--ease-out) backwards;
+  display: flex;
+  flex-direction: column;
+}
+
+.ql-testimonial:nth-child(1) { animation-delay: 0s; }
+.ql-testimonial:nth-child(2) { animation-delay: 0.15s; }
+.ql-testimonial:nth-child(3) { animation-delay: 0.3s; }
+
+.ql-testimonial:hover {
+  border-color: var(--signal);
+  box-shadow: 0 8px 24px rgba(0, 217, 255, 0.15);
+}
+
+.ql-testimonial-stars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--sp-4);
+  font-size: 16px;
+}
+
+.ql-testimonial-quote {
+  color: var(--ink-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  margin-bottom: var(--sp-5);
+  flex: 1;
+}
+
+.ql-testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-4);
+}
+
+.ql-testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--signal), var(--up));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0d14;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.ql-testimonial-info h5 {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ql-testimonial-info p {
+  font-family: var(--font-mono);
+  font-size: var(--fs-overline);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-mute);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   FAQ Accordion
+   ============================================================ */
+.ql-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.ql-faq-item {
+  border-bottom: 1px solid var(--line);
+  transition: background 0.3s ease;
+}
+
+.ql-faq-item:last-child {
+  border-bottom: none;
+}
+
+.ql-faq-item.ql-faq-open {
+  background: rgba(0, 217, 255, 0.05);
+}
+
+.ql-faq-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4);
+  background: var(--bg-surface);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.ql-faq-trigger:hover {
+  background: var(--bg-elevated);
+  color: var(--signal);
+}
+
+.ql-faq-item.ql-faq-open .ql-faq-trigger {
+  color: var(--signal);
+  background: rgba(0, 217, 255, 0.08);
+}
+
+.ql-faq-arrow {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: var(--signal);
+}
+
+.ql-faq-item.ql-faq-open .ql-faq-arrow {
+  transform: rotate(180deg);
+}
+
+.ql-faq-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.ql-faq-item.ql-faq-open .ql-faq-content {
+  max-height: 500px;
+}
+
+.ql-faq-answer {
+  padding: 0 var(--sp-4) var(--sp-4);
+  color: var(--ink-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
 }
 
 /* ---- mobile tuning ---- */

@@ -17,6 +17,10 @@ import {
 import { MarketingNav } from '../components/marketing-nav'
 import { AlertsShowcase } from '../components/marketing/alerts-showcase'
 import { DiscoverShowcase } from '../components/marketing/discover-showcase'
+import { ComparisonTable } from '../components/marketing/comparison-table'
+import { RiskMetrics } from '../components/marketing/risk-metrics'
+import { Testimonials } from '../components/marketing/testimonials'
+import { FAQ } from '../components/marketing/faq'
 import { computeSafetyGrade } from '../lib/grade'
 import type { Opportunity } from '../lib/types'
 
@@ -230,6 +234,9 @@ export default function HomePage() {
       {/* ---------------- Hero ---------------- */}
       <section className="ql-hero">
         <div className="ql-hero-aurora" aria-hidden="true" />
+        <div className="ql-orb ql-orb-1" aria-hidden="true" />
+        <div className="ql-orb ql-orb-2" aria-hidden="true" />
+        <div className="ql-orb ql-orb-3" aria-hidden="true" />
         <div className="ql-wrap ql-hero-body">
           <div>
             <span className="ql-badge"><span className="ql-dot" />DeFi yield intelligence · beta</span>
@@ -394,6 +401,18 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Comparison Table Section */}
+      <ComparisonTable />
+
+      {/* Risk Metrics Section */}
+      <RiskMetrics />
+
+      {/* Testimonials Section */}
+      <Testimonials />
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* ---------------- Product preview ---------------- */}
       <section className="ql-section ql-section--tight">
