@@ -65,6 +65,7 @@ function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
   return {
     opportunities: opportunities.slice(start, start + pageSize),
     total: opportunities.length,
+    chainCount: new Set(opportunities.map((o) => o.chain)).size,
     page,
     pageSize,
     hasMore: start + pageSize < opportunities.length,

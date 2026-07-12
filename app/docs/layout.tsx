@@ -1,17 +1,15 @@
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
 import { MarketingNav } from '../../components/marketing-nav'
+import { MarketingFooter } from '../../components/marketing/marketing-footer'
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <main className="ql">
+      <div className="ql-grain" aria-hidden="true" />
       <MarketingNav />
-      <main className="ql-legal">
-        <div className="ql-legal-wrap">
-          <Link href="/" className="ql-legal-back"><ArrowLeft size={15} /> Back to home</Link>
-          {children}
-        </div>
-      </main>
-    </>
+      <div className="ql-docs">
+        <div className="ql-wrap">{children}</div>
+      </div>
+      <MarketingFooter />
+    </main>
   )
 }

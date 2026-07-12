@@ -8,9 +8,9 @@ import { YieldTable } from '../../components/yield-table'
 export const revalidate = 1800
 
 export const metadata: Metadata = {
-  title: 'Safest DeFi Yields Right Now — Safety-Graded | QuickYield',
+  title: 'Safest Onchain Yields Right Now — Safety-Graded',
   description:
-    'Live, safety-graded DeFi yield pools across major chains. See the safest stablecoin, ETH, and SOL yields right now — research only, no wallet, no custody.',
+    'Live, safety-graded onchain yield pools across major chains. See the safest stablecoin, ETH, and SOL yields right now — research only, no wallet, no custody.',
   alternates: { canonical: '/yields' },
 }
 
@@ -31,7 +31,7 @@ export default async function YieldsIndexPage() {
         <div className="ql-wrap">
           <span className="ql-eyebrow">Live · safety-graded</span>
           <h1 className="ql-h2" style={{ fontSize: 'var(--fs-display)', letterSpacing: '-0.03em' }}>
-            The safest DeFi yields, <em style={{ color: 'var(--signal)', fontStyle: 'normal' }}>right now</em>.
+            The safest onchain yields, <em style={{ color: 'var(--brand-green)', fontStyle: 'normal' }}>right now</em>.
           </h1>
           <p className="ql-lead">
             QuickYield scans {total.toLocaleString()}+ pools across major chains and grades each one A–F for safety —

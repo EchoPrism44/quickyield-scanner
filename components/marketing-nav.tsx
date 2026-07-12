@@ -14,19 +14,20 @@ export function MarketingNav() {
 
   return (
     <nav
-      className={`qy-nav qy-nav-fade ${scrolled ? 'qy-glass' : ''}`}
+      className={`ql-nav ${scrolled ? 'ql-nav--scrolled' : ''}`}
       data-testid="marketing-nav"
     >
-      <div className="qy-nav-inner">
-        <BrandLogo href="/" className="qy-logo-nav" />
-        <div className="qy-nav-links">
-          <a href="#how" className="qy-nav-link">How it works</a>
-          <a href="#features" className="qy-nav-link">Features</a>
-          <Link href="/docs" className="qy-nav-link">Documentation</Link>
+      <div className="ql-nav-inner">
+        <BrandLogo href="/" className="ql-logo-nav" />
+        <div className="ql-nav-links">
+          <a href="/#how" className="ql-nav-link">How it works</a>
+          <Link href="/docs" className="ql-nav-link">Methodology</Link>
+          <Link href="/proof" className="ql-nav-link">Track record</Link>
+          <Link href="/yields" className="ql-nav-link">Yields</Link>
         </div>
-        <div className="qy-nav-actions">
-          <Link href="/sign-in" className="qy-nav-signin" data-testid="nav-signin">Sign in</Link>
-          <Link href="/sign-up" className="qy-btn qy-btn-ink" data-testid="nav-getstarted">Get started</Link>
+        <div className="ql-nav-actions">
+          <Link href="/sign-in" className="ql-nav-signin" data-testid="nav-signin">Sign in</Link>
+          <Link href="/sign-up" className="ql-btn ql-btn--primary ql-btn--sm" data-testid="nav-getstarted">Get started</Link>
         </div>
       </div>
     </nav>
