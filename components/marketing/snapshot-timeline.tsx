@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
-import { GRADE_LETTERS, type LedgerSnapshotSummary } from '../../lib/ledger'
+import { GRADE_LETTERS, type LedgerSnapshotSummary } from '../../lib/ledger-shared'
 import { GradeDistributionBars } from './grade-distribution-bars'
 
 const EASE = [0.16, 1, 0.3, 1] as const

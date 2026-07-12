@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'motion/react'
-import { GRADE_LETTERS, type GradeDistribution } from '../../lib/ledger'
+import { GRADE_LETTERS, type GradeDistribution } from '../../lib/ledger-shared'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 

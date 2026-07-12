@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 import { ArrowUpRight, GitCommit } from 'lucide-react'
-import { LEDGER_REPO_URL, type LedgerSummary } from '../../lib/ledger'
+import { LEDGER_REPO_URL, type LedgerSummary } from '../../lib/ledger-shared'
 import { GradeDistributionBars } from './grade-distribution-bars'
 import { StatCounter } from './stat-counter'
 
