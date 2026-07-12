@@ -1,26 +1,26 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'QuickYield — the Bloomberg Terminal for DeFi yield'
+export const alt = 'QuickYield — yield research you can audit, not just trust'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-const bg = '#050a12'
-const surface = '#0d1a2b'
-const border = '#1a2d42'
-const accent = '#ff6b35'
-const text = '#f4f8ff'
-const muted = '#8baabf'
-const up = '#34d399'
+const bg = '#07090d'
+const surface = '#10151c'
+const border = '#232c38'
+const blue = '#2f88ff'
+const green = '#00E676'
+const text = '#f5f6f8'
+const muted = '#a6adba'
 
-const tickerRows = [
-  { asset: 'stETH', chain: 'Ethereum', apy: '3.12%', grade: 'A' },
-  { asset: 'USDC', chain: 'Base', apy: '8.00%', grade: 'B' },
-  { asset: 'SOL', chain: 'Solana', apy: '6.44%', grade: 'A' },
+const ledgerRows = [
+  { date: '·', label: 'weekly snapshot', detail: 'every live pool graded A–F' },
+  { date: '·', label: 'committed to git', detail: 'timestamped before outcomes' },
+  { date: '·', label: 'public forever', detail: 'anyone can verify the record' },
 ]
 
 // QuickYield QY monogram — kept in sync with public/brand/qy-mark.svg.
-const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 96" fill="none"><defs><linearGradient id="g" x1="10" y1="14" x2="112" y2="86" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB020"/><stop offset=".5" stop-color="#FF7A00"/><stop offset="1" stop-color="#FF6B35"/></linearGradient></defs><g stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><circle cx="46" cy="48" r="30"/><path d="M54 58 70 74"/><path d="M62 26 84 52 106 26"/><path d="M84 52 84 76"/></g></svg>`
+const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" rx="24" fill="#0c0f17"/><circle cx="36" cy="50" r="14" fill="none" stroke="#FFFFFF" stroke-width="6.5"/><rect x="43" y="52" width="6.5" height="18" rx="3.25" transform="rotate(-35 48.5 61)" fill="#00E676"/><path d="M 58 35 L 68 49 L 78 35 M 68 49 L 68 65" fill="none" stroke="#00E676" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 const markDataUri = `data:image/svg+xml;base64,${btoa(markSvg)}`
 
 export default function OpengraphImage() {
@@ -39,14 +39,14 @@ export default function OpengraphImage() {
         }}
       >
         {/* top accent line */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, backgroundColor: accent }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, backgroundColor: green }} />
 
         {/* brand row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <img src={markDataUri} width={66} height={53} alt="" />
+          <img src={markDataUri} width={56} height={56} alt="" />
           <div style={{ display: 'flex', fontSize: 34, fontWeight: 700, letterSpacing: -1 }}>
             <span style={{ color: text }}>Quick</span>
-            <span style={{ color: accent }}>Yield</span>
+            <span style={{ color: green }}>Yield</span>
           </div>
           <div
             style={{
@@ -55,30 +55,30 @@ export default function OpengraphImage() {
               padding: '4px 12px',
               borderRadius: 999,
               border: `1px solid ${border}`,
-              color: up,
+              color: green,
               fontSize: 16,
               letterSpacing: 2,
             }}
           >
-            ● LIVE
+            ● PUBLIC LEDGER
           </div>
         </div>
 
         {/* headline */}
         <div style={{ display: 'flex', flexDirection: 'column', marginTop: 56 }}>
-          <div style={{ display: 'flex', fontSize: 68, fontWeight: 800, color: text, lineHeight: 1.05, letterSpacing: -2 }}>
-            The Bloomberg Terminal
+          <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, color: text, lineHeight: 1.05, letterSpacing: -2 }}>
+            Yield research you can
           </div>
-          <div style={{ display: 'flex', fontSize: 68, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2 }}>
-            <span style={{ color: text }}>for&nbsp;</span>
-            <span style={{ color: accent }}>DeFi yield</span>
+          <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2 }}>
+            <span style={{ color: green }}>audit</span>
+            <span style={{ color: text }}>, not just trust.</span>
           </div>
-          <div style={{ display: 'flex', fontSize: 28, color: muted, marginTop: 24, maxWidth: 820 }}>
-            Scan live pools, grade their safety A–F, and get alerted before yields turn.
+          <div style={{ display: 'flex', fontSize: 27, color: muted, marginTop: 24, maxWidth: 880 }}>
+            Every pool graded A–F under a published methodology — every grade on a public, timestamped ledger.
           </div>
         </div>
 
-        {/* mini terminal panel */}
+        {/* mini ledger panel */}
         <div
           style={{
             display: 'flex',
@@ -91,30 +91,12 @@ export default function OpengraphImage() {
             gap: 14,
           }}
         >
-          {tickerRows.map((row) => (
-            <div key={row.asset} style={{ display: 'flex', alignItems: 'center', fontSize: 22 }}>
-              <div style={{ display: 'flex', width: 360, color: text, fontWeight: 600 }}>
-                {row.asset}
-                <span style={{ color: muted, fontWeight: 400 }}>&nbsp;· {row.chain}</span>
-              </div>
-              <div style={{ display: 'flex', width: 160, color: up, fontWeight: 700 }}>{row.apy}</div>
-              <div style={{ display: 'flex', color: muted }}>Safety grade&nbsp;</div>
-              <div
-                style={{
-                  display: 'flex',
-                  marginLeft: 8,
-                  width: 34,
-                  height: 34,
-                  borderRadius: 8,
-                  backgroundColor: row.grade === 'A' ? up : accent,
-                  color: bg,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 800,
-                }}
-              >
-                {row.grade}
-              </div>
+          {ledgerRows.map((row) => (
+            <div key={row.label} style={{ display: 'flex', alignItems: 'center', fontSize: 22 }}>
+              <div style={{ display: 'flex', width: 26, color: green, fontWeight: 800 }}>{row.date}</div>
+              <div style={{ display: 'flex', width: 330, color: text, fontWeight: 600 }}>{row.label}</div>
+              <div style={{ display: 'flex', color: muted }}>{row.detail}</div>
+              <div style={{ display: 'flex', marginLeft: 'auto', color: blue, fontWeight: 700 }}>✓</div>
             </div>
           ))}
         </div>
