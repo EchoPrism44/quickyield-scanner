@@ -8,19 +8,27 @@ import type { QuickYieldScoreBreakdown, SafetyGrade, SafetyGradeLetter } from '.
  * (attached to opportunities) and the client (landing + terminal display).
  */
 
-const WEIGHTS = {
+/** Signal weights behind every Safety Grade. Exported so the public
+ *  methodology docs render from the same constants the model uses. */
+export const WEIGHTS = {
   liquidity: 0.3,
   stability: 0.3,
   sustainability: 0.25,
   completeness: 0.15,
 } as const
 
+/** Grade bands (min score → letter). Exported for the methodology docs. */
+export const BANDS: ReadonlyArray<{ letter: SafetyGradeLetter; min: number; label: string }> = [
+  { letter: 'A', min: 85, label: 'Very safe' },
+  { letter: 'B', min: 72, label: 'Safe' },
+  { letter: 'C', min: 60, label: 'Moderate' },
+  { letter: 'D', min: 45, label: 'Elevated risk' },
+  { letter: 'F', min: 0, label: 'High risk' },
+]
+
 function bandFor(score: number): { letter: SafetyGradeLetter; label: string } {
-  if (score >= 85) return { letter: 'A', label: 'Very safe' }
-  if (score >= 72) return { letter: 'B', label: 'Safe' }
-  if (score >= 60) return { letter: 'C', label: 'Moderate' }
-  if (score >= 45) return { letter: 'D', label: 'Elevated risk' }
-  return { letter: 'F', label: 'High risk' }
+  const band = BANDS.find((b) => score >= b.min) ?? BANDS[BANDS.length - 1]
+  return { letter: band.letter, label: band.label }
 }
 
 export function computeSafetyGrade(b: QuickYieldScoreBreakdown): SafetyGrade {

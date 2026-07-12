@@ -1,5 +1,5 @@
 /* ============================================================
-   QuickYield marketing / landing  —  premium-minimalist Bloomberg
+   QuickYield marketing / landing — premium dark, ledger-first.
    Self-contained `.ql-*` namespace (no collision with dashboard
    `.qy-*` classes). Keys off styles/tokens.css.
    ============================================================ */
@@ -182,11 +182,11 @@
   display: inline-block; min-width: 22px; padding: 2px 6px; border-radius: var(--r-xs);
   font-weight: 700; font-size: 11px; text-align: center;
 }
-.ql-grade-a { background: var(--up-soft); color: var(--up); }
-.ql-grade-b { background: rgba(120, 220, 160, 0.12); color: #7adfa0; }
-.ql-grade-c { background: rgba(255, 176, 32, 0.12); color: var(--warn); }
-.ql-grade-d { background: rgba(255, 107, 53, 0.16); color: var(--signal); }
-.ql-grade-f { background: var(--down-soft); color: var(--down); }
+.ql-grade-a { background: var(--brand-green-soft); color: var(--grade-a); }
+.ql-grade-b { background: rgba(122, 223, 160, 0.12); color: var(--grade-b); }
+.ql-grade-c { background: rgba(255, 176, 32, 0.12); color: var(--grade-c); }
+.ql-grade-d { background: rgba(255, 138, 77, 0.16); color: var(--grade-d); }
+.ql-grade-f { background: var(--down-soft); color: var(--grade-f); }
 .ql-terminal-foot {
   display: flex; align-items: center; gap: 8px;
   padding: 12px 16px; border-top: 1px solid var(--line);
@@ -414,6 +414,153 @@
   text-transform: uppercase; letter-spacing: 0.06em; transition: all var(--dur) var(--ease-out);
 }
 .ql-asset-chip:hover { border-color: var(--line-hover); color: var(--ink); background: rgba(255, 255, 255, 0.03); }
+
+/* ============================================================
+   Marketing nav (ql — replaces the old qy-nav on public pages)
+   ============================================================ */
+.ql-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; transition: background var(--dur) var(--ease-out), border-color var(--dur); border-bottom: 1px solid transparent; }
+.ql-nav--scrolled { background: rgba(7, 9, 13, 0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--line); }
+.ql-nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; width: min(var(--maxw-wide), 100%); margin: 0 auto; padding-inline: var(--ql-gutter, 24px); }
+.ql-nav-links { display: none; gap: 28px; }
+@media (min-width: 768px) { .ql-nav-links { display: flex; } }
+.ql-nav-link { font-size: var(--fs-sm); color: var(--ink-dim); transition: color var(--dur-fast); }
+.ql-nav-link:hover { color: var(--ink); }
+.ql-nav-actions { display: flex; align-items: center; gap: 12px; }
+.ql-nav-signin { display: none; font-size: var(--fs-sm); color: var(--ink-dim); background: none; border: 0; }
+@media (min-width: 768px) { .ql-nav-signin { display: block; } }
+.ql-nav-signin:hover { color: var(--ink); }
+
+/* ============================================================
+   Ledger hero — the public track record as the centerpiece
+   ============================================================ */
+.ql-ledger {
+  border: 1px solid var(--line-strong); border-radius: var(--r-lg);
+  background: var(--bg-surface); box-shadow: var(--shadow-lg); overflow: hidden;
+}
+.ql-ledger-bar {
+  display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: var(--fs-overline);
+  text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-mute);
+}
+.ql-ledger-bar b { margin-left: auto; color: var(--brand-green); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.ql-ledger-rail { display: grid; gap: 0; }
+.ql-ledger-block { position: relative; padding: 14px 16px 14px 40px; border-top: 1px solid var(--line); }
+.ql-ledger-block:first-child { border-top: 0; }
+.ql-ledger-block::before {
+  content: ""; position: absolute; left: 19px; top: 0; bottom: 0; width: 1px;
+  background: var(--line-strong);
+}
+.ql-ledger-block::after {
+  content: ""; position: absolute; left: 15px; top: 20px; width: 9px; height: 9px;
+  border-radius: var(--r-pill); background: var(--brand-green);
+  box-shadow: 0 0 10px var(--brand-green-soft);
+}
+.ql-ledger-block--ghost::after { background: transparent; border: 1px dashed var(--ink-mute); box-shadow: none; }
+.ql-ledger-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ql-ledger-date { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--ink); font-weight: 600; }
+.ql-ledger-count { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.ql-ledger-json {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em;
+  color: var(--ink-mute); transition: color var(--dur-fast);
+}
+.ql-ledger-json:hover { color: var(--signal); }
+.ql-ledger-block--ghost { color: var(--ink-mute); }
+.ql-ledger-ghost-label { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-mute); }
+.ql-ledger-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 16px; border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: var(--fs-overline);
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute);
+}
+.ql-ledger-foot a { color: var(--ink-dim); display: inline-flex; align-items: center; gap: 6px; }
+.ql-ledger-foot a:hover { color: var(--ink); }
+
+/* ---- grade distribution bars (hero + proof) ---- */
+.ql-dist { display: grid; gap: 6px; margin-top: 10px; }
+.ql-dist--compact { gap: 4px; margin-top: 8px; }
+.ql-dist-row { display: grid; grid-template-columns: 16px 1fr auto; gap: 10px; align-items: center; }
+.ql-dist--compact .ql-dist-row { grid-template-columns: 14px 1fr; }
+.ql-dist-letter { font-family: var(--font-mono); font-size: 10px; font-weight: 700; }
+.ql-dist-track { height: 5px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.05); overflow: hidden; }
+.ql-dist-fill { display: block; height: 100%; border-radius: var(--r-pill); }
+.ql-dist-count { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; }
+
+/* ---- signal weight bars (landing + docs) ---- */
+.ql-weights { display: grid; gap: var(--sp-4); }
+.ql-weight-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.ql-weight-name { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: 600; color: var(--ink); }
+.ql-weight-pct { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--brand-green); font-variant-numeric: tabular-nums; }
+.ql-weight-track { height: 6px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+.ql-weight-fill { display: block; height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--signal), var(--brand-green)); }
+.ql-weight-blurb { margin-top: 6px; color: var(--ink-dim); font-size: var(--fs-sm); line-height: 1.55; }
+
+/* ---- grade threshold strip ---- */
+.ql-thresholds { display: flex; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; margin-top: var(--sp-5); }
+.ql-threshold { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid var(--line); }
+.ql-threshold:last-child { border-right: 0; }
+.ql-threshold b { display: block; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 700; }
+.ql-threshold span { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.04em; }
+
+/* ---- disclaimer band (required near grades) ---- */
+.ql-disclaimer {
+  display: flex; gap: 12px; align-items: flex-start;
+  border: 1px solid var(--line); border-left: 3px solid var(--warn);
+  border-radius: var(--r-md); background: rgba(255, 176, 32, 0.05);
+  padding: var(--sp-4) var(--sp-5);
+  color: var(--ink-dim); font-size: var(--fs-sm); line-height: 1.6;
+}
+.ql-disclaimer a { color: var(--signal); }
+.ql-disclaimer a:hover { text-decoration: underline; }
+
+/* ============================================================
+   Docs / methodology
+   ============================================================ */
+.ql-docs { padding-top: 128px; }
+.ql-docs-hero { max-width: 760px; margin-bottom: var(--sp-8); }
+.ql-docs-section { padding-block: var(--sp-6); border-top: 1px solid var(--line); scroll-margin-top: 96px; }
+.ql-docs-section h2 { font-family: var(--font-display); font-size: var(--fs-xl); color: var(--ink); letter-spacing: -0.015em; }
+.ql-docs-section > p { margin-top: var(--sp-3); max-width: 68ch; color: var(--ink-dim); font-size: var(--fs-base); line-height: 1.7; }
+.ql-docs-grid { display: grid; gap: var(--sp-5); margin-top: var(--sp-5); }
+@media (min-width: 860px) { .ql-docs-grid { grid-template-columns: 1fr 1fr; } }
+.ql-docs-fields { margin-top: var(--sp-4); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.ql-docs-field { display: grid; grid-template-columns: 160px 1fr; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: var(--fs-sm); }
+.ql-docs-field:first-child { border-top: 0; }
+.ql-docs-field code { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--brand-green); }
+.ql-docs-field span { color: var(--ink-dim); }
+.ql-faq { display: grid; gap: var(--sp-4); margin-top: var(--sp-5); }
+.ql-faq-item { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-surface); padding: var(--sp-4) var(--sp-5); }
+.ql-faq-item h3 { font-family: var(--font-display); font-size: var(--fs-base); color: var(--ink); }
+.ql-faq-item p { margin-top: 8px; color: var(--ink-dim); font-size: var(--fs-sm); line-height: 1.65; }
+
+/* ============================================================
+   Proof / track record
+   ============================================================ */
+.ql-proof-hero { padding-top: 132px; max-width: 780px; }
+.ql-proof-timeline { display: grid; gap: var(--sp-4); margin-top: var(--sp-6); }
+.ql-proof-snap {
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--bg-surface); padding: var(--sp-5);
+  transition: border-color var(--dur) var(--ease-out);
+}
+.ql-proof-snap:hover { border-color: var(--line-strong); }
+.ql-proof-snap-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.ql-proof-snap-date { font-family: var(--font-mono); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
+.ql-proof-snap-meta { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+.ql-proof-steps { display: grid; gap: var(--sp-4); margin-top: var(--sp-5); counter-reset: proofstep; }
+@media (min-width: 760px) { .ql-proof-steps { grid-template-columns: repeat(3, 1fr); } }
+.ql-proof-step { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-surface); padding: var(--sp-4); }
+.ql-proof-step::before {
+  counter-increment: proofstep; content: "0" counter(proofstep);
+  display: block; font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--brand-green); margin-bottom: 8px;
+}
+.ql-proof-step p { color: var(--ink-dim); font-size: var(--fs-sm); line-height: 1.6; }
+.ql-evolution { display: grid; gap: 8px; margin-top: var(--sp-5); }
+.ql-evolution-row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center; }
+.ql-evolution-date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-dim); }
+.ql-evolution-bar { display: flex; height: 14px; border-radius: var(--r-xs); overflow: hidden; }
+.ql-evolution-seg { height: 100%; }
 
 .ql-yield-table { border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden; background: var(--bg-surface); }
 .ql-yield-head, .ql-yield-row {
