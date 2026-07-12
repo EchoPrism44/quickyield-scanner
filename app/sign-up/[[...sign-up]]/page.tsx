@@ -1,6 +1,12 @@
 import { SignUp } from '@clerk/nextjs'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BrandLogo } from '../../../components/brand-logo'
+
+export const metadata: Metadata = {
+  title: 'Create account',
+  robots: { index: false },
+}
 
 export default function SignUpPage() {
   if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {

@@ -67,9 +67,9 @@ npm run db:push
 
 ## UI Overview
 
-A premium-minimalist **Bloomberg terminal** aesthetic that maps directly to the product's positioning ("The Bloomberg Terminal for DeFi yield"). Landing styles live in `styles/marketing.css` (`.ql-*` namespace); the app/dashboard styles use the `.qy-*` system in `app/globals.css`.
+A premium dark, ledger-first aesthetic that maps directly to the product's positioning ("Yield research you can audit, not just trust"). Landing styles live in `styles/marketing.css` (`.ql-*` namespace); the app/dashboard styles use the `.qy-*` system in `app/globals.css`. Marketing animation runs on `motion` (framer-motion v12) client islands.
 
-- **Landing page** (`/`) — Editorial hero with a live streaming terminal panel, ticker tape, count-up stats, the problem framing, a 4-step "How it works", the Safety-Grade intelligence section, a product preview, a trust band, CTA, and a minimal footer with legal links.
+- **Landing page** (`/`) — Ledger-first hero: the public grade ledger rendered as an animated commit rail (real weekly snapshots from `data/grades/`), ticker tape, real-number stats, the problem framing, the methodology section (real model weights + A–F thresholds), a 4-step "How it works", alerts + live terminal preview, a transparency band, disclaimer, CTA, and shared footer.
 - **Terminal** (`/terminal`) — The authed app. Sidebar navigation across Discover, Alerts, and Settings. The Discover table supports filtering (chain, asset, risk, category, time), presets, a yield heatmap, and APY/TVL/safety sorting. (Legacy `/dashboard` URLs 308-redirect here.)
 - **Legal** (`/legal/terms`, `/legal/privacy`, `/legal/disclaimer`) — Research-only / no-custody / not-financial-advice pages.
 

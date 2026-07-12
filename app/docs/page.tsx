@@ -1,94 +1,159 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { GitCommit, ShieldCheck, Bell, Database } from 'lucide-react'
+import { AnimatedSection } from '../../components/marketing/animated-section'
+import { WeightBars } from '../../components/marketing/weight-bars'
+import { BANDS } from '../../lib/grade'
+import { LEDGER_REPO_URL } from '../../lib/ledger'
 
 export const metadata: Metadata = {
-  title: 'Documentation — QuickYield',
+  title: 'Methodology — how Safety Grades work',
   description:
-    'How QuickYield works: the Safety Grade methodology, data sources, alerts and the weekly digest, and the research-only model.',
+    'The published methodology behind QuickYield Safety Grades: the four signals, their exact weights, the A–F thresholds, data sources and limitations, and the public grade ledger.',
+  alternates: { canonical: '/docs' },
 }
 
 export default function DocsPage() {
   return (
     <>
-      <h1>Documentation</h1>
-      <div className="ql-legal-meta">How QuickYield scans, scores, and alerts</div>
-
-      <div className="ql-legal-note">
-        QuickYield is a research and alerting tool — not a financial adviser, broker, or custodian. It never holds your
-        funds or keys. Everything below explains how the product reaches its conclusions so you can judge them for
-        yourself, then verify with the underlying protocol before acting.
+      <div className="ql-docs-hero">
+        <span className="ql-eyebrow">Methodology</span>
+        <h1 className="ql-h2" style={{ marginTop: 'var(--sp-4)' }}>
+          The methodology behind every grade.
+        </h1>
+        <p className="ql-lead">
+          When we say &ldquo;yield research you can audit,&rdquo; this page is the thing you audit.
+          The signals, the weights, and the thresholds below are the model&apos;s real constants —
+          the same code that grades every pool renders this page.
+        </p>
+        <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-5)' }}>
+          <span>
+            Safety Grades are our opinion under this published methodology. Informational only —
+            not investment advice, not an audit, and not a guarantee. Verify with the underlying
+            protocol before moving funds.
+          </span>
+        </div>
       </div>
 
-      <h2>Overview</h2>
-      <p>
-        QuickYield continuously scans live DeFi yield pools across major chains, ranks them with a transparent scoring
-        model, and surfaces a plain-English <strong>Safety Grade</strong> for every pool. You can save pools to a
-        watchlist, set plain-language alerts, and receive a weekly digest — all without connecting a wallet or giving up
-        custody. The goal is simple: surface <em>safer</em> yield before the crowd, and filter out the noise and the
-        traps.
-      </p>
+      <AnimatedSection className="ql-docs-section" id="signals" as="div">
+        <span className="ql-eyebrow"><Database size={12} /> The four signals</span>
+        <h2>What a grade is made of</h2>
+        <p>
+          Every pool earns a 0–100 score — a weighted blend of four transparent signals. The grade
+          also names its <em>weakest</em> signal, so an A-grade pool that is strong everywhere
+          except reward quality tells you exactly where to look first.
+        </p>
+        <div className="ql-docs-grid">
+          <WeightBars detailed />
+          <div>
+            <div className="ql-thresholds" style={{ marginTop: 0 }}>
+              {BANDS.map((b) => (
+                <div className="ql-threshold" key={b.letter}>
+                  <b style={{ color: `var(--grade-${b.letter.toLowerCase()})` }}>{b.letter}</b>
+                  <span>{b.min > 0 ? `score ≥ ${b.min}` : 'score < 45'}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-sm)', lineHeight: 1.65 }}>
+              Thresholds are fixed, not curved — a pool is never graded on its neighbors. When the
+              model changes, the change lands in the public repository like everything else, so the
+              methodology&apos;s own history is auditable too.
+            </p>
+          </div>
+        </div>
+      </AnimatedSection>
 
-      <h2>The Safety Grade</h2>
-      <p>
-        Every pool earns a letter grade from <strong>A</strong> (very safe) to <strong>F</strong>, distilled from a
-        0–100 score. The score is a weighted blend of four transparent signals — the same four shown on each pool&apos;s
-        detail page:
-      </p>
-      <ul>
-        <li><strong>Liquidity</strong> — is there enough TVL and market depth for the yield to be real and exitable?</li>
-        <li><strong>APY stability</strong> — is the rate steady over time, or did it spike only in the latest feed?</li>
-        <li><strong>Reward quality</strong> — is it sustainable base yield, or propped up by incentive tokens that fade?</li>
-        <li><strong>Data completeness</strong> — how much history and market context backs the score?</li>
-      </ul>
-      <p>
-        The grade also names its <em>weakest</em> factor, so an A-grade pool that is strong everywhere except reward
-        quality tells you exactly where to look. Grades are heuristic estimates, not guarantees — they are a starting
-        point for research, never a recommendation to deposit.
-      </p>
+      <AnimatedSection className="ql-docs-section" id="data" as="div">
+        <span className="ql-eyebrow"><Database size={12} /> Data &amp; limitations</span>
+        <h2>Where the data comes from — and where it stops</h2>
+        <p>
+          Pool data is sourced from public <strong>DeFiLlama</strong> feeds and refreshed on a live
+          scan. Each scan is snapshotted, so QuickYield accumulates its own APY and TVL history over
+          time; pool detail pages also pull per-pool history directly from DeFiLlama for 30- and
+          90-day context.
+        </p>
+        <p>
+          Just as important is what a grade is <em>not</em>: it does not review smart-contract code,
+          audit a protocol&apos;s team, or see anything the public market feed can&apos;t.{' '}
+          <strong>A grade is not an audit.</strong> Data can be delayed or incomplete — always
+          confirm on the protocol itself.
+        </p>
+      </AnimatedSection>
 
-      <h2>Data &amp; sources</h2>
-      <p>
-        Pool data is sourced from public <strong>DeFiLlama</strong> feeds and refreshed on a live scan. Each scan is
-        also snapshotted, so QuickYield accumulates its own APY and TVL history over time. On a pool&apos;s detail page
-        the APY/TVL chart pulls real per-pool history directly from DeFiLlama — so you can see 30-day and 90-day
-        behavior immediately, not just since you started tracking it. Data can be delayed or incomplete; always confirm
-        on the protocol itself.
-      </p>
+      <AnimatedSection className="ql-docs-section" id="ledger" as="div">
+        <span className="ql-eyebrow"><GitCommit size={12} /> The public ledger</span>
+        <h2>Every grade, on the record, before the outcome</h2>
+        <p>
+          Every Monday, an automated job grades every live pool and commits the full list to the
+          public repository as <code style={{ color: 'var(--brand-green)' }}>data/grades/&lt;date&gt;.json</code>.
+          The git history timestamps each snapshot, so the record is written <em>before</em> anyone
+          knows how those pools perform — the opposite of a cherry-picked backtest. Each snapshot
+          contains, for every pool:
+        </p>
+        <div className="ql-docs-fields">
+          {[
+            ['poolId', 'stable DeFiLlama pool identifier'],
+            ['project / chain / symbol', 'which protocol, network, and asset'],
+            ['apy', 'the APY at grading time'],
+            ['tvlUsd', 'pool TVL at grading time'],
+            ['grade / score', 'the Safety Grade letter and its 0–100 score'],
+          ].map(([code, desc]) => (
+            <div className="ql-docs-field" key={code}>
+              <code>{code}</code>
+              <span>{desc}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ marginTop: 'var(--sp-4)' }}>
+          Inspect the raw files at{' '}
+          <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer" style={{ color: 'var(--signal)' }}>
+            data/grades on GitHub ↗
+          </a>{' '}
+          or read the running history on the <Link href="/proof" style={{ color: 'var(--signal)' }}>track record page</Link>.
+        </p>
+      </AnimatedSection>
 
-      <h2>Alerts &amp; the weekly digest</h2>
-      <p>
-        Alerts are built in plain language — pick what should trigger one and QuickYield watches for it on every scan:
-      </p>
-      <ul>
-        <li><strong>APY rises above / drops below</strong> a threshold you set.</li>
-        <li><strong>APY drops fast</strong> — a sudden fall of N points in 24 hours.</li>
-        <li><strong>TVL drains</strong> — the pool loses a share of its liquidity since the last scan.</li>
-        <li><strong>Reward-reliant</strong> — incentive tokens make up too much of the APY.</li>
-      </ul>
-      <p>
-        Alerts fire only on a real match — never spam — and arrive by <strong>email or Telegram</strong>. Separately,
-        the <strong>weekly Safe Yield digest</strong> emails you every Sunday with your watchlist&apos;s APY and grade
-        moves plus the top safer picks you aren&apos;t already tracking. The digest is on by default and can be turned
-        off with a single toggle in Settings.
-      </p>
+      <AnimatedSection className="ql-docs-section" id="alerts" as="div">
+        <span className="ql-eyebrow"><Bell size={12} /> Alerts &amp; digest</span>
+        <h2>Alerts in plain language</h2>
+        <p>
+          Alerts are built in plain language — pick what should trigger one and QuickYield watches
+          for it on every scan: APY rising above or dropping below your threshold, a sudden APY
+          fall, TVL draining, or rewards making up too much of the yield. Alerts fire only on a
+          real match — never spam — by email or Telegram. Separately, the weekly digest emails you
+          every Sunday with your watchlist&apos;s APY and grade moves; one toggle turns it off.
+        </p>
+      </AnimatedSection>
 
-      <h2>Frequently asked</h2>
-      <p><strong>Does QuickYield hold my funds?</strong> No. It is non-custodial and never connects a wallet or executes
-        transactions. It is informational only.</p>
-      <p><strong>Is this financial advice?</strong> No. QuickYield provides research and signals; every decision and its
-        consequences are yours.</p>
-      <p><strong>Where does the data come from?</strong> Public DeFiLlama feeds, plus QuickYield&apos;s own accumulating
-        snapshot history.</p>
-      <p><strong>How often does it update?</strong> The market feed runs on a live scan; the weekly digest sends every
-        Sunday.</p>
+      <AnimatedSection className="ql-docs-section" id="faq" as="div">
+        <span className="ql-eyebrow"><ShieldCheck size={12} /> Frequently asked</span>
+        <h2>Straight answers</h2>
+        <div className="ql-faq">
+          {[
+            ['Is a Safety Grade an audit?', 'No. It is a published-methodology opinion computed from public market data. It does not review contract code or teams, and it is not a certification of safety.'],
+            ['Does QuickYield hold my funds?', 'No. It is non-custodial and never connects a wallet or executes transactions. It is research and alerting only.'],
+            ['Is this financial advice?', 'No. QuickYield provides research and signals; every decision and its consequences are yours.'],
+            ['Where does the data come from?', 'Public DeFiLlama feeds, plus QuickYield’s own accumulating snapshot history.'],
+            ['Can past grades be edited?', 'No. Snapshots live in a public git history — editing one would be visible to anyone. That is the point of the ledger.'],
+          ].map(([q, a]) => (
+            <div className="ql-faq-item" key={q}>
+              <h3>{q}</h3>
+              <p>{a}</p>
+            </div>
+          ))}
+        </div>
+      </AnimatedSection>
 
-      <h2>Disclaimers</h2>
-      <p>
-        DeFi carries significant risk, including total loss of capital. Safety Grades and scores are estimates, not
-        assurances. Verify every opportunity with the underlying protocol before moving funds. See our{' '}
-        <Link href="/legal/terms">Terms</Link>, <Link href="/legal/privacy">Privacy</Link>, and{' '}
-        <Link href="/legal/disclaimer">Disclaimer</Link> for the full picture.
-      </p>
+      <AnimatedSection className="ql-docs-section" as="div">
+        <h2>Disclaimers</h2>
+        <p>
+          Onchain yield carries significant risk, including total loss of capital. Safety Grades
+          and scores are estimates, not assurances. Verify every opportunity with the underlying
+          protocol before moving funds. See our <Link href="/legal/terms" style={{ color: 'var(--signal)' }}>Terms</Link>,{' '}
+          <Link href="/legal/privacy" style={{ color: 'var(--signal)' }}>Privacy</Link>, and{' '}
+          <Link href="/legal/disclaimer" style={{ color: 'var(--signal)' }}>Disclaimer</Link> for the full picture.
+        </p>
+      </AnimatedSection>
     </>
   )
 }

@@ -17,7 +17,7 @@ const steps: Step[] = [
     icon: Radar,
     overline: 'Step 1 · Scan',
     title: 'Find safer yield, fast',
-    body: 'Discover scans 1,500+ live pools and ranks them. Every pool gets a Safety Grade (A–F) with a plain-English reason, so high APY never hides high risk.',
+    body: 'Discover scans every live pool on the market feed and ranks them. Every pool gets a Safety Grade (A–F) with a plain-English reason, so high APY never hides high risk.',
   },
   {
     icon: Bookmark,
