@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { GRADE_LETTERS, type LedgerSnapshotSummary } from '../../lib/ledger-shared'
 
 function TooltipBox({ active, payload, label }: {
@@ -35,15 +35,16 @@ export function SafeShareTrend({ snapshots }: { snapshots: LedgerSnapshotSummary
   return (
     <div className="ql-chart">
       <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
+        <AreaChart data={data} margin={{ top: 8, right: 14, bottom: 4, left: 6 }}>
           <defs>
             <linearGradient id="safe-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="var(--brand-green)" stopOpacity={0.5} />
               <stop offset="100%" stopColor="var(--brand-green)" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <XAxis dataKey="date" tick={{ fill: 'var(--ink-mute)', fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={24} />
-          <YAxis unit="%" domain={[0, 100]} tick={{ fill: 'var(--ink-mute)', fontSize: 11 }} tickLine={false} axisLine={false} width={44} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+          <XAxis dataKey="date" tick={{ fill: 'var(--ink-mute)', fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={24} padding={{ left: 8, right: 8 }} />
+          <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(v) => `${v}%`} tick={{ fill: 'var(--ink-mute)', fontSize: 11 }} tickLine={false} axisLine={false} width={40} />
           <Tooltip content={<TooltipBox />} />
           <Area type="monotone" dataKey="safe" stroke="var(--brand-green)" strokeWidth={2} fill="url(#safe-grad)" isAnimationActive={false} />
         </AreaChart>

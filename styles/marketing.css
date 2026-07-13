@@ -609,6 +609,10 @@
 .ql-chart-tip-date { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
 .ql-chart-tip-row { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-dim); padding: 1px 0; }
 .ql-chart-tip-row span { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+.ql-chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: var(--sp-4); }
+.ql-chart-legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--ink-dim); }
+.ql-chart-legend-item i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.ql-chart-legend-item b { color: var(--ink); font-weight: 600; }
 
 .ql-yield-table { border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden; background: var(--bg-surface); }
 .ql-yield-head, .ql-yield-row {
