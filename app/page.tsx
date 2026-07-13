@@ -22,7 +22,7 @@ import { TickerTape } from '../components/marketing/ticker-tape'
 import { TerminalPreview } from '../components/marketing/terminal-preview'
 import { StatCounter } from '../components/marketing/stat-counter'
 import { WeightBars } from '../components/marketing/weight-bars'
-import { getLedgerSummary, LEDGER_REPO_URL } from '../lib/ledger'
+import { getLedgerSummary } from '../lib/ledger'
 import { getOpportunities } from '../lib/opportunities'
 import { BANDS } from '../lib/grade'
 
@@ -79,7 +79,7 @@ export default async function HomePage() {
             </h1>
             <p className="ql-hero-sub">
               QuickYield grades every live onchain yield pool A–F under a published methodology —
-              and commits every grade to a public, timestamped ledger before the outcome is known.
+              and publishes every grade to a public, timestamped ledger before the outcome is known.
             </p>
             <div className="ql-cta-row">
               <Link href="/terminal" className="ql-btn ql-btn--primary">
@@ -241,11 +241,11 @@ export default async function HomePage() {
               <div className="ql-trust-item">
                 <h4><GitCommit size={18} />A ledger that can&apos;t be rewritten</h4>
                 <p>
-                  Every Monday, every live pool&apos;s grade is committed to a public repository with a
-                  git timestamp — before the outcome is known. No edits, no hindsight.{' '}
-                  <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer" style={{ color: 'var(--signal)' }}>
-                    Inspect the raw files ↗
-                  </a>
+                  Every Monday, every live pool&apos;s grade is timestamped and published — before the
+                  outcome is known. No edits, no hindsight.{' '}
+                  <Link href="/proof" style={{ color: 'var(--signal)' }}>
+                    See the track record →
+                  </Link>
                 </p>
               </div>
               <div className="ql-trust-item">

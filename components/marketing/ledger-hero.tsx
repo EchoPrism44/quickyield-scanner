@@ -2,7 +2,8 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 import { ArrowUpRight, GitCommit } from 'lucide-react'
-import { LEDGER_REPO_URL, type LedgerSummary } from '../../lib/ledger-shared'
+import Link from 'next/link'
+import { type LedgerSummary } from '../../lib/ledger-shared'
 import { GradeDistributionBars } from './grade-distribution-bars'
 import { StatCounter } from './stat-counter'
 
@@ -29,17 +30,17 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
     return (
       <div className="ql-ledger" aria-label="Public grade ledger">
         <div className="ql-ledger-bar">
-          <GitCommit size={13} /> data/grades — public ledger
+          <GitCommit size={13} /> weekly grade ledger
         </div>
         <div className="ql-ledger-rail">
           <div className="ql-ledger-block ql-ledger-block--ghost">
-            <span className="ql-ledger-ghost-label">Snapshots load from the public repo</span>
+            <span className="ql-ledger-ghost-label">The weekly track record loads here</span>
           </div>
         </div>
         <div className="ql-ledger-foot">
-          <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer">
-            view the ledger on GitHub <ArrowUpRight size={11} />
-          </a>
+          <Link href="/proof">
+            see the track record <ArrowUpRight size={11} />
+          </Link>
         </div>
       </div>
     )
@@ -52,7 +53,7 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
     <div className="ql-ledger" aria-label="Public grade ledger — weekly snapshots">
       <div className="ql-ledger-bar">
         <GitCommit size={13} />
-        <span>data/grades — public ledger</span>
+        <span>weekly grade ledger</span>
         <b>
           <span className="ql-dot" />
           {ledger.totals.snapshotCount} snapshots
@@ -83,7 +84,7 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
                 </span>
               </div>
               {isLatest && <GradeDistributionBars dist={snap.dist} compact />}
-              <a className="ql-ledger-json" href={snap.githubUrl} target="_blank" rel="noreferrer">
+              <a className="ql-ledger-json" href={snap.dataUrl} target="_blank" rel="noreferrer">
                 raw JSON <ArrowUpRight size={10} />
               </a>
             </motion.div>
@@ -103,10 +104,10 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
       </div>
 
       <div className="ql-ledger-foot">
-        <span>timestamped in git · written before outcomes are known</span>
-        <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer">
-          GitHub <ArrowUpRight size={11} />
-        </a>
+        <span>timestamped weekly · written before outcomes are known</span>
+        <Link href="/proof">
+          track record <ArrowUpRight size={11} />
+        </Link>
       </div>
     </div>
   )

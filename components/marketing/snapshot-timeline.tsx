@@ -29,9 +29,16 @@ export function SnapshotTimeline({ snapshots }: { snapshots: LedgerSnapshotSumma
             </span>
           </div>
           <GradeDistributionBars dist={snap.dist} />
-          <a className="ql-ledger-json" href={snap.githubUrl} target="_blank" rel="noreferrer">
-            raw JSON <ArrowUpRight size={10} />
-          </a>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <a className="ql-ledger-json" href={snap.dataUrl} target="_blank" rel="noreferrer">
+              raw JSON <ArrowUpRight size={10} />
+            </a>
+            {snap.repoUrl && (
+              <a className="ql-ledger-json" href={snap.repoUrl} target="_blank" rel="noreferrer">
+                verify on GitHub <ArrowUpRight size={10} />
+              </a>
+            )}
+          </div>
         </motion.div>
       ))}
     </div>

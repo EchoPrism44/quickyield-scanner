@@ -6,12 +6,12 @@ import { MarketingFooter } from '../../components/marketing/marketing-footer'
 import { AnimatedSection } from '../../components/marketing/animated-section'
 import { SnapshotTimeline, DistributionEvolution } from '../../components/marketing/snapshot-timeline'
 import { StatCounter } from '../../components/marketing/stat-counter'
-import { getLedgerSummary, LEDGER_REPO_URL } from '../../lib/ledger'
+import { getLedgerSummary } from '../../lib/ledger'
 
 export const metadata: Metadata = {
   title: 'Track record — the public grade ledger',
   description:
-    'Every week QuickYield grades every live pool and commits it to a public, timestamped record anyone can inspect. No edits, no hindsight, no survivorship bias.',
+    'Every week QuickYield grades every live pool and publishes it to a public, timestamped record anyone can inspect. No edits, no hindsight, no survivorship bias.',
   alternates: { canonical: '/proof' },
 }
 
@@ -24,6 +24,8 @@ const GRADE_LEDGER_CONTRACT: string | null = null
 
 export default function ProofPage() {
   const ledger = getLedgerSummary()
+  const latestDataUrl = ledger?.latest.dataUrl ?? null
+  const hasPublicRepo = Boolean(ledger?.latest.repoUrl)
 
   return (
     <main className="ql">
@@ -38,14 +40,16 @@ export default function ProofPage() {
             We won&apos;t show you a backtest, because an honest one is impossible — the pools that
             fail vanish from public data, so any &ldquo;our grades predicted doom&rdquo; chart is
             survivorship bias dressed up as proof. So we do the opposite.{' '}
-            <strong>Every week we grade every live pool and commit it to a public, timestamped
+            <strong>Every week we grade every live pool and publish it to a public, timestamped
             record</strong> anyone can inspect. No edits. No hindsight. The track record builds in
             the open — and the future judges us.
           </p>
           <div className="ql-cta-row">
-            <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer" className="ql-btn ql-btn--primary">
-              <GitCommit size={16} strokeWidth={2.5} /> Open the public ledger
-            </a>
+            {latestDataUrl && (
+              <a href={latestDataUrl} target="_blank" rel="noreferrer" className="ql-btn ql-btn--primary">
+                <GitCommit size={16} strokeWidth={2.5} /> Open the latest snapshot
+              </a>
+            )}
             <Link href="/docs" className="ql-btn ql-btn--ghost">Read the methodology</Link>
           </div>
         </div>
@@ -110,25 +114,32 @@ export default function ProofPage() {
           </div>
           <div className="ql-proof-steps">
             <div className="ql-proof-step">
-              <p><strong style={{ color: 'var(--ink)' }}>Open the repository.</strong> The ledger lives in a public GitHub repo at <code style={{ color: 'var(--brand-green)' }}>data/grades/</code> — no account needed.</p>
+              <p><strong style={{ color: 'var(--ink)' }}>Open any snapshot.</strong> Every week&apos;s raw JSON is downloadable right here — one file per Monday, no account needed.</p>
             </div>
             <div className="ql-proof-step">
-              <p><strong style={{ color: 'var(--ink)' }}>Pick any dated file.</strong> Each one lists every pool we graded that Monday with its grade and score.</p>
+              <p><strong style={{ color: 'var(--ink)' }}>Pick any pool.</strong> Each snapshot lists every pool we graded that week with its grade and score at the time.</p>
             </div>
             <div className="ql-proof-step">
-              <p><strong style={{ color: 'var(--ink)' }}>Check the commit timestamp.</strong> Git records when each snapshot was written — before its outcomes were known.</p>
+              <p>
+                {hasPublicRepo ? (
+                  <><strong style={{ color: 'var(--ink)' }}>Check the timestamp.</strong> The same snapshots are mirrored to a public ledger repo, where the git commit records when each was written — before its outcomes were known.</>
+                ) : (
+                  <><strong style={{ color: 'var(--ink)' }}>Confirm it&apos;s unchanged.</strong> Snapshots are append-only and independently anchored (see below), so a past week can&apos;t be quietly edited after the fact.</>
+                )}
+              </p>
             </div>
           </div>
 
           <div className="ql-trust" style={{ marginTop: 'var(--sp-6)' }}>
             <span className="ql-eyebrow">Why this is the honest proof</span>
             <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-base)', lineHeight: 1.7, maxWidth: '72ch' }}>
-              A public commit history can&apos;t be quietly rewritten — every grade carries a git
-              timestamp from before its outcome was known. Because we record <em>every</em> pool we
-              grade (including the ones that later die), there&apos;s no survivorship bias: the
-              failures stay in the record. The predictive record matures over the coming months,
-              and we make no claim it can&apos;t yet support — grades are descriptive estimates of
-              current pool quality, not guarantees.
+              {hasPublicRepo
+                ? 'A public commit history can’t be quietly rewritten — every grade carries a git timestamp from before its outcome was known. '
+                : 'Every grade is recorded before its outcome is known, and the record is append-only. '}
+              Because we record <em>every</em> pool we grade (including the ones that later die),
+              there&apos;s no survivorship bias: the failures stay in the record. The predictive
+              record matures over the coming months, and we make no claim it can&apos;t yet support —
+              grades are descriptive estimates of current pool quality, not guarantees.
             </p>
             {GRADE_LEDGER_CONTRACT ? (
               <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-sm)' }}>

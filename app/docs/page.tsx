@@ -4,7 +4,6 @@ import { GitCommit, ShieldCheck, Bell, Database } from 'lucide-react'
 import { AnimatedSection } from '../../components/marketing/animated-section'
 import { WeightBars } from '../../components/marketing/weight-bars'
 import { BANDS } from '../../lib/grade'
-import { LEDGER_REPO_URL } from '../../lib/ledger'
 
 export const metadata: Metadata = {
   title: 'Methodology — how Safety Grades work',
@@ -56,8 +55,8 @@ export default function DocsPage() {
             </div>
             <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-sm)', lineHeight: 1.65 }}>
               Thresholds are fixed, not curved — a pool is never graded on its neighbors. When the
-              model changes, the change lands in the public repository like everything else, so the
-              methodology&apos;s own history is auditable too.
+              model changes, that change is published like every snapshot, so the methodology&apos;s
+              own history is auditable too.
             </p>
           </div>
         </div>
@@ -84,9 +83,10 @@ export default function DocsPage() {
         <span className="ql-eyebrow"><GitCommit size={12} /> The public ledger</span>
         <h2>Every grade, on the record, before the outcome</h2>
         <p>
-          Every Monday, an automated job grades every live pool and commits the full list to the
-          public repository as <code style={{ color: 'var(--brand-green)' }}>data/grades/&lt;date&gt;.json</code>.
-          The git history timestamps each snapshot, so the record is written <em>before</em> anyone
+          Every Monday, an automated job grades every live pool and publishes the full list as a
+          dated snapshot — <code style={{ color: 'var(--brand-green)' }}>&lt;date&gt;.json</code>,
+          downloadable from the <Link href="/proof" style={{ color: 'var(--signal)' }}>track record page</Link>.
+          Each snapshot is timestamped and append-only, so the record is written <em>before</em> anyone
           knows how those pools perform — the opposite of a cherry-picked backtest. Each snapshot
           contains, for every pool:
         </p>
@@ -105,11 +105,8 @@ export default function DocsPage() {
           ))}
         </div>
         <p style={{ marginTop: 'var(--sp-4)' }}>
-          Inspect the raw files at{' '}
-          <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer" style={{ color: 'var(--signal)' }}>
-            data/grades on GitHub ↗
-          </a>{' '}
-          or read the running history on the <Link href="/proof" style={{ color: 'var(--signal)' }}>track record page</Link>.
+          Read the running history — and download any week&apos;s raw JSON — on the{' '}
+          <Link href="/proof" style={{ color: 'var(--signal)' }}>track record page</Link>.
         </p>
       </AnimatedSection>
 

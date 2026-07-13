@@ -7,15 +7,32 @@ export const GRADE_LETTERS = ['A', 'B', 'C', 'D', 'F'] as const
 export type GradeLetter = (typeof GRADE_LETTERS)[number]
 export type GradeDistribution = Record<GradeLetter, number>
 
-export const LEDGER_REPO_URL = 'https://github.com/EchoPrism44/quickyield-scanner/tree/main/data/grades'
-export const LEDGER_BLOB_BASE = 'https://github.com/EchoPrism44/quickyield-scanner/blob/main/data/grades'
+/**
+ * Public data-only ledger repo (weekly JSON snapshots only — NOT the app
+ * source). Leave null until that repo exists; when set, the /proof and hero
+ * surfaces additionally show a "verify on GitHub" link. The app source repo
+ * stays private either way.
+ */
+export const LEDGER_REPO_URL = null as string | null
+const LEDGER_BLOB_BASE = LEDGER_REPO_URL ? `${LEDGER_REPO_URL.replace(/\/tree\/.*$/, '')}/blob/main` : null
+
+/** In-app raw JSON for a snapshot (served by app/api/ledger/[date]). */
+export function snapshotDataUrl(date: string): string {
+  return `/api/ledger/${date}`
+}
+
+/** Public-repo URL for a snapshot, or null until the data-only repo exists. */
+export function snapshotRepoUrl(date: string): string | null {
+  return LEDGER_BLOB_BASE ? `${LEDGER_BLOB_BASE}/${date}.json` : null
+}
 
 export type LedgerSnapshotSummary = {
   date: string
   count: number
   dist: GradeDistribution
   chains: number
-  githubUrl: string
+  dataUrl: string
+  repoUrl: string | null
 }
 
 export type LedgerSummary = {
