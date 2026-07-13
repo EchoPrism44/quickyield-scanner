@@ -3,7 +3,6 @@ import { join } from 'node:path'
 import {
   GRADE_LETTERS,
   snapshotDataUrl,
-  snapshotRepoUrl,
   type GradeDistribution,
   type GradeLetter,
   type LedgerSnapshotSummary,
@@ -24,7 +23,7 @@ import {
  * Client-safe types/constants live in lib/ledger-shared.ts.
  */
 
-export { GRADE_LETTERS, LEDGER_REPO_URL, snapshotDataUrl } from './ledger-shared'
+export { GRADE_LETTERS, snapshotDataUrl } from './ledger-shared'
 export type { GradeDistribution, GradeLetter, LedgerSnapshotSummary, LedgerSummary } from './ledger-shared'
 
 type RawSnapshot = {
@@ -55,7 +54,6 @@ function summarize(raw: RawSnapshot, file: string): LedgerSnapshotSummary {
     dist,
     chains: chains.size,
     dataUrl: snapshotDataUrl(date),
-    repoUrl: snapshotRepoUrl(date),
   }
 }
 

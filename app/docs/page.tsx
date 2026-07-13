@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { GitCommit, ShieldCheck, Bell, Database } from 'lucide-react'
+import { ScrollText, ShieldCheck, Bell, Database } from 'lucide-react'
 import { AnimatedSection } from '../../components/marketing/animated-section'
 import { WeightBars } from '../../components/marketing/weight-bars'
 import { BANDS } from '../../lib/grade'
@@ -80,15 +80,15 @@ export default function DocsPage() {
       </AnimatedSection>
 
       <AnimatedSection className="ql-docs-section" id="ledger" as="div">
-        <span className="ql-eyebrow"><GitCommit size={12} /> The public ledger</span>
+        <span className="ql-eyebrow"><ScrollText size={12} /> The record &amp; the on-chain ledger</span>
         <h2>Every grade, on the record, before the outcome</h2>
         <p>
           Every Monday, an automated job grades every live pool and publishes the full list as a
-          dated snapshot — <code style={{ color: 'var(--brand-green)' }}>&lt;date&gt;.json</code>,
-          downloadable from the <Link href="/proof" style={{ color: 'var(--signal)' }}>track record page</Link>.
-          Each snapshot is timestamped and append-only, so the record is written <em>before</em> anyone
-          knows how those pools perform — the opposite of a cherry-picked backtest. Each snapshot
-          contains, for every pool:
+          dated, timestamped snapshot. Each snapshot is append-only and written <em>before</em> anyone
+          knows how those pools perform — the opposite of a cherry-picked backtest. To make that
+          tamper-proof rather than just &ldquo;trust us,&rdquo; each snapshot&apos;s hash is anchored
+          on the <strong>Base blockchain</strong> — an immutable public ledger (launching soon). Every
+          snapshot records, for every pool:
         </p>
         <div className="ql-docs-fields">
           {[
@@ -105,7 +105,7 @@ export default function DocsPage() {
           ))}
         </div>
         <p style={{ marginTop: 'var(--sp-4)' }}>
-          Read the running history — and download any week&apos;s raw JSON — on the{' '}
+          See the running history, the grade-mix charts, and the on-chain verification status on the{' '}
           <Link href="/proof" style={{ color: 'var(--signal)' }}>track record page</Link>.
         </p>
       </AnimatedSection>
@@ -131,7 +131,7 @@ export default function DocsPage() {
             ['Does QuickYield hold my funds?', 'No. It is non-custodial and never connects a wallet or executes transactions. It is research and alerting only.'],
             ['Is this financial advice?', 'No. QuickYield provides research and signals; every decision and its consequences are yours.'],
             ['Where does the data come from?', 'Public DeFiLlama feeds, plus QuickYield’s own accumulating snapshot history.'],
-            ['Can past grades be edited?', 'No. Snapshots live in a public git history — editing one would be visible to anyone. That is the point of the ledger.'],
+            ['Can past grades be edited?', 'No. Each weekly snapshot is recorded before its outcome is known and is append-only; on-chain anchoring on Base (launching soon) makes any change independently detectable. That is the point of the record.'],
           ].map(([q, a]) => (
             <div className="ql-faq-item" key={q}>
               <h3>{q}</h3>

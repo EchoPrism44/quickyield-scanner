@@ -1,13 +1,12 @@
 'use client'
 
 import { motion, useReducedMotion } from 'motion/react'
-import { ArrowUpRight } from 'lucide-react'
-import { GRADE_LETTERS, type LedgerSnapshotSummary } from '../../lib/ledger-shared'
+import { type LedgerSnapshotSummary } from '../../lib/ledger-shared'
 import { GradeDistributionBars } from './grade-distribution-bars'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
-/** Full snapshot history — newest first, one card per committed week. */
+/** Full snapshot history — newest first, one visual card per weekly record. */
 export function SnapshotTimeline({ snapshots }: { snapshots: LedgerSnapshotSummary[] }) {
   const reduce = useReducedMotion()
   const newestFirst = [...snapshots].reverse()
@@ -29,48 +28,8 @@ export function SnapshotTimeline({ snapshots }: { snapshots: LedgerSnapshotSumma
             </span>
           </div>
           <GradeDistributionBars dist={snap.dist} />
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <a className="ql-ledger-json" href={snap.dataUrl} target="_blank" rel="noreferrer">
-              raw JSON <ArrowUpRight size={10} />
-            </a>
-            {snap.repoUrl && (
-              <a className="ql-ledger-json" href={snap.repoUrl} target="_blank" rel="noreferrer">
-                verify on GitHub <ArrowUpRight size={10} />
-              </a>
-            )}
-          </div>
         </motion.div>
       ))}
-    </div>
-  )
-}
-
-/** Stacked-percentage strip per snapshot — how the distribution evolves. */
-export function DistributionEvolution({ snapshots }: { snapshots: LedgerSnapshotSummary[] }) {
-  return (
-    <div className="ql-evolution">
-      {snapshots.map((snap) => {
-        const total = GRADE_LETTERS.reduce((sum, g) => sum + snap.dist[g], 0) || 1
-        return (
-          <div className="ql-evolution-row" key={snap.date}>
-            <span className="ql-evolution-date">{snap.date}</span>
-            <div className="ql-evolution-bar" role="img"
-              aria-label={GRADE_LETTERS.map((g) => `${g} ${Math.round((snap.dist[g] / total) * 100)}%`).join(', ')}>
-              {GRADE_LETTERS.map((g) => (
-                <span
-                  key={g}
-                  className="ql-evolution-seg"
-                  style={{
-                    width: `${(snap.dist[g] / total) * 100}%`,
-                    background: `var(--grade-${g.toLowerCase()})`,
-                    opacity: 0.85,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )
-      })}
     </div>
   )
 }

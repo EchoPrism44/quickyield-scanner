@@ -29,8 +29,8 @@ export function MarketingFooter() {
           <div>
             <h5>Transparency</h5>
             <ul>
-              <li><Link href="/proof">The public grade ledger</Link></li>
-              <li><Link href="/docs#ledger">How the ledger works</Link></li>
+              <li><Link href="/proof">Public track record</Link></li>
+              <li><Link href="/docs#ledger">The on-chain ledger</Link></li>
               <li><Link href="/docs#signals">Grading signals</Link></li>
             </ul>
           </div>

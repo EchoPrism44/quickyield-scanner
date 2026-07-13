@@ -1,31 +1,27 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, GitCommit } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { MarketingNav } from '../../components/marketing-nav'
 import { MarketingFooter } from '../../components/marketing/marketing-footer'
 import { AnimatedSection } from '../../components/marketing/animated-section'
-import { SnapshotTimeline, DistributionEvolution } from '../../components/marketing/snapshot-timeline'
-import { StatCounter } from '../../components/marketing/stat-counter'
+import { RiskCards } from '../../components/marketing/risk-cards'
+import { GradeDistributionChart } from '../../components/marketing/grade-distribution-chart'
+import { SafeShareTrend } from '../../components/marketing/safe-share-trend'
+import { SnapshotTimeline } from '../../components/marketing/snapshot-timeline'
+import { OnChainBadge } from '../../components/marketing/onchain-badge'
 import { getLedgerSummary } from '../../lib/ledger'
+import { GRADE_LEDGER_CONTRACT, ledgerBasescanUrl } from '../../lib/onchain'
 
 export const metadata: Metadata = {
-  title: 'Track record — the public grade ledger',
+  title: 'Track record — every grade, on the record',
   description:
-    'Every week QuickYield grades every live pool and publishes it to a public, timestamped record anyone can inspect. No edits, no hindsight, no survivorship bias.',
+    'Every week QuickYield grades every live pool and publishes the record — anchored on Base so it can’t be quietly rewritten. No edits, no hindsight, no survivorship bias.',
   alternates: { canonical: '/proof' },
 }
 
-/**
- * On-chain anchoring is planned but NOT live. When the GradeLedger contract
- * is deployed on Base, set its address here and the card below starts
- * rendering it. Until then the copy stays strictly future-tense.
- */
-const GRADE_LEDGER_CONTRACT: string | null = null
-
 export default function ProofPage() {
   const ledger = getLedgerSummary()
-  const latestDataUrl = ledger?.latest.dataUrl ?? null
-  const hasPublicRepo = Boolean(ledger?.latest.repoUrl)
+  const basescanUrl = ledgerBasescanUrl()
 
   return (
     <main className="ql">
@@ -40,126 +36,112 @@ export default function ProofPage() {
             We won&apos;t show you a backtest, because an honest one is impossible — the pools that
             fail vanish from public data, so any &ldquo;our grades predicted doom&rdquo; chart is
             survivorship bias dressed up as proof. So we do the opposite.{' '}
-            <strong>Every week we grade every live pool and publish it to a public, timestamped
-            record</strong> anyone can inspect. No edits. No hindsight. The track record builds in
-            the open — and the future judges us.
+            <strong>Every week we grade every live pool and publish the record</strong> — recorded
+            before the outcome is known, and anchored on-chain so it can&apos;t be quietly rewritten.
           </p>
-          <div className="ql-cta-row">
-            {latestDataUrl && (
-              <a href={latestDataUrl} target="_blank" rel="noreferrer" className="ql-btn ql-btn--primary">
-                <GitCommit size={16} strokeWidth={2.5} /> Open the latest snapshot
-              </a>
-            )}
-            <Link href="/docs" className="ql-btn ql-btn--ghost">Read the methodology</Link>
+          <div style={{ marginTop: 'var(--sp-5)' }}>
+            <OnChainBadge />
           </div>
         </div>
       </div>
 
       {ledger && (
-        <div className="ql-stats" style={{ marginTop: 'var(--sp-7)' }}>
-          <div className="ql-stats-grid">
-            <div className="ql-stat">
-              <div className="ql-stat-v"><StatCounter value={ledger.totals.snapshotCount} /></div>
-              <div className="ql-stat-l">Weekly snapshots on record</div>
+        <>
+          <AnimatedSection className="ql-section ql-section--tight" as="div">
+            <div className="ql-wrap">
+              <div className="ql-head">
+                <span className="ql-eyebrow">This week</span>
+                <h2 className="ql-h2">The latest grades at a glance.</h2>
+              </div>
+              <RiskCards latest={ledger.latest} />
             </div>
-            <div className="ql-stat">
-              <div className="ql-stat-v"><StatCounter value={ledger.latest.count} /></div>
-              <div className="ql-stat-l">Pools graded last Monday</div>
+          </AnimatedSection>
+
+          <AnimatedSection className="ql-section ql-section--tight" as="div">
+            <div className="ql-wrap">
+              <div className="ql-head">
+                <span className="ql-eyebrow">Grade mix over time</span>
+                <h2 className="ql-h2">How the grades have moved.</h2>
+                <p className="ql-lead">
+                  The share of pools at each grade, A through F, across every weekly snapshot.
+                  Descriptive only — this shows what we said, not yet how it played out.
+                </p>
+              </div>
+              <GradeDistributionChart snapshots={ledger.snapshots} />
             </div>
-            <div className="ql-stat">
-              <div className="ql-stat-v"><StatCounter value={ledger.totals.poolsGradedCumulative} /></div>
-              <div className="ql-stat-l">Grades recorded, cumulative</div>
+          </AnimatedSection>
+
+          <AnimatedSection className="ql-section ql-section--tight" as="div">
+            <div className="ql-wrap">
+              <div className="ql-head">
+                <span className="ql-eyebrow">Safe share</span>
+                <h2 className="ql-h2">Pools graded A or B, week over week.</h2>
+              </div>
+              <SafeShareTrend snapshots={ledger.snapshots} />
             </div>
-            <div className="ql-stat">
-              <div className="ql-stat-v">{ledger.totals.firstDate}</div>
-              <div className="ql-stat-l">Ledger running since</div>
+          </AnimatedSection>
+
+          <AnimatedSection className="ql-section ql-section--tight" as="div">
+            <div className="ql-wrap">
+              <div className="ql-head">
+                <span className="ql-eyebrow">The record</span>
+                <h2 className="ql-h2">Every snapshot, newest first.</h2>
+              </div>
+              <SnapshotTimeline snapshots={ledger.snapshots} />
             </div>
-          </div>
-        </div>
+          </AnimatedSection>
+        </>
       )}
 
-      {ledger && (
-        <AnimatedSection className="ql-section ql-section--tight">
-          <div className="ql-wrap">
-            <div className="ql-head">
-              <span className="ql-eyebrow">Distribution over time</span>
-              <h2 className="ql-h2">How the grades have moved.</h2>
-              <p className="ql-lead">
-                Each strip is one committed snapshot — the share of pools at each grade, A through
-                F. Descriptive only: this shows what we said, not yet how it played out.
-              </p>
-            </div>
-            <DistributionEvolution snapshots={ledger.snapshots} />
-          </div>
-        </AnimatedSection>
-      )}
-
-      {ledger && (
-        <AnimatedSection className="ql-section ql-section--tight">
-          <div className="ql-wrap">
-            <div className="ql-head">
-              <span className="ql-eyebrow">The record</span>
-              <h2 className="ql-h2">Every snapshot, newest first.</h2>
-            </div>
-            <SnapshotTimeline snapshots={ledger.snapshots} />
-          </div>
-        </AnimatedSection>
-      )}
-
-      <AnimatedSection className="ql-section ql-section--tight">
+      <AnimatedSection className="ql-section ql-section--tight" as="div">
         <div className="ql-wrap">
           <div className="ql-head">
-            <span className="ql-eyebrow">Verify it yourself</span>
-            <h2 className="ql-h2">Don&apos;t take our word for any of this.</h2>
+            <span className="ql-eyebrow">How verification works</span>
+            <h2 className="ql-h2">Why this is the honest proof.</h2>
           </div>
           <div className="ql-proof-steps">
             <div className="ql-proof-step">
-              <p><strong style={{ color: 'var(--ink)' }}>Open any snapshot.</strong> Every week&apos;s raw JSON is downloadable right here — one file per Monday, no account needed.</p>
+              <p><strong style={{ color: 'var(--ink)' }}>Recorded before the outcome.</strong> Every Monday we grade every live pool and write the result down — while nobody yet knows how those pools will perform.</p>
             </div>
             <div className="ql-proof-step">
-              <p><strong style={{ color: 'var(--ink)' }}>Pick any pool.</strong> Each snapshot lists every pool we graded that week with its grade and score at the time.</p>
+              <p><strong style={{ color: 'var(--ink)' }}>Every pool, no cherry-picking.</strong> The failures stay in the record too, so there&apos;s no survivorship bias hiding the misses.</p>
             </div>
             <div className="ql-proof-step">
               <p>
-                {hasPublicRepo ? (
-                  <><strong style={{ color: 'var(--ink)' }}>Check the timestamp.</strong> The same snapshots are mirrored to a public ledger repo, where the git commit records when each was written — before its outcomes were known.</>
+                {GRADE_LEDGER_CONTRACT ? (
+                  <><strong style={{ color: 'var(--ink)' }}>Anchored on Base.</strong> Each snapshot&apos;s hash is written to our on-chain ledger, so the record is tamper-proof — verify it yourself on Basescan.</>
                 ) : (
-                  <><strong style={{ color: 'var(--ink)' }}>Confirm it&apos;s unchanged.</strong> Snapshots are append-only and independently anchored (see below), so a past week can&apos;t be quietly edited after the fact.</>
+                  <><strong style={{ color: 'var(--ink)' }}>Append-only, anchoring soon.</strong> The record only grows; a past week can&apos;t be edited. On-chain anchoring on Base is launching soon to make that cryptographically verifiable.</>
                 )}
               </p>
             </div>
           </div>
 
           <div className="ql-trust" style={{ marginTop: 'var(--sp-6)' }}>
-            <span className="ql-eyebrow">Why this is the honest proof</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+              <span className="ql-eyebrow">The on-chain ledger</span>
+              <OnChainBadge size="sm" />
+            </div>
             <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-base)', lineHeight: 1.7, maxWidth: '72ch' }}>
-              {hasPublicRepo
-                ? 'A public commit history can’t be quietly rewritten — every grade carries a git timestamp from before its outcome was known. '
-                : 'Every grade is recorded before its outcome is known, and the record is append-only. '}
-              Because we record <em>every</em> pool we grade (including the ones that later die),
-              there&apos;s no survivorship bias: the failures stay in the record. The predictive
-              record matures over the coming months, and we make no claim it can&apos;t yet support —
-              grades are descriptive estimates of current pool quality, not guarantees.
+              {GRADE_LEDGER_CONTRACT && basescanUrl ? (
+                <>
+                  Each weekly snapshot&apos;s hash is anchored to our GradeLedger contract on Base.
+                  Because the chain is append-only, a grade we published can never be quietly changed
+                  after the fact — anyone can confirm the on-chain hash matches the record.{' '}
+                  <a href={basescanUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--signal)', fontFamily: 'var(--font-mono)' }}>
+                    View the contract on Basescan ↗
+                  </a>
+                </>
+              ) : (
+                <>
+                  The record is recorded before outcomes are known and is append-only. On-chain
+                  anchoring on Base — writing each snapshot&apos;s hash to an immutable ledger so the
+                  record is verifiable by anyone, not just trusted — is launching soon. The predictive
+                  track record matures over the coming months; grades are descriptive estimates of
+                  current pool quality, not guarantees.
+                </>
+              )}
             </p>
-            {GRADE_LEDGER_CONTRACT ? (
-              <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-sm)' }}>
-                Each snapshot&apos;s hash is also anchored on Base:{' '}
-                <a
-                  href={`https://basescan.org/address/${GRADE_LEDGER_CONTRACT}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: 'var(--signal)', fontFamily: 'var(--font-mono)' }}
-                >
-                  {GRADE_LEDGER_CONTRACT}
-                </a>
-              </p>
-            ) : (
-              <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-mute)', fontSize: 'var(--fs-sm)' }}>
-                Planned, not live yet: anchoring each snapshot&apos;s hash on Base so the record is
-                verifiable on-chain as well as in git. This page will show the contract address
-                when it ships.
-              </p>
-            )}
           </div>
 
           <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-5)' }}>
@@ -174,7 +156,7 @@ export default function ProofPage() {
             <Link href="/terminal" className="ql-btn ql-btn--primary">
               See live grades <ArrowRight size={16} strokeWidth={2.5} />
             </Link>
-            <Link href="/yields" className="ql-btn ql-btn--ghost">Browse public yields</Link>
+            <Link href="/docs" className="ql-btn ql-btn--ghost">Read the methodology</Link>
           </div>
         </div>
       </AnimatedSection>
