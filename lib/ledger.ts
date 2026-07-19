@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
   GRADE_LETTERS,
-  LEDGER_BLOB_BASE,
+  snapshotDataUrl,
   type GradeDistribution,
   type GradeLetter,
   type LedgerSnapshotSummary,
@@ -23,7 +23,7 @@ import {
  * Client-safe types/constants live in lib/ledger-shared.ts.
  */
 
-export { GRADE_LETTERS, LEDGER_REPO_URL } from './ledger-shared'
+export { GRADE_LETTERS, snapshotDataUrl } from './ledger-shared'
 export type { GradeDistribution, GradeLetter, LedgerSnapshotSummary, LedgerSummary } from './ledger-shared'
 
 type RawSnapshot = {
@@ -47,12 +47,13 @@ function summarize(raw: RawSnapshot, file: string): LedgerSnapshotSummary {
     if (isGradeLetter(pool.grade)) dist[pool.grade] += 1
     if (pool.chain) chains.add(pool.chain)
   }
+  const date = raw.date ?? file.replace(/\.json$/, '')
   return {
-    date: raw.date ?? file.replace(/\.json$/, ''),
+    date,
     count: raw.count ?? raw.pools.length,
     dist,
     chains: chains.size,
-    githubUrl: `${LEDGER_BLOB_BASE}/${file}`,
+    dataUrl: snapshotDataUrl(date),
   }
 }
 

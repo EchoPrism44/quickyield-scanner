@@ -38,7 +38,7 @@ describe('getLedgerSummary', () => {
     expect(summary!.latest.dist).toEqual({ A: 1, B: 2, C: 0, D: 0, F: 1 })
     expect(summary!.latest.chains).toBe(2)
     expect(summary!.totals).toEqual({ snapshotCount: 2, firstDate: '2026-06-11', poolsGradedCumulative: 6 })
-    expect(summary!.latest.githubUrl).toContain('2026-06-15.json')
+    expect(summary!.latest.dataUrl).toBe('/api/ledger/2026-06-15')
   })
 
   it('ignores files that are not dated snapshots', () => {

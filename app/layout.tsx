@@ -59,12 +59,19 @@ const clerkAppearance = {
   },
 }
 
+// Only mount Clerk when a real publishable key is configured. Without this,
+// an absent/placeholder key drops Clerk into "keyless mode" (a full-page
+// claim overlay + a client chunk that fails to load), which blanks local
+// dev. Production sets a real pk_live/pk_test key, so Clerk mounts normally.
+const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+const clerkEnabled = typeof clerkPublishableKey === 'string' && clerkPublishableKey.startsWith('pk_')
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <ClerkProvider appearance={clerkAppearance}>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
+  const html = (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
   )
+  if (!clerkEnabled) return html
+  return <ClerkProvider appearance={clerkAppearance}>{html}</ClerkProvider>
 }

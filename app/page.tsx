@@ -5,9 +5,9 @@ import {
   Bell,
   Check,
   Database,
-  GitCommit,
   Mail,
   Radio,
+  ScrollText,
   ShieldCheck,
   Siren,
   Target,
@@ -22,7 +22,7 @@ import { TickerTape } from '../components/marketing/ticker-tape'
 import { TerminalPreview } from '../components/marketing/terminal-preview'
 import { StatCounter } from '../components/marketing/stat-counter'
 import { WeightBars } from '../components/marketing/weight-bars'
-import { getLedgerSummary, LEDGER_REPO_URL } from '../lib/ledger'
+import { getLedgerSummary } from '../lib/ledger'
 import { getOpportunities } from '../lib/opportunities'
 import { BANDS } from '../lib/grade'
 
@@ -72,14 +72,14 @@ export default async function HomePage() {
           <div>
             <span className="ql-badge">
               <span className="ql-dot" />
-              Public grade ledger · updated weekly
+              Public grade record · updated weekly
             </span>
             <h1 className="ql-h1">
               Yield research you can <em>audit</em>, not just trust.
             </h1>
             <p className="ql-hero-sub">
               QuickYield grades every live onchain yield pool A–F under a published methodology —
-              and commits every grade to a public, timestamped ledger before the outcome is known.
+              and publishes every grade to a public, timestamped record before the outcome is known.
             </p>
             <div className="ql-cta-row">
               <Link href="/terminal" className="ql-btn ql-btn--primary">
@@ -111,7 +111,7 @@ export default async function HomePage() {
           </div>
           <div className="ql-stat">
             <div className="ql-stat-v">{ledger ? <StatCounter value={ledger.latest.chains} /> : '—'}</div>
-            <div className="ql-stat-l">Chains in the ledger</div>
+            <div className="ql-stat-l">Chains in the record</div>
           </div>
           <div className="ql-stat">
             <div className="ql-stat-v">
@@ -123,7 +123,7 @@ export default async function HomePage() {
           </div>
           <div className="ql-stat">
             <div className="ql-stat-v">Weekly</div>
-            <div className="ql-stat-l">Ledger cadence · every Monday</div>
+            <div className="ql-stat-l">Record cadence · every Monday</div>
           </div>
         </div>
       </div>
@@ -239,13 +239,13 @@ export default async function HomePage() {
             <h2 className="ql-h2">Check us. That&apos;s the point.</h2>
             <div className="ql-trust-grid">
               <div className="ql-trust-item">
-                <h4><GitCommit size={18} />A ledger that can&apos;t be rewritten</h4>
+                <h4><ScrollText size={18} />A record that can&apos;t be rewritten</h4>
                 <p>
-                  Every Monday, every live pool&apos;s grade is committed to a public repository with a
-                  git timestamp — before the outcome is known. No edits, no hindsight.{' '}
-                  <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer" style={{ color: 'var(--signal)' }}>
-                    Inspect the raw files ↗
-                  </a>
+                  Every Monday, every live pool&apos;s grade is timestamped and published before the
+                  outcome is known — and anchored on Base so it can&apos;t be quietly changed.{' '}
+                  <Link href="/proof" style={{ color: 'var(--signal)' }}>
+                    See the track record →
+                  </Link>
                 </p>
               </div>
               <div className="ql-trust-item">

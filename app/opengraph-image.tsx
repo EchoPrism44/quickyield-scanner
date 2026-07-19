@@ -15,8 +15,8 @@ const muted = '#a6adba'
 
 const ledgerRows = [
   { date: '·', label: 'weekly snapshot', detail: 'every live pool graded A–F' },
-  { date: '·', label: 'committed to git', detail: 'timestamped before outcomes' },
-  { date: '·', label: 'public forever', detail: 'anyone can verify the record' },
+  { date: '·', label: 'recorded first', detail: 'timestamped before outcomes' },
+  { date: '·', label: 'graded in the open', detail: 'the record builds in public' },
 ]
 
 // QuickYield QY monogram — kept in sync with public/brand/qy-mark.svg.
@@ -60,7 +60,7 @@ export default function OpengraphImage() {
               letterSpacing: 2,
             }}
           >
-            ● PUBLIC LEDGER
+            ● GRADED IN THE OPEN
           </div>
         </div>
 

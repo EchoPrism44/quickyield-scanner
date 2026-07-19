@@ -29,16 +29,8 @@ export function MarketingFooter() {
           <div>
             <h5>Transparency</h5>
             <ul>
-              <li>
-                <a
-                  href="https://github.com/EchoPrism44/quickyield-scanner/tree/main/data/grades"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Public grade ledger ↗
-                </a>
-              </li>
-              <li><Link href="/docs#ledger">How the ledger works</Link></li>
+              <li><Link href="/proof">Public track record</Link></li>
+              <li><Link href="/docs#ledger">The on-chain ledger</Link></li>
               <li><Link href="/docs#signals">Grading signals</Link></li>
             </ul>
           </div>

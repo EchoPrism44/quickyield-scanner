@@ -7,15 +7,21 @@ export const GRADE_LETTERS = ['A', 'B', 'C', 'D', 'F'] as const
 export type GradeLetter = (typeof GRADE_LETTERS)[number]
 export type GradeDistribution = Record<GradeLetter, number>
 
-export const LEDGER_REPO_URL = 'https://github.com/EchoPrism44/quickyield-scanner/tree/main/data/grades'
-export const LEDGER_BLOB_BASE = 'https://github.com/EchoPrism44/quickyield-scanner/blob/main/data/grades'
+/**
+ * Machine-readable raw JSON for a snapshot (served by app/api/ledger/[date]).
+ * Layer 1 (developer/machine access) — intentionally NOT linked in the UI.
+ * Users see charts + the on-chain (Base) verification, never raw JSON.
+ */
+export function snapshotDataUrl(date: string): string {
+  return `/api/ledger/${date}`
+}
 
 export type LedgerSnapshotSummary = {
   date: string
   count: number
   dist: GradeDistribution
   chains: number
-  githubUrl: string
+  dataUrl: string
 }
 
 export type LedgerSummary = {

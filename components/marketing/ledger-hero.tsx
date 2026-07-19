@@ -1,10 +1,12 @@
 'use client'
 
 import { motion, useReducedMotion } from 'motion/react'
-import { ArrowUpRight, GitCommit } from 'lucide-react'
-import { LEDGER_REPO_URL, type LedgerSummary } from '../../lib/ledger-shared'
+import { ArrowUpRight, Layers } from 'lucide-react'
+import Link from 'next/link'
+import { type LedgerSummary } from '../../lib/ledger-shared'
 import { GradeDistributionBars } from './grade-distribution-bars'
 import { StatCounter } from './stat-counter'
+import { OnChainBadge } from './onchain-badge'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 const MAX_RAIL_BLOCKS = 4
@@ -18,28 +20,29 @@ function nextMonday(): string {
 }
 
 /**
- * Hero centerpiece: the public grade ledger rendered as a commit rail.
- * Every block is a real weekly snapshot from data/grades/ — dates, counts,
- * and distributions all come from the committed files, never invented.
+ * Hero centerpiece: the weekly grade record rendered as a rail of snapshots.
+ * Every block is a real weekly snapshot — dates, counts, and distributions
+ * all come from published data, never invented. The on-chain badge reflects
+ * the Base anchor (or its "launching soon" state).
  */
 export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
   const reduce = useReducedMotion()
 
   if (!ledger) {
     return (
-      <div className="ql-ledger" aria-label="Public grade ledger">
+      <div className="ql-ledger" aria-label="Weekly grade record">
         <div className="ql-ledger-bar">
-          <GitCommit size={13} /> data/grades — public ledger
+          <Layers size={13} /> weekly grade record
         </div>
         <div className="ql-ledger-rail">
           <div className="ql-ledger-block ql-ledger-block--ghost">
-            <span className="ql-ledger-ghost-label">Snapshots load from the public repo</span>
+            <span className="ql-ledger-ghost-label">The weekly track record loads here</span>
           </div>
         </div>
         <div className="ql-ledger-foot">
-          <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer">
-            view the ledger on GitHub <ArrowUpRight size={11} />
-          </a>
+          <Link href="/proof">
+            see the track record <ArrowUpRight size={11} />
+          </Link>
         </div>
       </div>
     )
@@ -49,10 +52,10 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
   const latestDate = ledger.latest.date
 
   return (
-    <div className="ql-ledger" aria-label="Public grade ledger — weekly snapshots">
+    <div className="ql-ledger" aria-label="Weekly grade record — snapshots">
       <div className="ql-ledger-bar">
-        <GitCommit size={13} />
-        <span>data/grades — public ledger</span>
+        <Layers size={13} />
+        <span>weekly grade record</span>
         <b>
           <span className="ql-dot" />
           {ledger.totals.snapshotCount} snapshots
@@ -83,9 +86,6 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
                 </span>
               </div>
               {isLatest && <GradeDistributionBars dist={snap.dist} compact />}
-              <a className="ql-ledger-json" href={snap.githubUrl} target="_blank" rel="noreferrer">
-                raw JSON <ArrowUpRight size={10} />
-              </a>
             </motion.div>
           )
         })}
@@ -103,10 +103,10 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
       </div>
 
       <div className="ql-ledger-foot">
-        <span>timestamped in git · written before outcomes are known</span>
-        <a href={LEDGER_REPO_URL} target="_blank" rel="noreferrer">
-          GitHub <ArrowUpRight size={11} />
-        </a>
+        <OnChainBadge size="sm" />
+        <Link href="/proof">
+          track record <ArrowUpRight size={11} />
+        </Link>
       </div>
     </div>
   )
