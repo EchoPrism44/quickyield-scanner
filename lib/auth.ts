@@ -17,6 +17,20 @@ export async function requireUserId() {
   return userId
 }
 
+/**
+ * Signed-in user id, or null for anonymous visitors (public CMC-style pages).
+ * Never throws — a Clerk misconfiguration degrades to anonymous instead of a 500.
+ */
+export async function optionalUserId(): Promise<string | null> {
+  if (canUseLocalUser()) return LOCAL_USER_ID
+  try {
+    const { userId } = await auth()
+    return userId
+  } catch {
+    return null
+  }
+}
+
 export async function requireDashboardUserId(returnBackUrl = '/terminal'): Promise<string> {
   if (canUseLocalUser()) return LOCAL_USER_ID
   const session = await auth()

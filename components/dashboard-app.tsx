@@ -33,9 +33,25 @@ function useToasts() {
   return { items, push }
 }
 
+function SignedOutCard({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="qy-page">
+      <div className="qy-empty" data-testid="signed-out-card">
+        <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)', marginBottom: 8 }}>{title}</h2>
+        <p style={{ color: 'var(--ink-dim)', maxWidth: '46ch', margin: '0 auto 20px' }}>{body}</p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary">Sign in</Link>
+          <Link href="/sign-up" className="qy-btn qy-btn-secondary">Create free account</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   const [data, setData] = useState(initialData)
   const [tab, setTab] = useState<Tab>('discover')
+  const isAnonymous = Boolean(initialData.user.isAnonymous)
   const [chain, setChain] = useState(initialData.settings.chain)
   const [risk, setRisk] = useState(initialData.settings.risk)
   const [time, setTime] = useState(initialData.settings.time)
@@ -53,13 +69,21 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   const watched = useMemo(() => new Set(data.watchlist), [data.watchlist])
 
   useEffect(() => {
-    if (tab !== 'alerts') return
+    if (tab !== 'alerts' || isAnonymous) return
     void refreshActivity()
-  }, [tab])
+  }, [tab, isAnonymous])
 
   useEffect(() => {
+    if (isAnonymous) return
     void refreshActivity()
-  }, [])
+  }, [isAnonymous])
+
+  /** Route anonymous visitors to sign-in the moment they try a user action. */
+  function requireSignIn(): boolean {
+    if (!isAnonymous) return false
+    window.location.href = '/sign-in?redirect_url=/terminal'
+    return true
+  }
 
   function opportunityParams(next = { chain, risk, time, category, q: query, capital, preset, page: 1 }) {
     const params = new URLSearchParams({
@@ -106,6 +130,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   }
 
   async function toggleWatch(opportunityId: string) {
+    if (requireSignIn()) return
     const isWatching = watched.has(opportunityId)
     const response = isWatching
       ? await fetch(`/api/watchlist/${encodeURIComponent(opportunityId)}`, { method: 'DELETE' })
@@ -124,6 +149,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   }
 
   function openAlertBuilder(item?: Opportunity) {
+    if (requireSignIn()) return
     setAlertDraft(alertDraftFromOpportunity(item, { chain, category }))
   }
 
@@ -241,11 +267,20 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
           ))}
         </nav>
         <div className="qy-aside-foot">
-          <div className="qy-aside-user">
-            <div className="qy-aside-user-label">{data.user.name}</div>
-            <div className="qy-aside-user-email">{data.user.email}</div>
-          </div>
-          {!data.user.isLocal && <UserButton />}
+          {isAnonymous ? (
+            <div style={{ display: 'grid', gap: 8 }}>
+              <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary qy-btn-sm" style={{ justifyContent: 'center' }}>Sign in</Link>
+              <Link href="/sign-up" className="qy-btn qy-btn-secondary qy-btn-sm" style={{ justifyContent: 'center' }}>Create account</Link>
+            </div>
+          ) : (
+            <>
+              <div className="qy-aside-user">
+                <div className="qy-aside-user-label">{data.user.name}</div>
+                <div className="qy-aside-user-email">{data.user.email}</div>
+              </div>
+              {!data.user.isLocal && <UserButton />}
+            </>
+          )}
         </div>
       </aside>
 
@@ -260,8 +295,12 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             <span className="qy-mono qy-topbar-updated">{data.total} pools scanned</span>
           </div>
           <div className="qy-terminal-topbar-actions">
-            <Link href="/" className="qy-btn qy-btn-secondary qy-btn-sm">Landing page</Link>
-            {!data.user.isLocal && <UserButton />}
+            <Link href="/" className="qy-btn qy-btn-secondary qy-btn-sm qy-topbar-home-link">Landing page</Link>
+            {isAnonymous ? (
+              <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary qy-btn-sm">Sign in</Link>
+            ) : (
+              !data.user.isLocal && <UserButton />
+            )}
           </div>
         </header>
 
@@ -291,17 +330,37 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             />
           )}
           {tab === 'watchlist' && (
+            isAnonymous ? (
+              <SignedOutCard
+                title="Your watchlist lives here"
+                body="Sign in to save pools, track their APY and Safety Grade moves, and get the weekly digest for the pools you care about."
+              />
+            ) : (
             <WatchlistView
               watched={watched}
               onToggleWatch={toggleWatch}
               onCreateAlert={openAlertBuilder}
               onGoDiscover={() => setTab('discover')}
             />
+            )
           )}
           {tab === 'alerts' && (
+            isAnonymous ? (
+              <SignedOutCard
+                title="Alerts need an account"
+                body="Sign in to set plain-language rules — APY thresholds, TVL drains, reward spikes — and get Telegram or email alerts the moment a pool matches."
+              />
+            ) : (
             <AlertsView alerts={data.alerts} activity={activity} onDelete={deleteAlert} onToggle={toggleAlert} onCreate={() => openAlertBuilder()} />
+            )
           )}
-          {tab === 'settings' && (
+          {tab === 'settings' && isAnonymous && (
+            <SignedOutCard
+              title="Settings are per-account"
+              body="Sign in to configure notification channels, your capital assumption, and the weekly digest."
+            />
+          )}
+          {tab === 'settings' && !isAnonymous && (
             <SettingsView
               user={data.user}
               notifications={data.notifications}

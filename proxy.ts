@@ -8,9 +8,12 @@ export default clerkMiddleware(async (auth, req) => {
     process.env.NEXT_PUBLIC_QUICKYIELD_LOCAL_DEMO === '1' ||
     !process.env.CLERK_SECRET_KEY
   )
-  const publicApiRoutes = ['/api/opportunities', '/api/cron/scan-yields', '/api/telegram/webhook']
+  // CMC model: the terminal is public read-only; only user-scoped APIs and
+  // /analytics require auth. Every user-scoped route also does its own
+  // requireUserId() -> 401 (defense in depth).
+  const publicApiRoutes = ['/api/opportunities', '/api/cron/scan-yields', '/api/cron/weekly-digest', '/api/telegram/webhook', '/api/pools', '/api/ledger']
   const isPublicApi = publicApiRoutes.some((route) => pathname.startsWith(route))
-  const isProtectedRoute = pathname.startsWith('/terminal') || pathname.startsWith('/analytics') || (pathname.startsWith('/api/') && !isPublicApi)
+  const isProtectedRoute = pathname.startsWith('/analytics') || (pathname.startsWith('/api/') && !isPublicApi)
 
   if (isProtectedRoute && !localDemo) {
     await auth.protect()

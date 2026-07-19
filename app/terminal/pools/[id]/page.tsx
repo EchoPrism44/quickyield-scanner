@@ -4,7 +4,7 @@ import { ArrowLeftRight, ExternalLink } from 'lucide-react'
 import { ProtocolLogo } from '../../../../components/protocol-logo'
 import { PoolDetailActions } from '../../../../components/pool-detail-actions'
 import { PoolHistoryChart } from '../../../../components/pool-history-chart'
-import { requireDashboardUserId } from '../../../../lib/auth'
+import { optionalUserId } from '../../../../lib/auth'
 import { fetchPoolChart, type PoolChartPoint } from '../../../../lib/chart'
 import { getOpportunities, getRankReason } from '../../../../lib/opportunities'
 import { safetyGradeOf } from '../../../../lib/grade'
@@ -15,13 +15,14 @@ import type { Opportunity, PoolDetail } from '../../../../lib/types'
 export const dynamic = 'force-dynamic'
 
 export default async function PoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const userId = await requireDashboardUserId('/terminal')
+  // Public read-only page (CMC model) — watchlist state only when signed in.
+  const userId = await optionalUserId()
   const { id } = await params
   let detail = await getPoolDetail(id)
   if (!detail) detail = await recoverPoolDetail(id)
   if (!detail) notFound()
 
-  const watchlist = await getWatchlist(userId)
+  const watchlist = userId ? await getWatchlist(userId) : []
   const watched = watchlist.includes(detail.opportunity.id)
   const { opportunity, history, relatedByProtocol, relatedByAsset, relatedByChain } = detail
   const grade = safetyGradeOf(opportunity)
@@ -70,7 +71,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
               <div className="qy-detail-stat"><span className="qy-overline">24h move</span><strong>{opportunity.volatility.toFixed(2)}%</strong></div>
             </div>
 
-            <PoolDetailActions opportunity={opportunity} initiallyWatched={watched} />
+            <PoolDetailActions opportunity={opportunity} initiallyWatched={watched} isAnonymous={!userId} />
           </div>
 
           <aside className="qy-detail-side">
