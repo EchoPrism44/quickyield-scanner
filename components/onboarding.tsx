@@ -101,9 +101,9 @@ export function Onboarding() {
               width: 64,
               height: 64,
               borderRadius: 16,
-              backgroundColor: 'rgba(255,107,53,0.12)',
-              color: '#ff6b35',
-              border: '1px solid rgba(255,107,53,0.3)',
+              backgroundColor: 'rgba(47,136,255,0.12)',
+              color: 'var(--signal)',
+              border: '1px solid rgba(47,136,255,0.3)',
             }}
           >
             <Icon size={28} />
@@ -120,7 +120,7 @@ export function Onboarding() {
                   width: index === step ? 22 : 8,
                   height: 8,
                   borderRadius: 999,
-                  backgroundColor: index === step ? '#ff6b35' : 'rgba(255,255,255,0.18)',
+                  backgroundColor: index === step ? 'var(--signal)' : 'rgba(255,255,255,0.18)',
                   transition: reducedMotion ? 'none' : 'all .2s ease',
                 }}
               />
