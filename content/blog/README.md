@@ -7,10 +7,12 @@ automatically when you push.
 
 ## Step 1 — Get the data
 
-Open a terminal in the project folder and run:
+Open a terminal and go to the project folder first — the commands fail from
+anywhere else:
 
 ```bash
-npx tsx scripts/analyze-snapshot.ts
+cd C:\Users\Vivek\projects\quickyield-scanner
+npm run blog:data
 ```
 
 This prints the full week-over-week analysis: pools graded, grade distribution
@@ -26,7 +28,7 @@ npx tsx scripts/analyze-snapshot.ts 2026-07-13 2026-07-20
 ## Step 2 — Create the draft
 
 ```bash
-npx tsx scripts/analyze-snapshot.ts --draft
+npm run blog:draft
 ```
 
 This writes `content/blog/<date>-weekly-grade-record.md` with the numbers,
