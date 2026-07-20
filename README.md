@@ -51,6 +51,32 @@ npm run db:generate
 npm run db:push
 ```
 
+## Blog publishing (weekly ritual)
+
+Full guide with screenshots-and-charts instructions: [`content/blog/README.md`](content/blog/README.md).
+The short version (run everything from the project folder):
+
+```
+npm run blog:data     # print the week-over-week grade analysis (your research)
+npm run blog:draft    # write a pre-filled draft into content/blog/<date>-weekly-grade-record.md
+```
+
+Then open the draft, write the "Our read" section in your own words, and publish
+by committing + pushing (merge to main via PR):
+
+```
+git add content/blog/ public/blog/
+git commit -m "blog: weekly grade record <date>"
+git push
+```
+
+- Posts are plain Markdown files in `content/blog/` — frontmatter block on top
+  (title, date, excerpt, author), body below. Filename = URL slug.
+- Images go in `public/blog/`, referenced as `![alt](/blog/<file>.png)`.
+- Charts: use the generated Markdown table, or export a chart image from
+  Sheets/Excel and include it like any image.
+- Nothing auto-publishes: no push, no post.
+
 ## API Surface
 
 - `GET /api/opportunities`
