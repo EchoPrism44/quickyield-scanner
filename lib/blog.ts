@@ -6,9 +6,13 @@ export type BlogPost = {
   title: string
   date: string
   excerpt: string
+  author: string
   readMinutes: number
   body: string
 }
+
+/** Site default byline — used when a post has no `author:` in its frontmatter. */
+export const DEFAULT_AUTHOR = 'Vivek'
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog')
 
@@ -41,6 +45,7 @@ function loadPost(file: string): BlogPost | null {
     title: meta.title,
     date: meta.date,
     excerpt: meta.excerpt ?? '',
+    author: meta.author || DEFAULT_AUTHOR,
     readMinutes: Number(meta.readMinutes) || Math.max(2, Math.round(body.split(/\s+/).length / 200)),
     body,
   }

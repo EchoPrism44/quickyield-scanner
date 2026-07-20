@@ -40,6 +40,7 @@ export default function BlogIndexPage() {
               <Link key={post.slug} href={`/blog/${post.slug}`} className="ql-blog-card">
                 <div className="ql-blog-card-meta">
                   <span className="ql-eyebrow">{post.date}</span>
+                  <span className="ql-blog-read">By {post.author}</span>
                   <span className="ql-blog-read">{post.readMinutes} min read</span>
                 </div>
                 <h2>{post.title}</h2>

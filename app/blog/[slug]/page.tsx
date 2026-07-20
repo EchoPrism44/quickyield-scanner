@@ -42,6 +42,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </Link>
           <div className="ql-blog-card-meta" style={{ marginTop: 'var(--sp-5)' }}>
             <span className="ql-eyebrow">{post.date}</span>
+            <span className="ql-blog-read">By {post.author}</span>
             <span className="ql-blog-read">{post.readMinutes} min read</span>
           </div>
           <h1>{post.title}</h1>

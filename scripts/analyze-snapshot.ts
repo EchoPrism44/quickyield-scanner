@@ -136,6 +136,7 @@ function draftPost(a: Analysis): string {
 title: "Weekly grade record — ${a.currDate}"
 date: "${a.currDate}"
 excerpt: "${a.currCount.toLocaleString()} pools graded: ${up} upgraded, ${down} downgraded — ${tone} for onchain yield."
+author: "Vivek"
 readMinutes: 4
 ---
 
@@ -159,7 +160,9 @@ ${topUp ? `**Biggest upgrade:** ${label(topUp.pool)} moved ${topUp.from} → ${t
 
 ${topDown ? `**Biggest downgrade:** ${label(topDown.pool)} moved ${topDown.from} → ${topDown.pool.grade} (APY ${topDown.pool.apy.toFixed(2)}%, TVL ${fmtTvl(topDown.pool.tvlUsd)}).` : ''}
 
-<!-- TODO: add your interpretation — why did these move? what should readers watch next week? -->
+## Our read
+
+(Write your take here: why did these pools move? Is the market getting safer or riskier? What should readers watch next week? Delete this placeholder before publishing.)
 
 ## Method note
 
