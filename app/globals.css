@@ -947,6 +947,11 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 
 @media (max-width: 720px) {
   .qy-analytics { padding: 32px 0 72px; }
+  .qy-detail-hero,
+  .qy-detail-layout,
+  .qy-related-section,
+  .qy-detail-score-grid,
+  .qy-watchlist-grid { grid-template-columns: 1fr; }
   .qy-analytics-table-head,
   .qy-analytics-table-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .qy-analytics-table-head span:nth-child(n+3) { display: none; }
