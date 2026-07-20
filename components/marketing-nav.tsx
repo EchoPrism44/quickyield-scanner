@@ -24,10 +24,12 @@ export function MarketingNav() {
           <Link href="/docs" className="ql-nav-link">Methodology</Link>
           <Link href="/proof" className="ql-nav-link">Track record</Link>
           <Link href="/yields" className="ql-nav-link">Yields</Link>
+          <Link href="/blog" className="ql-nav-link">Blog</Link>
         </div>
         <div className="ql-nav-actions">
           <Link href="/sign-in" className="ql-nav-signin" data-testid="nav-signin">Sign in</Link>
-          <Link href="/sign-up" className="ql-btn ql-btn--primary ql-btn--sm" data-testid="nav-getstarted">Get started</Link>
+          {/* Terminal is public (CMC model) — the primary CTA opens it directly, no signup wall. */}
+          <Link href="/terminal" className="ql-btn ql-btn--primary ql-btn--sm" data-testid="nav-getstarted">Open terminal</Link>
         </div>
       </div>
     </nav>
