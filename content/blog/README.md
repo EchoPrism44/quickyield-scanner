@@ -87,3 +87,63 @@ The filename becomes the URL slug, so keep it lowercase-with-dashes.
 - The excerpt is what Google and X show; write it like a hook, one sentence.
 - Keep the method-note + disclaimer at the bottom of weekly posts (compliance).
 - The site never auto-publishes anything: no push, no post.
+
+## Adding images (screenshots, charts, diagrams)
+
+1. Save the image file into the `public/blog/` folder, e.g.
+   `public/blog/2026-07-20-grade-shift.png`. Use lowercase-with-dashes names.
+2. Reference it in your post with normal Markdown:
+
+   ```
+   ![Grade distribution shift, week over week](/blog/2026-07-20-grade-shift.png)
+   ```
+
+   The text in `[...]` is the alt text — describe the image in one phrase
+   (Google reads it). The path always starts with `/blog/`.
+3. Commit the image together with the post:
+
+   ```bash
+   git add content/blog/ public/blog/
+   ```
+
+Images are automatically styled (rounded corners, border, fits the column).
+PNG or JPG under ~500 KB is ideal; screenshot tools' defaults are fine.
+
+## Adding charts
+
+Three ways, simplest first:
+
+1. **Markdown table** — for small numeric comparisons this beats a chart.
+   The draft already generates one (the grade distribution table). Syntax:
+
+   ```
+   | Grade | Last week | This week |
+   |---|---|---|
+   | A | 112 | 112 |
+   ```
+
+2. **Chart as an image** — make the chart anywhere (Excel, Google Sheets,
+   TradingView screenshot, even a screenshot of the /proof charts), export
+   or screenshot it as PNG, then follow the image steps above. This is the
+   recommended way for weekly posts — fast and looks professional on the
+   dark theme if you use a dark background.
+
+3. **Live interactive chart** — the site's own recharts components (like the
+   ones on /proof) can be embedded in a post, but that needs a code change
+   per chart type (posts are plain Markdown, not React). If you find
+   yourself wanting the same chart every week, ask Claude to build it once
+   as a reusable component and wire it into the post template.
+
+## What else works in Markdown
+
+- **Links:** `[Basescan](https://basescan.org/...)` — external links open in the text.
+- **Bold / italics:** `**bold**`, `*italics*`
+- **Lists:** lines starting with `-` or `1.`
+- **Quotes:** lines starting with `>` (rendered with a blue accent bar)
+- **Code:** backticks for `inline`, triple backticks for blocks
+- **Divider:** a line with only `---` (but NOT at the very top — the top
+  `---` block is reserved for the title/date/author frontmatter)
+
+Raw HTML (iframes, embedded tweets, YouTube players) is intentionally NOT
+rendered, for security. To share a video, link to it; to quote a tweet,
+screenshot it and include it as an image.

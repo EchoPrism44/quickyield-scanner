@@ -669,3 +669,5 @@
 .ql-article-body th, .ql-article-body td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
 .ql-article-body th { color: var(--ink); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; background: rgba(255,255,255,0.03); }
 .ql-article-body blockquote { border-left: 3px solid var(--signal); margin: 0 0 16px; padding: 4px 0 4px 16px; color: var(--ink-dim); }
+.ql-article-body img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); margin: 4px 0 16px; display: block; }
+.ql-article-body hr { border: none; border-top: 1px solid var(--line); margin: 28px 0; }
