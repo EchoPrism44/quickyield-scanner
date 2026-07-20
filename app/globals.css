@@ -554,6 +554,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-terminal-app { background: radial-gradient(circle at top right, rgba(47, 136, 255, 0.08), transparent 30%), var(--bg-page); }
 .qy-terminal-topbar { justify-content: space-between; }
 .qy-terminal-topbar-actions { display: flex; align-items: center; gap: 10px; }
+.qy-topbar-home-link { display: none; }
+@media (min-width: 768px) { .qy-topbar-home-link { display: inline-flex; } }
 .qy-terminal-page { padding-bottom: 40px; }
 .qy-terminal-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
 .qy-terminal-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
@@ -588,6 +590,17 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   padding-top: 6px;
 }
 .qy-market-search { min-width: 240px; }
+/* Discover two-column layout: main (filters, table, load-more) + rail (heatmap, signal stream) */
+.qy-discover-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-bottom: 14px; }
+@media (min-width: 1100px) {
+  .qy-discover-layout { grid-template-columns: minmax(0, 1fr) 320px; }
+  .qy-discover-main { min-width: 0; }
+  .qy-discover-rail { display: flex; flex-direction: column; gap: 14px; }
+}
+@media (max-width: 1099px) {
+  .qy-discover-main,
+  .qy-discover-rail { display: contents; }
+}
 .qy-discover-summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

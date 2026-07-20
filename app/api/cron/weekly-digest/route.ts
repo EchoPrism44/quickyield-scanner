@@ -14,9 +14,20 @@ function withGrade(pool: Opportunity) {
   return { ...pool, grade: pool.safety?.letter }
 }
 
+/**
+ * Weekly digest sender. Triggered by the Vercel cron in vercel.json
+ * (Sundays 08:00 UTC, sends `Authorization: Bearer $CRON_SECRET`) and by
+ * the weekly-digest GitHub Action fallback. Manual test:
+ *   curl "https://<host>/api/cron/weekly-digest?secret=$CRON_SECRET"
+ * NOTE: silently no-ops with 401 if CRON_SECRET is not set in the env.
+ */
 export async function GET(request: NextRequest) {
   const secret = request.headers.get('authorization')?.replace('Bearer ', '') ?? request.nextUrl.searchParams.get('secret')
   if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+    console.error('[weekly-digest] unauthorized invocation', {
+      hasCronSecretEnv: Boolean(process.env.CRON_SECRET),
+      hasAuthHeader: Boolean(request.headers.get('authorization')),
+    })
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -24,6 +35,7 @@ export async function GET(request: NextRequest) {
     getAllUsersForDigest(),
     getCachedOpportunities(),
   ])
+  console.log('[weekly-digest] run started', { recipients: allUsers.length, cachedPools: allPools.length })
 
   const safePools = allPools
     .filter((p) => p.risk === 'Low' && p.confidence >= 80)
@@ -56,5 +68,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  console.log('[weekly-digest] run finished', { label, recipients: allUsers.length, sent, skipped, failures })
   return NextResponse.json({ label, recipients: allUsers.length, sent, skipped, failures })
 }

@@ -127,6 +127,8 @@ export function DiscoverView({
         </div>
       </div>
 
+      <div className="qy-discover-layout">
+      <div className="qy-discover-main">
       <div className="qy-discover-summary" aria-label="Current scan summary">
         <div><span className="qy-overline">Avg APY</span><strong>{avgApy.toFixed(2)}%</strong></div>
         <div><span className="qy-overline">Total TVL tracked</span><strong>{fmtTvl(totalTvlUsd)}</strong></div>
@@ -303,8 +305,10 @@ export function DiscoverView({
           </button>
         </div>
       ) : null}
+      </div>
 
-      <div className="qy-intel-grid">
+      {/* Right rail on desktop (≥1100px); stacks below the table on mobile */}
+      <aside className="qy-discover-rail">
         <section className="qy-heatmap-panel" aria-label="Yield heatmap">
           <div className="qy-intel-panel-head">
             <div>
@@ -336,7 +340,7 @@ export function DiscoverView({
           </div>
         </section>
 
-        <section className="qy-intel-feed" aria-label="Scanner signal stream">
+      <section className="qy-intel-feed" aria-label="Scanner signal stream">
           <div className="qy-intel-panel-head">
             <div>
               <span className="qy-overline">Scanner feed</span>
@@ -353,6 +357,7 @@ export function DiscoverView({
             ))}
           </div>
         </section>
+      </aside>
       </div>
     </section>
   )

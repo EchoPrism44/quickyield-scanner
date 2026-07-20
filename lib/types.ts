@@ -230,6 +230,8 @@ export type DashboardUser = {
   email: string
   imageUrl?: string
   isLocal: boolean
+  /** True when the terminal is being browsed without a signed-in user. */
+  isAnonymous?: boolean
 }
 
 export type NotificationChannel = {

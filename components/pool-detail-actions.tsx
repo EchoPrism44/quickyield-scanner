@@ -8,15 +8,24 @@ import type { Opportunity } from '../lib/types'
 export function PoolDetailActions({
   opportunity,
   initiallyWatched,
+  isAnonymous = false,
 }: {
   opportunity: Opportunity
   initiallyWatched: boolean
+  isAnonymous?: boolean
 }) {
   const [watched, setWatched] = useState(initiallyWatched)
   const [copied, setCopied] = useState(false)
   const [alertDraft, setAlertDraft] = useState<AlertDraft | null>(null)
 
+  function requireSignIn(): boolean {
+    if (!isAnonymous) return false
+    window.location.href = `/sign-in?redirect_url=${encodeURIComponent(window.location.pathname)}`
+    return true
+  }
+
   async function toggleWatch() {
+    if (requireSignIn()) return
     const response = watched
       ? await fetch(`/api/watchlist/${encodeURIComponent(opportunity.id)}`, { method: 'DELETE' })
       : await fetch('/api/watchlist', {
@@ -49,7 +58,7 @@ export function PoolDetailActions({
           {watched ? <Check size={14} /> : null}
           {watched ? 'Saved to watchlist' : 'Add to watchlist'}
         </button>
-        <button type="button" className="qy-btn qy-btn-secondary" onClick={() => setAlertDraft(alertDraftFromOpportunity(opportunity))}>
+        <button type="button" className="qy-btn qy-btn-secondary" onClick={() => { if (!requireSignIn()) setAlertDraft(alertDraftFromOpportunity(opportunity)) }}>
           <Bell size={14} />
           Set alert target
         </button>
