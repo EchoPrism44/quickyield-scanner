@@ -24,7 +24,9 @@
     "postgres": "^3.4.9",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-markdown": "^10.1.0",
     "recharts": "^3.8.1",
+    "remark-gfm": "^4.0.1",
     "resend": "^6.12.2",
     "zod": "^4.4.3"
   },

@@ -23,6 +23,7 @@ export function MarketingFooter() {
               <li><Link href="/proof">Track record</Link></li>
               <li><Link href="/docs">Methodology</Link></li>
               <li><Link href="/yields">Best yields</Link></li>
+              <li><Link href="/blog">Blog</Link></li>
               <li><Link href="/terminal">Launch terminal</Link></li>
             </ul>
           </div>
