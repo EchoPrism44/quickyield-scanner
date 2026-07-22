@@ -2,6 +2,7 @@ import { currentUser } from '@clerk/nextjs/server'
 import { LOCAL_USER_ID, canUseLocalUser, optionalUserId } from './auth'
 import { defaultSettings } from './constants'
 import { getOpportunities } from './opportunities'
+import { getWeekOverWeekDelta } from './snapshot-delta'
 import { ensureUser, getAlertRules, getNotificationStatus, getUserSettings, getWatchlist } from './store'
 import type { DashboardData, DashboardUser, NotificationStatus } from './types'
 
@@ -27,7 +28,10 @@ export async function getInitialDashboardData(): Promise<DashboardData> {
   const userId = await optionalUserId()
 
   if (!userId) {
-    const opportunityResult = await getOpportunities(defaultSettings)
+    const [opportunityResult, weekDelta] = await Promise.all([
+      getOpportunities(defaultSettings),
+      getWeekOverWeekDelta(),
+    ])
     return {
       user: ANONYMOUS_USER,
       ...opportunityResult,
@@ -35,6 +39,7 @@ export async function getInitialDashboardData(): Promise<DashboardData> {
       alerts: [],
       settings: defaultSettings,
       notifications: EMPTY_NOTIFICATIONS,
+      weekDelta,
     }
   }
 
@@ -52,11 +57,12 @@ export async function getInitialDashboardData(): Promise<DashboardData> {
 
   await ensureUser(userId, user.email)
   const settings = await getUserSettings(userId)
-  const [opportunityResult, watchlist, alerts, notifications] = await Promise.all([
+  const [opportunityResult, watchlist, alerts, notifications, weekDelta] = await Promise.all([
     getOpportunities(settings),
     getWatchlist(userId),
     getAlertRules(userId),
     getNotificationStatus(userId),
+    getWeekOverWeekDelta(),
   ])
 
   return {
@@ -66,5 +72,6 @@ export async function getInitialDashboardData(): Promise<DashboardData> {
     alerts,
     settings,
     notifications,
+    weekDelta,
   }
 }

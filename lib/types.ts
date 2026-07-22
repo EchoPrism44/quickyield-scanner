@@ -1,3 +1,5 @@
+import type { WeekOverWeekDelta } from './snapshot-delta'
+
 export type RiskLevel = 'Low' | 'Medium'
 export type TimeCost = '5 min' | '15 min' | 'Ongoing'
 export type Trend = 'up' | 'down' | 'flat'
@@ -288,6 +290,8 @@ export type DashboardData = {
   alerts: AlertRule[]
   settings: UserSettings
   notifications: NotificationStatus
+  /** Week-over-week grade snapshot diff (Market Pulse strip). Null until a second snapshot exists. */
+  weekDelta?: WeekOverWeekDelta | null
 }
 
 export type AlertActivity = {
