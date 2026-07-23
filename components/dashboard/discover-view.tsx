@@ -6,6 +6,7 @@ import { Bookmark, Filter, Search, SlidersHorizontal } from 'lucide-react'
 import { categories, chains, timeCosts } from '../../lib/constants'
 import { ProtocolLogo } from '../protocol-logo'
 import { GradeChip, SparklineCell } from './shared'
+import { MarketPulse } from './market-pulse'
 import type { DashboardData, Opportunity, OpportunityPreset } from '../../lib/types'
 
 const presetItems: { key: OpportunityPreset | 'all'; label: string }[] = [
@@ -113,6 +114,8 @@ export function DiscoverView({
 
   return (
     <section className="qy-page qy-terminal-page" data-testid="discover-page">
+      <MarketPulse delta={data.weekDelta} />
+
       <div className="qy-page-header qy-terminal-header">
         <div>
           <span className="qy-overline qy-overline-signal">Yield radar</span>
@@ -122,7 +125,15 @@ export function DiscoverView({
         <div className="qy-terminal-kpis">
           <div className="qy-terminal-kpi"><span className="qy-overline">Best stablecoin yield</span><strong>{stablecoinBest ? `${stablecoinBest.apy.toFixed(2)}%` : '--'}</strong></div>
           <div className="qy-terminal-kpi"><span className="qy-overline">Highest APY</span><strong>{highestApy ? `${highestApy.apy.toFixed(2)}%` : '--'}</strong></div>
-          <div className="qy-terminal-kpi"><span className="qy-overline">Pools scanned</span><strong>{data.total}</strong></div>
+          <div className="qy-terminal-kpi">
+            <span className="qy-overline">Pools scanned</span>
+            <strong>{data.total}</strong>
+            {data.weekDelta ? (
+              <span className={`qy-kpi-delta ${data.weekDelta.poolsDelta >= 0 ? 'qy-wl-up' : 'qy-wl-down'}`}>
+                {data.weekDelta.poolsDelta >= 0 ? '+' : ''}{data.weekDelta.poolsDelta} this week
+              </span>
+            ) : null}
+          </div>
           <div className="qy-terminal-kpi"><span className="qy-overline">Triggered alerts</span><strong>{triggeredAlerts}</strong></div>
         </div>
       </div>
