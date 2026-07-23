@@ -13,8 +13,14 @@ export function canUseLocalUser() {
 
 export async function requireUserId() {
   if (canUseLocalUser()) return LOCAL_USER_ID
-  const { userId } = await auth()
-  return userId
+  try {
+    const { userId } = await auth()
+    return userId
+  } catch {
+    // Clerk not configured / middleware bypassed: treat as unauthenticated so
+    // protected routes return 401 instead of crashing with a 500.
+    return null
+  }
 }
 
 /**
