@@ -6,7 +6,11 @@ const projectRoot = dirname(fileURLToPath(import.meta.url))
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  // NOTE: do not set `output: 'standalone'` here. Combined with this package's
+  // `"type": "module"`, Vercel's serverless launcher (___next_launcher.cjs)
+  // does require() on the ESM page bundles and every dynamic route 500s with
+  // ERR_REQUIRE_ESM. Vercel does its own (ESM-aware) bundling, so standalone
+  // is only needed for self-hosting (Docker/VPS) — which we don't do.
   // Pin the workspace root to this project so Turbopack doesn't crawl the
   // whole home directory when a stray lockfile exists in a parent folder.
   turbopack: { root: projectRoot },
