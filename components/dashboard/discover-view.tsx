@@ -14,6 +14,7 @@ const presetItems: { key: OpportunityPreset | 'all'; label: string }[] = [
   { key: 'safe-stablecoins', label: 'Safer stablecoins' },
   { key: 'eth-staking', label: 'ETH staking' },
   { key: 'solana-yield', label: 'Solana yield' },
+  { key: 'rwa', label: 'RWA / T-bills' },
   { key: 'high-apy', label: 'High APY' },
   { key: 'saved', label: 'Saved' },
 ]

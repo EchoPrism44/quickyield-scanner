@@ -4,6 +4,7 @@ import { getProtocolUrlIndex } from './llama-protocols'
 import { cacheOpportunities, getCachedOpportunities, storeOpportunitySnapshots } from './store'
 import { poolToOpportunity } from './scoring'
 import { safetyGradeOf } from './grade'
+import { isRwaOpportunity } from './rwa'
 import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
@@ -44,6 +45,7 @@ function matchesPreset(item: Opportunity, preset: OpportunityFilters['preset'], 
   if (preset === 'safe-stablecoins') return item.risk === 'Low' && item.category === 'Stablecoin lending' && /USDC|USDT|DAI/i.test(item.asset)
   if (preset === 'eth-staking') return item.category === 'Staking' && /ETH|STETH/i.test(item.asset)
   if (preset === 'solana-yield') return item.chain === 'Solana'
+  if (preset === 'rwa') return isRwaOpportunity(item)
   if (preset === 'high-apy') return item.apy >= 8
   return true
 }
