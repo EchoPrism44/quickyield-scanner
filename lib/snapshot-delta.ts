@@ -96,6 +96,40 @@ export function analyze(prev: Snapshot, curr: Snapshot) {
 
 export type Analysis = ReturnType<typeof analyze>
 
+export type ChainStat = { chain: string; count: number; safe: number; safePct: number }
+
+/** Per-chain counts + safe-share (A|B) for one snapshot, sorted by pool count. */
+export function chainBreakdown(snap: Snapshot): ChainStat[] {
+  const m = new Map<string, { count: number; safe: number }>()
+  for (const p of snap.pools) {
+    const e = m.get(p.chain) ?? { count: 0, safe: 0 }
+    e.count += 1
+    if (p.grade === 'A' || p.grade === 'B') e.safe += 1
+    m.set(p.chain, e)
+  }
+  return [...m.entries()]
+    .map(([chain, e]) => ({ chain, count: e.count, safe: e.safe, safePct: e.count ? Math.round((e.safe / e.count) * 100) : 0 }))
+    .sort((a, b) => b.count - a.count)
+}
+
+export type ProtocolStat = { project: string; count: number; safe: number; aCount: number }
+
+/** Protocols ranked by number of graded pools, with their safe (A|B) and A counts. */
+export function topProtocols(snap: Snapshot, limit = 10): ProtocolStat[] {
+  const m = new Map<string, { count: number; safe: number; aCount: number }>()
+  for (const p of snap.pools) {
+    const e = m.get(p.project) ?? { count: 0, safe: 0, aCount: 0 }
+    e.count += 1
+    if (p.grade === 'A' || p.grade === 'B') e.safe += 1
+    if (p.grade === 'A') e.aCount += 1
+    m.set(p.project, e)
+  }
+  return [...m.entries()]
+    .map(([project, e]) => ({ project, ...e }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit)
+}
+
 export type WeekOverWeekDelta = {
   prevDate: string
   currDate: string

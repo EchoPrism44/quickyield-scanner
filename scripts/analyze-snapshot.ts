@@ -21,12 +21,15 @@ import path from 'node:path'
 import {
   GRADES,
   analyze,
+  chainBreakdown,
   fmtTvl,
   label,
   listSnapshotDates,
   loadSnapshot,
   safeShare,
+  topProtocols,
   type Analysis,
+  type Snapshot,
 } from '../lib/snapshot-delta'
 
 function report(a: Analysis): string {
@@ -58,13 +61,43 @@ function report(a: Analysis): string {
   return lines.join('\n')
 }
 
-function draftPost(a: Analysis): string {
+function reportBreakdowns(curr: Snapshot, prev: Snapshot): string {
+  const lines: string[] = []
+  const currChains = chainBreakdown(curr)
+  const prevChains = new Map(chainBreakdown(prev).map((c) => [c.chain, c]))
+  lines.push('')
+  lines.push('By chain (top 8 by pools graded):')
+  for (const c of currChains.slice(0, 8)) {
+    const p = prevChains.get(c.chain)
+    const delta = p ? c.safePct - p.safePct : 0
+    lines.push(`  ${c.chain}: ${c.count} pools · ${c.safePct}% safe (A|B) (${delta >= 0 ? '+' : ''}${delta}pp)`)
+  }
+  lines.push('')
+  lines.push('Protocols with the most graded pools (top 10):')
+  for (const t of topProtocols(curr, 10)) {
+    lines.push(`  ${t.project}: ${t.count} pools · ${t.safe} safe · ${t.aCount} A-grade`)
+  }
+  return lines.join('\n')
+}
+
+function draftPost(a: Analysis, curr: Snapshot, prev: Snapshot): string {
   const up = a.upgraded.length
   const down = a.downgraded.length
   const tone = up > down ? 'a net-positive week' : down > up ? 'a cautious week' : 'a steady week'
   const topUp = a.upgraded[0]
   const topDown = a.downgraded[0]
   const dGrid = GRADES.map((g) => `| ${g} | ${a.prevDist[g]} | ${a.currDist[g]} | ${a.currDist[g] - a.prevDist[g] >= 0 ? '+' : ''}${a.currDist[g] - a.prevDist[g]} |`).join('\n')
+
+  const prevChains = new Map(chainBreakdown(prev).map((c) => [c.chain, c]))
+  const chainRows = chainBreakdown(curr).slice(0, 6).map((c) => {
+    const p = prevChains.get(c.chain)
+    const delta = p ? c.safePct - p.safePct : 0
+    return `| ${c.chain} | ${c.count} | ${c.safePct}% | ${delta >= 0 ? '+' : ''}${delta}pp |`
+  }).join('\n')
+
+  const tvlMovers = a.tvlMovers.slice(0, 4)
+    .map((m) => `- **${label(m.pool)}** — ${fmtTvl(m.prevTvl)} → ${fmtTvl(m.pool.tvlUsd)} (${m.deltaPct >= 0 ? '+' : ''}${Math.round(m.deltaPct)}%), graded ${m.pool.grade}`)
+    .join('\n')
 
   return `---
 title: "Weekly grade record — ${a.currDate}"
@@ -94,6 +127,20 @@ ${topUp ? `**Biggest upgrade:** ${label(topUp.pool)} moved ${topUp.from} → ${t
 
 ${topDown ? `**Biggest downgrade:** ${label(topDown.pool)} moved ${topDown.from} → ${topDown.pool.grade} (APY ${topDown.pool.apy.toFixed(2)}%, TVL ${fmtTvl(topDown.pool.tvlUsd)}).` : ''}
 
+## Where the money moved
+
+Biggest TVL swings among pools over $1M this week:
+
+${tvlMovers}
+
+## By chain
+
+Safe share is the % of a chain's graded pools at A or B.
+
+| Chain | Pools | Safe share | Δ vs last week |
+|---|---|---|---|
+${chainRows}
+
 ## Our read
 
 (Write your take here: why did these pools move? Is the market getting safer or riskier? What should readers watch next week? Delete this placeholder before publishing.)
@@ -114,13 +161,16 @@ if (!prevDate || !currDate) {
   process.exit(1)
 }
 
-const a = analyze(loadSnapshot(prevDate), loadSnapshot(currDate))
+const prev = loadSnapshot(prevDate)
+const curr = loadSnapshot(currDate)
+const a = analyze(prev, curr)
 console.log(report(a))
+console.log(reportBreakdowns(curr, prev))
 
 if (wantDraft) {
   const outDir = path.join(process.cwd(), 'content', 'blog')
   fs.mkdirSync(outDir, { recursive: true })
   const out = path.join(outDir, `${a.currDate}-weekly-grade-record.md`)
-  fs.writeFileSync(out, draftPost(a))
+  fs.writeFileSync(out, draftPost(a, curr, prev))
   console.log(`\nDraft written: ${out}`)
 }
