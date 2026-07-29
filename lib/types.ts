@@ -202,7 +202,7 @@ export type OpportunityFilters = {
   pageSize?: number
 }
 
-export type OpportunityPreset = 'safe-stablecoins' | 'eth-staking' | 'solana-yield' | 'high-apy' | 'saved'
+export type OpportunityPreset = 'safe-stablecoins' | 'eth-staking' | 'solana-yield' | 'rwa' | 'high-apy' | 'saved'
 
 export type OpportunitiesResult = {
   opportunities: Opportunity[]

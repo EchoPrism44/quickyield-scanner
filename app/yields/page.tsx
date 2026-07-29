@@ -46,6 +46,7 @@ export default async function YieldsIndexPage() {
             {FEATURED_ASSETS.map((a) => (
               <Link key={a} href={`/yields/${a.toLowerCase()}`} className="ql-asset-chip">Best {a} yield</Link>
             ))}
+            <Link href="/yields/rwa" className="ql-asset-chip">RWA &amp; T-bills</Link>
           </div>
         </div>
       </section>
