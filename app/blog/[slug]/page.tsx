@@ -38,17 +38,27 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div className="ql-wrap">
         <article className="ql-article">
           <Link href="/blog" className="ql-article-back">
-            <ArrowLeft size={14} /> All posts
+            <ArrowLeft size={13} /> All research
           </Link>
-          <div className="ql-blog-card-meta" style={{ marginTop: 'var(--sp-5)' }}>
-            <span className="ql-eyebrow">{post.date}</span>
-            <span className="ql-blog-read">By {post.author}</span>
-            <span className="ql-blog-read">{post.readMinutes} min read</span>
+
+          <div className="ql-article-kicker">
+            <span className="ql-eyebrow">Weekly grade record</span>
           </div>
           <h1>{post.title}</h1>
+          {post.excerpt ? <p className="ql-article-standfirst">{post.excerpt}</p> : null}
+
+          <div className="ql-article-byline">
+            <span className="byline">By {post.author}</span>
+            <span className="sep">·</span>
+            <span>{post.date}</span>
+            <span className="sep">·</span>
+            <span>{post.readMinutes} min read</span>
+          </div>
+
           <div className="ql-article-body">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
           </div>
+
           <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-7)' }}>
             <span>
               Safety Grades are our opinion under a published methodology. Informational only —
