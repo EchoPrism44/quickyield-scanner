@@ -1,6 +1,32 @@
 import type { Metadata, Viewport } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
+import { Instrument_Sans, JetBrains_Mono, Newsreader } from 'next/font/google'
 import './globals.css'
+
+/**
+ * Fonts are loaded through next/font (self-hosted, preloaded, no layout shift).
+ * A plain CSS `@import url(fonts.googleapis...)` does NOT survive the Turbopack
+ * build — it gets stripped, and every family silently falls back.
+ *
+ * Newsreader (serif) = editorial surfaces: marketing headlines + articles.
+ * Instrument Sans = UI/data surfaces. JetBrains Mono = tickers and figures.
+ */
+const fontSerif = Newsreader({
+  subsets: ['latin'],
+  display: 'swap',
+  style: ['normal', 'italic'],
+  variable: '--font-serif-src',
+})
+const fontSans = Instrument_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans-src',
+})
+const fontMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono-src',
+})
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
   ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://quickyield.vercel.app')
@@ -68,7 +94,7 @@ const clerkEnabled = typeof clerkPublishableKey === 'string' && clerkPublishable
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const html = (
-    <html lang="en">
+    <html lang="en" className={`${fontSerif.variable} ${fontSans.variable} ${fontMono.variable}`}>
       <body>{children}</body>
     </html>
   )

@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+/* Fonts come from next/font in app/layout.tsx (self-hosted). A CSS @import of
+   Google Fonts is stripped by the Turbopack build and silently falls back. */
 @import "../styles/tokens.css";
 @import "../styles/marketing.css";
 
@@ -17,9 +18,12 @@
   --safe: #00E676;
   --risk: #ff3366;
   --warn: #ffb020;
-  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  /* Editorial serif for reading surfaces (marketing headlines, articles);
+     grotesk + mono for data surfaces (terminal, numbers). */
+  --font-serif: var(--font-serif-src), "Iowan Old Style", Georgia, serif;
+  --font-display: var(--font-sans-src), system-ui, sans-serif;
+  --font-sans: var(--font-sans-src), system-ui, sans-serif;
+  --font-mono: var(--font-mono-src), ui-monospace, Menlo, monospace;
 }
 
 * { box-sizing: border-box; }
