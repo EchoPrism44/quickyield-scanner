@@ -24,7 +24,19 @@ Every Monday, QuickYield grades every live pool on the feed and publishes the re
 | D — Elevated | 423 | 403 | −20 |
 | F — High risk | 288 | 264 | −24 |
 
+![Pools by Safety Grade this week](/blog/charts/2026-07-20-grade-counts.svg)
+
 The headline safe-share held at 61%, but notice the tails: **D and F both shrank** (−20 and −24) while B and C grew. Fewer pools sat in the danger zone this week — the middle of the market quietly firmed up.
+
+## Does the grade actually mean anything?
+
+Fair question to ask of any rating. Here's every graded pool's APY, grouped by the grade we gave it:
+
+![APY distribution by Safety Grade](/blog/charts/2026-07-20-apy-by-grade.svg)
+
+The separation is clean and it runs in one direction: **median APY climbs from 3.2% at A to 46.7% at F.** We don't grade on yield — the score comes from liquidity, APY stability, reward quality, and data completeness — so this gap is the grade independently rediscovering the oldest rule in finance: the biggest advertised returns carry the biggest risk.
+
+One honest wrinkle: **A's median (3.2%) sits slightly above B's (1.4%)**. That's not a bug — the A tier is dominated by large, mature staking and lending pools that pay a real base yield, while B sweeps in thousands of small pools paying close to nothing. Safety and zero yield aren't the same thing.
 
 ## Notable moves
 

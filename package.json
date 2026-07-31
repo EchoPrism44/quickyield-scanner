@@ -12,7 +12,8 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "blog:data": "tsx scripts/analyze-snapshot.ts",
-    "blog:draft": "tsx scripts/analyze-snapshot.ts --draft"
+    "blog:draft": "tsx scripts/analyze-snapshot.ts --draft",
+    "blog:charts": "tsx scripts/chart-snapshot.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.0",
