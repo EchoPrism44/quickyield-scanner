@@ -24,7 +24,8 @@ export function MarketingNav() {
           <Link href="/docs" className="ql-nav-link">Methodology</Link>
           <Link href="/proof" className="ql-nav-link">Track record</Link>
           <Link href="/yields" className="ql-nav-link">Yields</Link>
-          <Link href="/blog" className="ql-nav-link">Blog</Link>
+          <Link href="/blog" className="ql-nav-link">Research</Link>
+          <Link href="/roadmap" className="ql-nav-link">Roadmap</Link>
         </div>
         <div className="ql-nav-actions">
           <Link href="/sign-in" className="ql-nav-signin" data-testid="nav-signin">Sign in</Link>
