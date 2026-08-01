@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
           <div>
             <span className="qy-overline qy-overline-signal">Market intelligence</span>
             <h1 className="qy-h2">What changed this week</h1>
-            <p className="qy-analytics-sub">Safety-grade mix, the biggest yield and liquidity moves, and which pools held steadiest — built from QuickYield&apos;s own accumulating snapshots.</p>
+            <p className="qy-analytics-sub">Safety-grade mix, the biggest yield and liquidity moves, and which pools held steadiest — built from Litmus&apos;s own accumulating snapshots.</p>
           </div>
           <div className="qy-analytics-actions">
             <Link href="/terminal" className="qy-btn qy-btn-secondary">Back to Discover</Link>

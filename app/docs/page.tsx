@@ -8,7 +8,7 @@ import { BANDS } from '../../lib/grade'
 export const metadata: Metadata = {
   title: 'Methodology — how Safety Grades work',
   description:
-    'The published methodology behind QuickYield Safety Grades: the four signals, their exact weights, the A–F thresholds, data sources and limitations, and the public grade ledger.',
+    'The published methodology behind Litmus Safety Grades: the four signals, their exact weights, the A–F thresholds, data sources and limitations, and the public grade ledger.',
   alternates: { canonical: '/docs' },
 }
 
@@ -67,7 +67,7 @@ export default function DocsPage() {
         <h2>Where the data comes from — and where it stops</h2>
         <p>
           Pool data is sourced from public <strong>DeFiLlama</strong> feeds and refreshed on a live
-          scan. Each scan is snapshotted, so QuickYield accumulates its own APY and TVL history over
+          scan. Each scan is snapshotted, so Litmus accumulates its own APY and TVL history over
           time; pool detail pages also pull per-pool history directly from DeFiLlama for 30- and
           90-day context.
         </p>
@@ -114,7 +114,7 @@ export default function DocsPage() {
         <span className="ql-eyebrow"><Bell size={12} /> Alerts &amp; digest</span>
         <h2>Alerts in plain language</h2>
         <p>
-          Alerts are built in plain language — pick what should trigger one and QuickYield watches
+          Alerts are built in plain language — pick what should trigger one and Litmus watches
           for it on every scan: APY rising above or dropping below your threshold, a sudden APY
           fall, TVL draining, or rewards making up too much of the yield. Alerts fire only on a
           real match — never spam — by email or Telegram. Separately, the weekly digest emails you
@@ -128,9 +128,9 @@ export default function DocsPage() {
         <div className="ql-faq">
           {[
             ['Is a Safety Grade an audit?', 'No. It is a published-methodology opinion computed from public market data. It does not review contract code or teams, and it is not a certification of safety.'],
-            ['Does QuickYield hold my funds?', 'No. It is non-custodial and never connects a wallet or executes transactions. It is research and alerting only.'],
-            ['Is this financial advice?', 'No. QuickYield provides research and signals; every decision and its consequences are yours.'],
-            ['Where does the data come from?', 'Public DeFiLlama feeds, plus QuickYield’s own accumulating snapshot history.'],
+            ['Does Litmus hold my funds?', 'No. It is non-custodial and never connects a wallet or executes transactions. It is research and alerting only.'],
+            ['Is this financial advice?', 'No. Litmus provides research and signals; every decision and its consequences are yours.'],
+            ['Where does the data come from?', 'Public DeFiLlama feeds, plus Litmus’s own accumulating snapshot history.'],
             ['Can past grades be edited?', 'No. Each weekly snapshot is recorded before its outcome is known and is append-only; on-chain anchoring on Base (launching soon) makes any change independently detectable. That is the point of the record.'],
           ].map(([q, a]) => (
             <div className="ql-faq-item" key={q}>

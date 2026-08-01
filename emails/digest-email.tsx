@@ -36,7 +36,7 @@ export function DigestEmail({
 
           {/* Header */}
           <Text style={{ color: accent, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', margin: '0 0 8px' }}>
-            QuickYield · Safe Yield Digest
+            Litmus · Safe Yield Digest
           </Text>
           <Heading style={{ color: text, fontSize: 24, margin: '0 0 4px' }}>
             Weekly update
@@ -122,7 +122,7 @@ export function DigestEmail({
           {/* Footer */}
           <Section style={{ marginTop: 32, borderTop: `1px solid ${border}`, paddingTop: 24 }}>
             <Text style={{ color: muted, fontSize: 11, margin: '0 0 4px' }}>
-              QuickYield is a research tool, not a financial adviser. Review fees, lockups, smart-contract risk,
+              Litmus is a research tool, not a financial adviser. Review fees, lockups, smart-contract risk,
               custody risk, and regional availability before using any third-party platform.
             </Text>
             <Text style={{ color: muted, fontSize: 11, margin: '8px 0 0' }}>

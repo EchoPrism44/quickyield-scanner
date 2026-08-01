@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
     await sendTelegramMessage(
       chatId,
       [
-        'QuickYield is connected.',
+        'Litmus is connected.',
         'You will receive alerts here when one of your yield targets matches a scan.',
-        'Tip: open Settings in QuickYield and use Send test alert to verify the full path.',
+        'Tip: open Settings in Litmus and use Send test alert to verify the full path.',
       ].join('\n'),
     )
   }

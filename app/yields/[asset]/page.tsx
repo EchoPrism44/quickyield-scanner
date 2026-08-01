@@ -26,11 +26,11 @@ async function loadAsset(assetParam: string) {
 export async function generateMetadata({ params }: { params: Promise<{ asset: string }> }): Promise<Metadata> {
   const { asset: raw } = await params
   const data = await loadAsset(raw)
-  if (!data) return { title: 'Yield not found | QuickYield' }
+  if (!data) return { title: 'Yield not found | Litmus' }
   const best = data.items[0]
   const bestLine = best ? ` Top safe pool: ${best.platform} at ${best.apy.toFixed(2)}% APY.` : ''
   return {
-    title: `Best & Safest ${data.asset} Yield Right Now | QuickYield`,
+    title: `Best & Safest ${data.asset} Yield Right Now | Litmus`,
     description: `Live, safety-graded ${data.asset} yield pools across major chains.${bestLine} Research only — no wallet, no custody.`,
     alternates: { canonical: `/yields/${data.asset.toLowerCase()}` },
   }

@@ -1,6 +1,6 @@
 import { getProtocolMeta, llamaProtocolIcon, normalizeProtocolSlug } from './protocols'
 import { computeSafetyGrade } from './grade'
-import type { LlamaPool, Opportunity, QuickYieldScoreBreakdown, RiskLevel } from './types'
+import type { LlamaPool, Opportunity, LitmusScoreBreakdown, RiskLevel } from './types'
 
 /** Inputs to the four Safety-Grade dimensions — shared by the live scan and the backtest. */
 export type ScoreInputs = {
@@ -16,7 +16,7 @@ export type ScoreInputs = {
  * The four transparent scoring dimensions. Extracted so the historical backtest
  * recomputes grades with the EXACT same model the live scan uses.
  */
-export function computeScoreBreakdown(i: ScoreInputs): QuickYieldScoreBreakdown {
+export function computeScoreBreakdown(i: ScoreInputs): LitmusScoreBreakdown {
   const liquidity = Math.min(100, Math.max(30, Math.round(((Math.log10(Math.max(i.tvl, 1_000_000)) - 6) / 3.5) * 65 + 35)))
   const stability = Math.min(100, Math.max(20, Math.round(96 - Math.abs(i.apyPct1D ?? 0) * 6 - Math.max(0, i.apy - 10) * 1.4)))
   const sustainability = Math.min(100, Math.max(24, Math.round(88 - ((i.apyReward ?? 0) / Math.max(i.apy, 1)) * 50 - Math.max(0, i.apy - 12) * 2)))

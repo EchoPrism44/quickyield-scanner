@@ -7,7 +7,7 @@ import { getLedgerSummary } from '../../lib/ledger'
 export const metadata: Metadata = {
   title: 'Roadmap — what’s shipped, what’s next, what we’re exploring',
   description:
-    'What QuickYield has shipped, what is being built next, and the directions we are exploring — plus the things we have decided we will never do.',
+    'What Litmus has shipped, what is being built next, and the directions we are exploring — plus the things we have decided we will never do.',
   alternates: { canonical: '/roadmap' },
 }
 
@@ -94,7 +94,7 @@ export default function RoadmapPage() {
           Where this is going.
         </h1>
         <p className="ql-lead">
-          QuickYield is built around one asset that compounds: a timestamped record of what we said
+          Litmus is built around one asset that compounds: a timestamped record of what we said
           about every pool, published before the outcome was known
           {ledger ? ` — ${ledger.totals.snapshotCount} weeks of it so far, starting ${ledger.totals.firstDate}` : ''}.
           Everything below is either built on that record or in service of it.

@@ -8,7 +8,7 @@ export type AlertFrequency = 'instant' | 'daily' | 'weekly'
 export type AlertCondition = 'apy-above' | 'apy-below' | 'apy-drop' | 'tvl-drop' | 'reward-spike'
 export type NotificationChannelType = 'email' | 'telegram'
 
-export type QuickYieldScoreBreakdown = {
+export type LitmusScoreBreakdown = {
   liquidity: number
   stability: number
   sustainability: number
@@ -169,7 +169,7 @@ export type Opportunity = {
   apyMean30d?: number
   volatility: number
   dataCompleteness: number
-  scoreBreakdown: QuickYieldScoreBreakdown
+  scoreBreakdown: LitmusScoreBreakdown
   safety?: SafetyGrade
 }
 

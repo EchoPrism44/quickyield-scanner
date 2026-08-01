@@ -125,7 +125,7 @@ export function PortfolioView({
         <div className="qy-empty">
           <Briefcase className="qy-empty-icon" />
           <h3>No positions tracked yet</h3>
-          <p>Add a position to see your blended APY and projected yield. It&apos;s manual and read-only — QuickYield never touches your funds or wallet.</p>
+          <p>Add a position to see your blended APY and projected yield. It&apos;s manual and read-only — Litmus never touches your funds or wallet.</p>
           <button type="button" className="qy-btn qy-btn-primary qy-empty-action" onClick={openDialog}>
             <Plus size={14} /> Add your first position
           </button>
@@ -190,7 +190,7 @@ export function PortfolioView({
                 </div>
               ) : (
                 <>
-                  <p className="qy-alert-preview">Tracking is manual and informational. QuickYield never connects a wallet or moves funds.</p>
+                  <p className="qy-alert-preview">Tracking is manual and informational. Litmus never connects a wallet or moves funds.</p>
                   <label>
                     <span>Pool (from your watchlist)</span>
                     <select className="qy-input" value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>

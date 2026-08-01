@@ -2,7 +2,7 @@
 --
 -- Why: Supabase auto-exposes a PostgREST REST API for the `public` schema,
 -- reachable with the public `anon` key. With RLS disabled, anyone with the
--- project URL + anon key can read/write these tables. QuickYield does NOT use
+-- project URL + anon key can read/write these tables. Litmus does NOT use
 -- that API — it connects directly to Postgres as the `postgres` superuser via
 -- DATABASE_URL, which BYPASSES RLS. So enabling RLS with no policies (deny-all)
 -- blocks the public API roles while leaving the app fully functional.

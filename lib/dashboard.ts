@@ -49,7 +49,7 @@ export async function getInitialDashboardData(): Promise<DashboardData> {
     ? { id: LOCAL_USER_ID, name: 'Local beta user', email: 'local@example.com', isLocal: true }
     : {
         id: userId,
-        name: (clerkUser?.fullName ?? clerkUser?.firstName ?? email.split('@')[0]) || 'QuickYield user',
+        name: (clerkUser?.fullName ?? clerkUser?.firstName ?? email.split('@')[0]) || 'Litmus user',
         email,
         imageUrl: clerkUser?.imageUrl,
         isLocal: false,

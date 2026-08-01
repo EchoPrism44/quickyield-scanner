@@ -3,7 +3,7 @@ import Link from 'next/link'
 export function BrandLogo({
   href,
   className = '',
-  label = 'QuickYield',
+  label = 'Litmus',
 }: {
   href?: string
   className?: string
@@ -12,11 +12,10 @@ export function BrandLogo({
   const content = (
     <>
       <span className="qy-logo-mark" aria-hidden="true">
-        <img src="/brand/qy-mark.svg" alt="" />
+        <img src="/brand/litmus-mark.svg" alt="" />
       </span>
       <span className="qy-logo-text">
-        <span>Quick</span>
-        <span>Yield</span>
+        <span>Litmus</span>
       </span>
     </>
   )

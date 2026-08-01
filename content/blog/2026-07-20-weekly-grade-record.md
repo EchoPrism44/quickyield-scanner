@@ -6,7 +6,7 @@ author: "Vivek"
 readMinutes: 5
 ---
 
-Every Monday, QuickYield grades every live pool on the feed and publishes the record — before anyone knows how those pools actually play out. This week's snapshot covers **5,300 pools**. Here's what changed between **July 13** and **July 20**.
+Every Monday, Litmus grades every live pool on the feed and publishes the record — before anyone knows how those pools actually play out. This week's snapshot covers **5,300 pools**. Here's what changed between **July 13** and **July 20**.
 
 ## The week at a glance
 

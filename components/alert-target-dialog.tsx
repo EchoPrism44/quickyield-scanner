@@ -220,7 +220,7 @@ export function AlertTargetDialog({
             <label>
               <span>Minimum safety score</span>
               <input className="qy-input" type="number" min={0} max={100} value={draft.minConfidence} onChange={(event) => patch({ minConfidence: Number(event.target.value) })} />
-              <small>Higher scores mean the pool passed more of QuickYield's market-data checks.</small>
+              <small>Higher scores mean the pool passed more of Litmus's market-data checks.</small>
             </label>
           </div>
           <fieldset className="qy-alert-frequency">

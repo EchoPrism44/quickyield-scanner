@@ -20,7 +20,7 @@ export async function GET(
     return new NextResponse(raw, {
       headers: {
         'Content-Type': 'application/json',
-        'Content-Disposition': `inline; filename="quickyield-grades-${date}.json"`,
+        'Content-Disposition': `inline; filename="litmus-grades-${date}.json"`,
         'Cache-Control': 'public, max-age=3600, s-maxage=86400',
       },
     })

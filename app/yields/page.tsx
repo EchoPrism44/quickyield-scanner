@@ -34,7 +34,7 @@ export default async function YieldsIndexPage() {
             The safest onchain yields, <em style={{ color: 'var(--brand-green)', fontStyle: 'normal' }}>right now</em>.
           </h1>
           <p className="ql-lead">
-            QuickYield scans {total.toLocaleString()}+ pools across major chains and grades each one A–F for safety —
+            Litmus scans {total.toLocaleString()}+ pools across major chains and grades each one A–F for safety —
             liquidity, APY stability, reward quality, and data completeness. Here are the strongest safe yields today.
           </p>
           <div className="ql-cta-row">

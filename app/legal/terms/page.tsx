@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — QuickYield',
-  description: 'The terms governing your use of QuickYield, an informational DeFi yield research and alerting product.',
+  title: 'Terms of Service — Litmus',
+  description: 'The terms governing your use of Litmus, an informational DeFi yield research and alerting product.',
 }
 
 export default function TermsPage() {
@@ -16,9 +16,9 @@ export default function TermsPage() {
         should be reviewed by qualified counsel before relying on it for a production launch.
       </div>
 
-      <h2>1. What QuickYield is</h2>
+      <h2>1. What Litmus is</h2>
       <p>
-        QuickYield (&ldquo;QuickYield&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is an informational research and
+        Litmus (&ldquo;Litmus&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is an informational research and
         alerting service for decentralized finance (DeFi) yield opportunities. We aggregate publicly available data,
         apply our own scoring, and let you create rules that trigger notifications. We do not provide financial,
         investment, tax, or legal advice.
@@ -26,13 +26,13 @@ export default function TermsPage() {
 
       <h2>2. No custody and no execution</h2>
       <p>
-        QuickYield never takes custody of your funds, private keys, or wallets. We do not execute transactions, move
+        Litmus never takes custody of your funds, private keys, or wallets. We do not execute transactions, move
         assets, or act as a broker, exchange, or adviser. Any action you take on a third-party protocol is solely your
         own decision and responsibility.
       </p>
 
       <h2>3. Eligibility and acceptable use</h2>
-      <p>You agree to use QuickYield only where lawful for you to do so, and not to:</p>
+      <p>You agree to use Litmus only where lawful for you to do so, and not to:</p>
       <ul>
         <li>Scrape, overload, or attempt to disrupt the service or its data sources.</li>
         <li>Misrepresent the service&apos;s output as financial advice to others.</li>
@@ -49,7 +49,7 @@ export default function TermsPage() {
       <h2>5. Disclaimers and limitation of liability</h2>
       <p>
         The service is provided &ldquo;as is&rdquo; without warranties of any kind. To the maximum extent permitted by
-        law, QuickYield is not liable for any losses arising from your use of the service or from decisions you make
+        law, Litmus is not liable for any losses arising from your use of the service or from decisions you make
         based on its information. DeFi carries significant risk, including total loss of capital.
       </p>
 

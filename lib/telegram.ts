@@ -37,7 +37,7 @@ export async function sendTelegramAlert(chatId: string, alert: AlertRule, opport
   if (!token) return { sent: false, skipped: true, reason: 'TELEGRAM_BOT_TOKEN is not configured' }
 
   const text = [
-    `QuickYield alert: ${opportunity.name}`,
+    `Litmus alert: ${opportunity.name}`,
     `${opportunity.platform} on ${opportunity.chain}`,
     `APY: ${opportunity.apy.toFixed(2)}% | Safety score: ${opportunity.confidence}`,
     `Rule: ${alert.name}`,
