@@ -11,7 +11,7 @@ Open a terminal and go to the project folder first — the commands fail from
 anywhere else:
 
 ```bash
-cd C:\Users\Vivek\projects\quickyield-scanner
+cd C:\Users\Vivek\projects\litmus
 npm run blog:data
 ```
 
