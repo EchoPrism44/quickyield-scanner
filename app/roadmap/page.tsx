@@ -59,6 +59,10 @@ const BUILDING: Item[] = [
 
 const EXPLORING: Item[] = [
   {
+    title: 'Risk broken out into its parts',
+    body: 'Today one grade summarises what we can measure from market data: liquidity, APY stability, reward quality, completeness. A fuller picture would separate smart-contract risk, counterparty and custody risk, and operational history into their own scores. We are not publishing those dimensions until we have real sources behind them — audit registries, incident histories, upgrade-key records — because a confident-looking number with nothing underneath is worse than no number.',
+  },
+  {
     title: 'A research API',
     body: 'Programmatic access to grades and their history, for teams that want to build on the record. Not built yet — we would rather hear what people actually need first.',
   },
@@ -73,6 +77,10 @@ const EXPLORING: Item[] = [
   {
     title: 'Letting others act on the feed',
     body: 'If the grade record is public and verifiable, other systems can subscribe to it and set their own automated rules on top. We are interested in being the dependable signal underneath that — not in operating it.',
+  },
+  {
+    title: 'A numeric score beside the letter',
+    body: 'A 0–100 reading would show movement a letter hides: a pool sliding within its band for weeks before it drops a grade. The underlying score already exists; the question is whether exposing it helps people or just invites false precision.',
   },
 ]
 
