@@ -21,7 +21,7 @@ async function loadRwa() {
 }
 
 export const metadata: Metadata = {
-  title: 'Best RWA & Tokenized T-Bill Yields — Safety-Graded | QuickYield',
+  title: 'Best RWA & Tokenized T-Bill Yields — Safety-Graded | Litmus',
   description:
     'Live, safety-graded yields on tokenized real-world assets — treasuries, T-bills, and on-chain private credit (Ondo, BlackRock BUIDL, Maple, Centrifuge, OpenEden and more). Research only, no wallet, no custody.',
   alternates: { canonical: '/yields/rwa' },

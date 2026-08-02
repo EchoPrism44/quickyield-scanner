@@ -7,7 +7,7 @@ import { getAllPosts } from '../../lib/blog'
 export const metadata: Metadata = {
   title: 'Research — the weekly grade record, analyzed',
   description:
-    'Weekly analysis of the QuickYield grade record: which pools upgraded, which downgraded, and what it says about onchain yield right now.',
+    'Weekly analysis of the Litmus grade record: which pools upgraded, which downgraded, and what it says about onchain yield right now.',
   alternates: { canonical: '/blog' },
 }
 

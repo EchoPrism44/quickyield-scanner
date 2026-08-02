@@ -58,7 +58,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
             <div className="qy-grade-banner">
               <span className={`qy-grade qy-grade-lg qy-grade-${grade.letter.toLowerCase()}`}>{grade.letter}</span>
               <div>
-                <span className="qy-overline qy-overline-signal">QuickYield Safety Grade</span>
+                <span className="qy-overline qy-overline-signal">Litmus Safety Grade</span>
                 <strong>{grade.label} · {grade.score}/100</strong>
                 <p>{grade.summary}</p>
               </div>
@@ -83,7 +83,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
                 <div><span className="qy-overline">Sustainability</span><strong>{opportunity.scoreBreakdown.sustainability}</strong></div>
                 <div><span className="qy-overline">Completeness</span><strong>{opportunity.scoreBreakdown.completeness}</strong></div>
               </div>
-              <p className="qy-detail-copy">QuickYield ranks pools using scale, APY behavior, reward quality, and data completeness.</p>
+              <p className="qy-detail-copy">Litmus ranks pools using scale, APY behavior, reward quality, and data completeness.</p>
             </div>
           </aside>
         </section>

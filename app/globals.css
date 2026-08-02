@@ -117,9 +117,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.qy-logo-text span:last-child {
-  color: var(--brand-green);
-}
+/* Single-word wordmark sits in ink — the mark carries the grade-ramp color. */
 .qy-auth-logo {
   margin-bottom: 24px;
 }

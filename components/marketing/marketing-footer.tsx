@@ -10,7 +10,7 @@ export function MarketingFooter() {
       <div className="ql-wrap">
         <div className="ql-footer-grid">
           <div>
-            <strong style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>QuickYield</strong>
+            <strong style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>Litmus</strong>
             <p className="ql-footer-blurb">
               Onchain yield research with a public track record. Research only — not investment
               advice, not an audit, and never custody. Always verify with the protocol before
@@ -46,7 +46,7 @@ export function MarketingFooter() {
           </div>
         </div>
         <div className="ql-footer-base">
-          <span>© 2026 QuickYield</span>
+          <span>© 2026 Litmus</span>
           <span>Graded in the open</span>
         </div>
       </div>

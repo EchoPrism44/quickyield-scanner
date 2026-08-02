@@ -1,7 +1,7 @@
-import type { QuickYieldScoreBreakdown, SafetyGrade, SafetyGradeLetter } from './types'
+import type { LitmusScoreBreakdown, SafetyGrade, SafetyGradeLetter } from './types'
 
 /**
- * QuickYield Safety Grade — the product's core, transparent IP.
+ * Litmus Safety Grade — the product's core, transparent IP.
  *
  * Distills the four scoring dimensions into a single A–F letter so a pool can be
  * judged at a glance. Pure and dependency-free so it can run on both the server
@@ -31,7 +31,7 @@ function bandFor(score: number): { letter: SafetyGradeLetter; label: string } {
   return { letter: band.letter, label: band.label }
 }
 
-export function computeSafetyGrade(b: QuickYieldScoreBreakdown): SafetyGrade {
+export function computeSafetyGrade(b: LitmusScoreBreakdown): SafetyGrade {
   const score = Math.round(
     Math.min(100, Math.max(0,
       b.liquidity * WEIGHTS.liquidity +
@@ -60,6 +60,6 @@ export function gradeTone(letter: SafetyGradeLetter): string {
 }
 
 /** Resolve a grade for an opportunity, falling back to computing from the breakdown. */
-export function safetyGradeOf(o: { safety?: SafetyGrade; scoreBreakdown: QuickYieldScoreBreakdown }): SafetyGrade {
+export function safetyGradeOf(o: { safety?: SafetyGrade; scoreBreakdown: LitmusScoreBreakdown }): SafetyGrade {
   return o.safety ?? computeSafetyGrade(o.scoreBreakdown)
 }

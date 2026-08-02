@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — QuickYield',
-  description: 'How QuickYield handles your data: account info, alert rules, and notification channels.',
+  title: 'Privacy Policy — Litmus',
+  description: 'How Litmus handles your data: account info, alert rules, and notification channels.',
 }
 
 export default function PrivacyPage() {

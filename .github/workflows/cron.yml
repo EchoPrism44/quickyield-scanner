@@ -10,8 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger scan-yields endpoint
+        env:
+          # Set the APP_URL repo secret (e.g. https://getlitmus.xyz) to decouple this
+          # job from the Vercel-generated hostname. Falls back to the current
+          # deployment URL so nothing breaks before that secret exists.
+          APP_URL: ${{ secrets.APP_URL }}
         run: |
-          response=$(curl -X GET "https://quickyield-scanner.vercel.app/api/cron/scan-yields?secret=${{ secrets.CRON_SECRET }}" \
+          BASE="${APP_URL:-https://quickyield-scanner.vercel.app}"
+          echo "Using base: $BASE"
+          response=$(curl -X GET "$BASE/api/cron/scan-yields?secret=${{ secrets.CRON_SECRET }}" \
             --silent --show-error --max-time 60 --write-out "\n%{http_code}")
           body=$(printf "%s" "$response" | sed '$d')
           status=$(printf "%s" "$response" | tail -n 1)

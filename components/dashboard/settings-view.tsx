@@ -125,7 +125,7 @@ export function SettingsView({
 
         <section className="qy-set-section">
           <h3><ShieldCheck size={16} /> Method</h3>
-          <p>QuickYield combines live market-feed data with internal ranking, data completeness, and volatility screens. It is a research product, not an execution product.</p>
+          <p>Litmus combines live market-feed data with internal ranking, data completeness, and volatility screens. It is a research product, not an execution product.</p>
         </section>
       </div>
     </section>

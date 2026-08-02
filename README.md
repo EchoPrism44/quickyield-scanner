@@ -1,6 +1,6 @@
-# QuickYield Intel
+# Litmus Intel
 
-QuickYield is a Next.js SaaS beta for crypto yield research. It scans public DeFiLlama yield data server-side, merges curated beginner-safe routes, stores watchlists and alert rules, and can send email alerts through Resend.
+Litmus is a Next.js SaaS beta for crypto yield research. It scans public DeFiLlama yield data server-side, merges curated beginner-safe routes, stores watchlists and alert rules, and can send email alerts through Resend.
 
 ## Product Boundaries
 
@@ -34,7 +34,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 DATABASE_URL=
 RESEND_API_KEY=
-RESEND_FROM="QuickYield <alerts@yourdomain.com>"
+RESEND_FROM="Litmus <alerts@yourdomain.com>"
 CRON_SECRET=
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_WEBHOOK_SECRET=

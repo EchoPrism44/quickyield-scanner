@@ -78,7 +78,7 @@ export default async function HomePage() {
               Yield research you can <em>audit</em>, not just trust.
             </h1>
             <p className="ql-hero-sub">
-              QuickYield grades every live onchain yield pool A–F under a published methodology —
+              Litmus grades every live onchain yield pool A–F under a published methodology —
               and publishes every grade to a public, timestamped record before the outcome is known.
             </p>
             <div className="ql-cta-row">
@@ -154,7 +154,7 @@ export default async function HomePage() {
             <span className="ql-eyebrow">The methodology</span>
             <h2 className="ql-h2">Every pool gets a Safety Grade.</h2>
             <p className="ql-lead">
-              QuickYield doesn&apos;t just list yields — it scores them. Four transparent signals,
+              Litmus doesn&apos;t just list yields — it scores them. Four transparent signals,
               weighted exactly as published, distilled into one letter. The weights below are the
               model&apos;s real constants, not marketing.
             </p>
@@ -250,7 +250,7 @@ export default async function HomePage() {
               </div>
               <div className="ql-trust-item">
                 <h4><ShieldCheck size={18} />No custody, ever</h4>
-                <p>QuickYield never touches your funds, keys, or wallet. There is no deposit, no trade button, no custody. It is research and alerting only.</p>
+                <p>Litmus never touches your funds, keys, or wallet. There is no deposit, no trade button, no custody. It is research and alerting only.</p>
               </div>
               <div className="ql-trust-item">
                 <h4><Database size={18} />Transparent data</h4>

@@ -85,7 +85,7 @@ export function Onboarding() {
         style={{ maxWidth: 460, transition: reducedMotion ? 'none' : 'transform .2s ease' }}
       >
         <div className="qy-modal-header">
-          <span className="qy-overline qy-overline-signal">Welcome to QuickYield</span>
+          <span className="qy-overline qy-overline-signal">Welcome to Litmus</span>
           <button type="button" className="qy-icon-btn" onClick={dismiss} aria-label="Skip onboarding">
             <X size={16} />
           </button>
@@ -128,7 +128,7 @@ export function Onboarding() {
           </div>
 
           <p className="qy-asset-meta" style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '4px 0 0' }}>
-            <ShieldCheck size={13} /> Research-only — QuickYield never touches your funds or wallet.
+            <ShieldCheck size={13} /> Research-only — Litmus never touches your funds or wallet.
           </p>
         </div>
 

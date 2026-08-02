@@ -16,7 +16,7 @@ export function TerminalPreview({ rows }: { rows: Opportunity[] }) {
     <div className="ql-terminal" aria-label="Live yield scanner preview">
       <div className="ql-terminal-bar">
         <i /><i /><i />
-        <span>quickyield // live scanner</span>
+        <span>litmus // live scanner</span>
         <b><span className="ql-dot" />synced</b>
       </div>
       <div className="ql-thead">

@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'QuickYield — yield research you can audit, not just trust'
+export const alt = 'Litmus — yield research you can audit, not just trust'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -19,8 +19,9 @@ const ledgerRows = [
   { date: '·', label: 'graded in the open', detail: 'the record builds in public' },
 ]
 
-// QuickYield QY monogram — kept in sync with public/brand/qy-mark.svg.
-const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" rx="24" fill="#0c0f17"/><circle cx="36" cy="50" r="14" fill="none" stroke="#FFFFFF" stroke-width="6.5"/><rect x="43" y="52" width="6.5" height="18" rx="3.25" transform="rotate(-35 48.5 61)" fill="#00E676"/><path d="M 58 35 L 68 49 L 78 35 M 68 49 L 68 65" fill="none" stroke="#00E676" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+// Litmus strip mark — kept in sync with public/brand/litmus-mark.svg.
+// The bands are the A–F grade colors, so the logo encodes the scale itself.
+const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="s" x1="50" y1="16" x2="50" y2="84" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00E676"/><stop offset="0.2" stop-color="#00E676"/><stop offset="0.2" stop-color="#7ADFA0"/><stop offset="0.4" stop-color="#7ADFA0"/><stop offset="0.4" stop-color="#FFB020"/><stop offset="0.6" stop-color="#FFB020"/><stop offset="0.6" stop-color="#FF8A4D"/><stop offset="0.8" stop-color="#FF8A4D"/><stop offset="0.8" stop-color="#FF3366"/><stop offset="1" stop-color="#FF3366"/></linearGradient></defs><rect x="0" y="0" width="100" height="100" rx="24" fill="#0c0f17"/><rect x="37" y="16" width="26" height="68" rx="13" fill="url(#s)"/></svg>`
 const markDataUri = `data:image/svg+xml;base64,${btoa(markSvg)}`
 
 export default function OpengraphImage() {
@@ -45,8 +46,7 @@ export default function OpengraphImage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <img src={markDataUri} width={56} height={56} alt="" />
           <div style={{ display: 'flex', fontSize: 34, fontWeight: 700, letterSpacing: -1 }}>
-            <span style={{ color: text }}>Quick</span>
-            <span style={{ color: green }}>Yield</span>
+            <span style={{ color: text }}>Litmus</span>
           </div>
           <div
             style={{

@@ -15,7 +15,7 @@ import { GRADE_LEDGER_CONTRACT, ledgerBasescanUrl } from '../../lib/onchain'
 export const metadata: Metadata = {
   title: 'Track record — every grade, on the record',
   description:
-    'Every week QuickYield grades every live pool and publishes the record — anchored on Base so it can’t be quietly rewritten. No edits, no hindsight, no survivorship bias.',
+    'Every week Litmus grades every live pool and publishes the record — anchored on Base so it can’t be quietly rewritten. No edits, no hindsight, no survivorship bias.',
   alternates: { canonical: '/proof' },
 }
 

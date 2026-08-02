@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Risk Disclaimer — QuickYield',
-  description: 'QuickYield is research and alerting only. Not financial advice. DeFi carries significant risk.',
+  title: 'Risk Disclaimer — Litmus',
+  description: 'Litmus is research and alerting only. Not financial advice. DeFi carries significant risk.',
 }
 
 export default function DisclaimerPage() {
@@ -12,13 +12,13 @@ export default function DisclaimerPage() {
       <div className="ql-legal-meta">Last updated · 1 June 2026</div>
 
       <div className="ql-legal-note">
-        Read this carefully. QuickYield is an informational tool only. Nothing here is financial advice, and DeFi can
+        Read this carefully. Litmus is an informational tool only. Nothing here is financial advice, and DeFi can
         result in the total loss of your funds.
       </div>
 
       <h2>Not financial advice</h2>
       <p>
-        QuickYield provides research context and alerts about publicly available DeFi yield opportunities. It does not
+        Litmus provides research context and alerts about publicly available DeFi yield opportunities. It does not
         recommend any specific pool, asset, protocol, or strategy, and nothing in the product should be construed as
         financial, investment, tax, or legal advice. We are not a licensed financial adviser, broker, or exchange.
       </p>

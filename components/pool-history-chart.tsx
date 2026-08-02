@@ -129,7 +129,7 @@ export function PoolHistoryChart({ data, source }: { data: PoolChartPoint[]; sou
       </div>
 
       <p className="qy-asset-meta" style={{ marginTop: 8 }}>
-        {source === 'live' ? 'Real pool history from DeFiLlama.' : 'Built from QuickYield snapshots.'} {filtered.length} points shown.
+        {source === 'live' ? 'Real pool history from DeFiLlama.' : 'Built from Litmus snapshots.'} {filtered.length} points shown.
       </p>
     </div>
   )
