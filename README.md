@@ -1,37 +1,52 @@
-# Litmus Intel
+<p align="center">
+  <img src="public/brand/litmus-wordmark.svg" alt="Litmus" width="360">
+</p>
 
-Litmus is a Next.js SaaS beta for crypto yield research. It scans public DeFiLlama yield data server-side, merges curated beginner-safe routes, stores watchlists and alert rules, and can send email alerts through Resend.
+<p align="center"><em>Yield research you can audit, not just trust.</em></p>
 
-## Product Boundaries
+---
 
-- Informational research and alerting only.
-- No custody, wallet connection, deposits, trades, financial advice, or guaranteed returns.
-- External links open third-party platforms that users must review independently.
+Litmus grades every live onchain yield pool **A–F** under a published methodology, and publishes the result every Monday — **before** anyone knows how those pools turn out. The record only grows; a past week is never edited.
+
+That archive is the point. Most tools show you today's APY. Litmus accumulates a timestamped history of what it said and when, which nobody can backfill after the fact.
+
+**Research only.** No custody, no wallet connection, no deposits, no trades, no financial advice, no guaranteed returns. External links open third-party platforms users must review independently.
+
+## How it works
+
+1. A scheduled job pulls public DeFiLlama yield data and merges it with curated routes.
+2. Each pool is scored on four signals — liquidity, APY stability, reward quality, data completeness — and mapped to an A–F grade. Weights and thresholds are published at `/docs` and rendered from the same constants the scorer uses.
+3. Every Monday a GitHub Action commits the full snapshot to `data/grades/<date>.json`.
+4. The app reads those snapshots for the public track record, the weekly research posts, and the Market Pulse diff.
 
 ## Stack
 
-- Next.js App Router on Vercel
-- Clerk email auth
-- Supabase Postgres with Drizzle schema
-- Resend + React Email for alert emails
-- GitHub Actions for hourly scans
-- Telegram bot alerts for trader notifications
-- Custom CSS design system with design tokens (`styles/tokens.css`) + Lucide icons — Inter / Inter Tight / JetBrains Mono on a Signal Orange dark theme
+- **Next.js** App Router on Vercel
+- **Clerk** email auth — only gates user-specific actions; browsing is public
+- **Supabase Postgres** with a Drizzle schema
+- **Resend** + React Email for alert and digest email
+- **Telegram** bot for alert delivery
+- **GitHub Actions** for the hourly scan, the weekly grade snapshot, and the digest fallback
+- **Custom CSS design system** — tokens in `styles/tokens.css`, Lucide icons, dark theme built on a blue signal (`#2f88ff`) and brand green (`#00E676`), with an A–F grade ramp
+- **Type**: Newsreader (serif) for editorial surfaces, Instrument Sans for UI and data, JetBrains Mono for tickers and figures — all self-hosted via `next/font`
 
-## Local Development
+## Local development
 
 ```
 npm install
 npm run dev
 ```
 
-Without environment variables, the app uses a local beta identity and in-memory storage so the UI and APIs remain testable.
+Without environment variables the app runs in local-demo mode (see `lib/auth.ts`) with an in-memory store, so every route is testable with no keys.
 
-## Environment Variables
+> On Windows PowerShell, chain commands with `;` — `&&` is not a valid separator.
+
+## Environment variables
 
 ```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
+NEXT_PUBLIC_SITE_URL=https://getlitmus.xyz
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=      # must be a real pk_ value, and NOT marked "Sensitive"
+CLERK_SECRET_KEY=                        # in Vercel this one SHOULD be Sensitive
 DATABASE_URL=
 RESEND_API_KEY=
 RESEND_FROM="Litmus <alerts@yourdomain.com>"
@@ -41,28 +56,30 @@ TELEGRAM_WEBHOOK_SECRET=
 NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=
 ```
 
+`NEXT_PUBLIC_*` variables are inlined at **build** time. Marking one "Sensitive" in Vercel hides it from the build, which is how the publishable key ends up empty in a deployed bundle.
+
+GitHub Actions secrets: `CRON_SECRET`, `APP_URL` (base URL for the hourly scan), `DIGEST_URL` (weekly digest endpoint).
+
 ## Commands
 
 ```
-npm run lint
-npm run test
-npm run build
-npm run db:generate
-npm run db:push
+npm run dev            npm run lint           npm run test
+npm run build          npm run type-check
+npm run db:generate    npm run db:push
+npm run blog:data      npm run blog:draft     npm run blog:charts
 ```
 
-## Blog publishing (weekly ritual)
+## Weekly research ritual
 
-Full guide with screenshots-and-charts instructions: [`content/blog/README.md`](content/blog/README.md).
-The short version (run everything from the project folder):
+Full guide, including images and charts: [`content/blog/README.md`](content/blog/README.md).
 
 ```
-npm run blog:data     # print the week-over-week grade analysis (your research)
-npm run blog:draft    # write a pre-filled draft into content/blog/<date>-weekly-grade-record.md
+npm run blog:data      # week-over-week analysis: grade shifts, movers, by chain, by protocol
+npm run blog:draft     # writes content/blog/<date>-weekly-grade-record.md, pre-filled
+npm run blog:charts    # writes themed SVG charts to public/blog/charts/
 ```
 
-Then open the draft, write the "Our read" section in your own words, and publish
-by committing + pushing (merge to main via PR):
+Then write the **"Our read"** section in your own words and publish by committing:
 
 ```
 git add content/blog/ public/blog/
@@ -70,33 +87,47 @@ git commit -m "blog: weekly grade record <date>"
 git push
 ```
 
-- Posts are plain Markdown files in `content/blog/` — frontmatter block on top
-  (title, date, excerpt, author), body below. Filename = URL slug.
-- Images go in `public/blog/`, referenced as `![alt](/blog/<file>.png)`.
-- Charts: use the generated Markdown table, or export a chart image from
-  Sheets/Excel and include it like any image.
-- Nothing auto-publishes: no push, no post.
+Posts are plain Markdown in `content/blog/` — frontmatter (`title`, `date`, `excerpt`, `author`, `readMinutes`) then body; the filename becomes the URL slug. Nothing auto-publishes: no push, no post.
 
-## API Surface
+## Pages
 
-- `GET /api/opportunities`
-- `GET /api/watchlist`
-- `POST /api/watchlist`
-- `DELETE /api/watchlist/:id`
-- `GET /api/alerts`
-- `POST /api/alerts`
-- `PATCH /api/alerts/:id`
-- `DELETE /api/alerts/:id`
-- `GET /api/user/settings`
-- `PATCH /api/user/settings`
-- `GET /api/cron/scan-yields`
+| Route | What it is |
+|---|---|
+| `/` | Landing — ledger-first hero built from real snapshots, methodology, live terminal preview |
+| `/terminal` | The app. **Public to browse**; sign-in only adds watchlist, alerts and settings. Discover has filters, presets, a yield heatmap in the right rail, and the Market Pulse week-over-week strip. Legacy `/dashboard` 308-redirects here. |
+| `/terminal/pools/[id]` | Pool detail — grade breakdown, APY/TVL history, related pools |
+| `/proof` | The public track record: every snapshot, grade distribution over time, safe-share trend |
+| `/docs` | Methodology — the real weights and A–F thresholds, rendered from the scorer's constants |
+| `/blog`, `/blog/[slug]` | Weekly research, written from our own snapshots |
+| `/roadmap` | Shipped / building / exploring — plus the boundaries we won't cross |
+| `/yields`, `/yields/[asset]`, `/yields/rwa` | SEO landing pages, including tokenized RWA and T-bills |
+| `/legal/*` | Terms, privacy, disclaimer |
 
-## UI Overview
+## API surface
 
-A premium dark, ledger-first aesthetic that maps directly to the product's positioning ("Yield research you can audit, not just trust"). Landing styles live in `styles/marketing.css` (`.ql-*` namespace); the app/dashboard styles use the `.qy-*` system in `app/globals.css`. Marketing animation runs on `motion` (framer-motion v12) client islands.
+Public (no auth): `GET /api/opportunities` · `GET /api/pools/:id/history` · `GET /api/ledger/:date`
 
-- **Landing page** (`/`) — Ledger-first hero: the public grade ledger rendered as an animated commit rail (real weekly snapshots from `data/grades/`), ticker tape, real-number stats, the problem framing, the methodology section (real model weights + A–F thresholds), a 4-step "How it works", alerts + live terminal preview, a transparency band, disclaimer, CTA, and shared footer.
-- **Terminal** (`/terminal`) — The authed app. Sidebar navigation across Discover, Alerts, and Settings. The Discover table supports filtering (chain, asset, risk, category, time), presets, a yield heatmap, and APY/TVL/safety sorting. (Legacy `/dashboard` URLs 308-redirect here.)
-- **Legal** (`/legal/terms`, `/legal/privacy`, `/legal/disclaimer`) — Research-only / no-custody / not-financial-advice pages.
+User-scoped (401 without a session): `/api/watchlist` · `/api/watchlist/:id` · `/api/alerts` · `/api/alerts/:id` · `/api/alerts/activity` · `/api/positions` · `/api/positions/:id` · `/api/user/settings` · `/api/notifications/test` · `/api/notifications/telegram/connect` · `/api/analytics/*`
 
-Without environment variables the app runs in local-demo mode (see `lib/auth.ts`), so every route is testable with `npm run dev` and no keys.
+Scheduled (bearer `CRON_SECRET`): `GET /api/cron/scan-yields` · `GET /api/cron/weekly-digest`
+
+> There is no public research API yet — it's on the roadmap under *exploring*, deliberately unbuilt until there's real demand to shape it.
+
+## Brand assets
+
+In `public/brand/`:
+
+| File | Use |
+|---|---|
+| `litmus-mark.svg` | App mark — the L, with the sweep as the tick of a passed test |
+| `litmus-avatar.svg` | 400×400 profile picture, centred to survive circular crops |
+| `litmus-wordmark.svg` | Horizontal lockup on a transparent background |
+| `litmus-mark-light.svg` | For light backgrounds — no tile, deepened green |
+| `litmus-mark-alt.svg` | Same L with the sweep on the F→A grade ramp |
+
+Keep `public/favicon.svg` byte-identical to `litmus-mark.svg`, and the inline copy in `app/opengraph-image.tsx` in sync with it.
+
+## Notes
+
+- CSS namespaces are historical: `.ql-*` for marketing surfaces (`styles/marketing.css`), `.qy-*` for the app (`app/globals.css`). They predate the rename and were left alone deliberately — renaming ~5,200 class references is churn with real regression risk and no user-visible benefit.
+- Do **not** set `output: 'standalone'` in `next.config.ts`, and do not add `"type": "module"` to `package.json`. Either one makes Vercel's serverless launcher `require()` an ES module, and every dynamic route 500s with `ERR_REQUIRE_ESM`.
