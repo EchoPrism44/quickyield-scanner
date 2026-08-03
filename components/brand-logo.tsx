@@ -15,7 +15,7 @@ export function BrandLogo({
         <img src="/brand/litmus-mark.svg" alt="" />
       </span>
       <span className="qy-logo-text">
-        <span>Litmus</span>
+        <span>LITMUS</span>
       </span>
     </>
   )
