@@ -1,23 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Litmus">
   <defs>
-    <radialGradient id="tile" cx="50%" cy="45%" r="65%">
-      <stop offset="0%" stop-color="#141418"/>
-      <stop offset="60%" stop-color="#0a0a0c"/>
-      <stop offset="100%" stop-color="#050506"/>
-    </radialGradient>
-    <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="50%" stop-color="#f0ece1"/>
-      <stop offset="100%" stop-color="#dfd7c6"/>
+    <linearGradient id="litmusSweep" x1="48" y1="70" x2="88" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00E676"/>
+      <stop offset="0.55" stop-color="#3FD9C4"/>
+      <stop offset="1" stop-color="#2F88FF"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="24" fill="url(#tile)"/>
-  <!-- Three strata: the record stacking up, week over week.
-       Source geometry spans (211,100)-(301,238); centre (256,169).
-       Scaled to fill the tile and centred on that true centre. -->
-  <g fill="url(#metal)" transform="translate(50 50) scale(0.52) translate(-256 -169)">
-    <path d="M 211,136 L 219,128 L 219,230 L 273,230 L 265,238 L 211,238 Z"/>
-    <path d="M 225,122 L 233,114 L 233,216 L 287,216 L 279,224 L 225,224 Z"/>
-    <path d="M 239,108 L 247,100 L 247,202 L 301,202 L 293,210 L 239,210 Z"/>
-  </g>
+  <rect x="0" y="0" width="100" height="100" rx="24" fill="#0c0f17"/>
+  <!-- L: upright + foot -->
+  <path d="M 28 18 h 15 v 50 h 30 v 15 H 28 Z" fill="#F5F6F8"/>
+  <!-- sweep: reads as the tick of a passed test, and as the strip lifting out -->
+  <path d="M 49 68 L 86 19 L 70 68 Z" fill="url(#litmusSweep)"/>
 </svg>

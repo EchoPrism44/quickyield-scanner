@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/brand/litmus-mark.svg" alt="Litmus" width="120">
+  <img src="public/brand/litmus-wordmark.svg" alt="Litmus" width="360">
 </p>
 
 <p align="center"><em>Yield research you can audit, not just trust.</em></p>
@@ -28,7 +28,7 @@ That archive is the point. Most tools show you today's APY. Litmus accumulates a
 - **Telegram** bot for alert delivery
 - **GitHub Actions** for the hourly scan, the weekly grade snapshot, and the digest fallback
 - **Custom CSS design system** — tokens in `styles/tokens.css`, Lucide icons, dark theme built on a blue signal (`#2f88ff`) and brand green (`#00E676`), with an A–F grade ramp
-- **Type**: Newsreader (serif) for editorial surfaces, Instrument Sans for UI and data, JetBrains Mono for tickers and figures, Cinzel for the wordmark — all self-hosted via `next/font`
+- **Type**: Newsreader (serif) for editorial surfaces, Instrument Sans for UI and data, JetBrains Mono for tickers and figures — all self-hosted via `next/font`
 
 ## Local development
 
@@ -119,13 +119,13 @@ In `public/brand/`:
 
 | File | Use |
 |---|---|
-| `litmus-mark.svg` | App mark — three strata, the record stacking up week over week |
+| `litmus-mark.svg` | App mark — the L, with the sweep as the tick of a passed test |
 | `litmus-avatar.svg` | 400×400 profile picture, centred to survive circular crops |
-| `litmus-mark-light.svg` | For light backgrounds — flat ink, no tile |
+| `litmus-wordmark.svg` | Horizontal lockup on a transparent background |
+| `litmus-mark-light.svg` | For light backgrounds — no tile, deepened green |
+| `litmus-mark-alt.svg` | Same L with the sweep on the F→A grade ramp |
 
 Keep `public/favicon.svg` byte-identical to `litmus-mark.svg`, and the inline copy in `app/opengraph-image.tsx` in sync with it.
-
-The wordmark is **Cinzel**, loaded through `next/font` in `app/layout.tsx` and styled by `.qy-logo-text`. It is deliberately *not* baked into an SVG: an SVG that merely names a font falls back to Times on any machine without it installed, which is nearly all of them.
 
 ## Notes
 

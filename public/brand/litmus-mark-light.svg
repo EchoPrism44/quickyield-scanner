@@ -1,9 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Litmus">
-  <!-- For light surfaces: no tile, ink strata. The metallic gradient needs a
-       dark ground to read as metal, so this variant goes flat. -->
-  <g fill="#0c0f17" transform="translate(50 50) scale(0.52) translate(-256 -169)">
-    <path d="M 211,136 L 219,128 L 219,230 L 273,230 L 265,238 L 211,238 Z"/>
-    <path d="M 225,122 L 233,114 L 233,216 L 287,216 L 279,224 L 225,224 Z"/>
-    <path d="M 239,108 L 247,100 L 247,202 L 301,202 L 293,210 L 239,210 Z"/>
-  </g>
+  <defs>
+    <linearGradient id="lightSweep" x1="48" y1="70" x2="88" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00B85E"/>
+      <stop offset="0.55" stop-color="#2BB3A3"/>
+      <stop offset="1" stop-color="#2F88FF"/>
+    </linearGradient>
+  </defs>
+  <!-- For light/white backgrounds: no tile, ink L, slightly deepened sweep so
+       the greens keep contrast against white. -->
+  <path d="M 28 18 h 15 v 50 h 30 v 15 H 28 Z" fill="#0c0f17"/>
+  <path d="M 49 68 L 86 19 L 70 68 Z" fill="url(#lightSweep)"/>
 </svg>
