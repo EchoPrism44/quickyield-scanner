@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
-import { Cinzel, Instrument_Sans, JetBrains_Mono, Newsreader } from 'next/font/google'
+import { Instrument_Sans, JetBrains_Mono, Newsreader } from 'next/font/google'
 import './globals.css'
 
 /**
@@ -26,15 +26,6 @@ const fontMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono-src',
-})
-// Cinzel = the wordmark only. Self-hosted here so the logotype renders the
-// same everywhere; an SVG that merely *names* Cinzel falls back to Times on
-// any machine without it installed, which is nearly all of them.
-const fontWordmark = Cinzel({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['500'],
-  variable: '--font-wordmark-src',
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -103,7 +94,7 @@ const clerkEnabled = typeof clerkPublishableKey === 'string' && clerkPublishable
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const html = (
-    <html lang="en" className={`${fontSerif.variable} ${fontSans.variable} ${fontMono.variable} ${fontWordmark.variable}`}>
+    <html lang="en" className={`${fontSerif.variable} ${fontSans.variable} ${fontMono.variable}`}>
       <body>{children}</body>
     </html>
   )
