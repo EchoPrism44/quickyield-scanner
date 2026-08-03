@@ -109,15 +109,18 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   height: 100%;
   display: block;
 }
+/* Wordmark: Cinzel, wide-tracked, cream — matched to the layered-L mark.
+   Tracking is on the right side only (letter-spacing adds trailing space),
+   so the negative margin keeps it optically centred against the mark. */
 .qy-logo-text {
   display: inline-flex;
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--ink);
+  font-family: var(--font-wordmark-src), "Trajan Pro", Georgia, serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  margin-right: -0.26em;
+  color: #f5f2eb;
 }
-/* Single-word wordmark sits in ink — the mark carries the grade-ramp color. */
 .qy-auth-logo {
   margin-bottom: 24px;
 }
