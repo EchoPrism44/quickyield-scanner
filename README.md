@@ -1,6 +1,10 @@
 <p align="center">
-  <img src="public/brand/litmus-mark.svg" alt="Litmus" width="120">
+  <img src="public/brand/litmus-mark.svg" alt="Litmus" width="104">
 </p>
+
+<h1 align="center">L I T M U S</h1>
+
+<p align="center"><strong>Test every yield.</strong></p>
 
 <p align="center"><em>Yield research you can audit, not just trust.</em></p>
 
@@ -115,17 +119,27 @@ Scheduled (bearer `CRON_SECRET`): `GET /api/cron/scan-yields` · `GET /api/cron/
 
 ## Brand assets
 
+The mark is three stacked strata — the record accumulating, week over week.
+
+<p align="left">
+  <img src="public/brand/litmus-mark.svg" alt="App mark" width="88">
+  &nbsp;&nbsp;
+  <img src="public/brand/litmus-avatar.svg" alt="Avatar" width="88">
+</p>
+
 In `public/brand/`:
 
 | File | Use |
 |---|---|
-| `litmus-mark.svg` | App mark — three strata, the record stacking up week over week |
-| `litmus-avatar.svg` | 400×400 profile picture, centred to survive circular crops |
-| `litmus-mark-light.svg` | For light backgrounds — flat ink, no tile |
+| `litmus-mark.svg` | App mark and favicon — rounded tile, metallic strata |
+| `litmus-avatar.svg` | 400×400 profile picture. Full-bleed and centred so the circular crop X, Discord and Telegram apply leaves ~69px of margin |
+| `litmus-mark-light.svg` | Light surfaces — flat ink, no tile. The metallic gradient needs a dark ground to read as metal, so this variant goes solid |
 
-Keep `public/favicon.svg` byte-identical to `litmus-mark.svg`, and the inline copy in `app/opengraph-image.tsx` in sync with it.
+Rules that are easy to break by accident:
 
-The wordmark is **Cinzel**, loaded through `next/font` in `app/layout.tsx` and styled by `.qy-logo-text`. It is deliberately *not* baked into an SVG: an SVG that merely names a font falls back to Times on any machine without it installed, which is nearly all of them.
+- Keep `public/favicon.svg` **byte-identical** to `litmus-mark.svg`, and keep the inline copy in `app/opengraph-image.tsx` in sync with it. Three copies, one geometry.
+- The mark is centred on its true centre `(256, 169)`, not the source viewBox centre. Re-centring on `(50, 50)` pushes it off-axis and breaks circular crops.
+- The wordmark is **Cinzel**, loaded via `next/font` in `app/layout.tsx` and styled by `.qy-logo-text`. Do **not** bake it into an SVG — an SVG that merely *names* a font falls back to Times on any machine without it installed, which is nearly all of them. That is why there is no `litmus-wordmark.svg`.
 
 ## Notes
 
