@@ -11,6 +11,18 @@ function getResend() {
   return resend
 }
 
+/**
+ * We send *from* the verified domain (alerts@getlitmus.xyz), which needs no
+ * mailbox to exist — DNS verification is enough. But a reply to that address
+ * would bounce silently unless something receives it. RESEND_REPLY_TO points
+ * replies at an inbox that is actually read, with no forwarder or mail
+ * hosting required. Omitted entirely when unset.
+ */
+function replyTo() {
+  const address = process.env.RESEND_REPLY_TO
+  return address ? { replyTo: address } : {}
+}
+
 export async function sendAlertEmail(to: string | undefined, alert: AlertRule, opportunity: Opportunity) {
   const client = getResend()
   if (!client) return { sent: false as const, skipped: true as const, reason: 'RESEND_API_KEY is not configured' }
@@ -19,6 +31,7 @@ export async function sendAlertEmail(to: string | undefined, alert: AlertRule, o
   const result = await client.emails.send({
     from: process.env.RESEND_FROM ?? 'Litmus <onboarding@resend.dev>',
     to,
+    ...replyTo(),
     subject: `Litmus alert: ${opportunity.name}`,
     react: AlertEmail({ alert, opportunity }),
   })
@@ -38,6 +51,7 @@ export async function sendDigestEmail(
   const result = await client.emails.send({
     from: process.env.RESEND_FROM ?? 'Litmus <onboarding@resend.dev>',
     to,
+    ...replyTo(),
     subject: `Litmus: your weekly Safe Yield digest — ${weekLabel}`,
     react: DigestEmail({ watchlistPools, topPicks, weekLabel }),
   })
