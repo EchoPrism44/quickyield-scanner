@@ -49,8 +49,8 @@ Without environment variables the app runs in local-demo mode (see `lib/auth.ts`
 
 ```
 NEXT_PUBLIC_SITE_URL=https://getlitmus.xyz
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=      # must be a real pk_ value, and NOT marked "Sensitive"
-CLERK_SECRET_KEY=                        # in Vercel this one SHOULD be Sensitive
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=      # must be a real pk_ value (pk_live_ in production)
+CLERK_SECRET_KEY=                        # sk_live_ in production
 DATABASE_URL=
 RESEND_API_KEY=
 RESEND_FROM="Litmus <alerts@getlitmus.xyz>"   # must be @ the Resend-verified domain
@@ -61,7 +61,7 @@ TELEGRAM_WEBHOOK_SECRET=
 NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=
 ```
 
-`NEXT_PUBLIC_*` variables are inlined at **build** time. Marking one "Sensitive" in Vercel hides it from the build, which is how the publishable key ends up empty in a deployed bundle.
+`NEXT_PUBLIC_*` variables are inlined at **build** time, so changing one requires a redeploy — setting it in Vercel alone does nothing. Vercel's "Sensitive" flag only prevents reading a value back in the dashboard; it does **not** hide the value from the build, and is safe on any variable.
 
 GitHub Actions secrets: `CRON_SECRET`, `APP_URL` (base URL for the hourly scan), `DIGEST_URL` (weekly digest endpoint).
 
