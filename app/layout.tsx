@@ -101,9 +101,48 @@ const clerkAppearance = {
 const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 const clerkEnabled = typeof clerkPublishableKey === 'string' && clerkPublishableKey.startsWith('pk_')
 
+/**
+ * Organization + WebSite structured data. This is what tells Google which logo
+ * belongs to the site (the icon shown beside a search result comes from here
+ * and from the favicon, not from the OG image), and gives it an explicit name
+ * to display rather than one guessed from the page title.
+ */
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'Litmus',
+      url: siteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/apple-icon`,
+        width: 180,
+        height: 180,
+      },
+      description:
+        'Litmus grades every live onchain yield pool A–F under a published methodology and publishes the record every week.',
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: 'Litmus',
+      publisher: { '@id': `${siteUrl}/#organization` },
+    },
+  ],
+}
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const html = (
     <html lang="en" className={`${fontSerif.variable} ${fontSans.variable} ${fontMono.variable} ${fontWordmark.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   )
