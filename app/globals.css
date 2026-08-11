@@ -648,12 +648,17 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-market-search { min-width: 240px; }
 /* Discover two-column layout: main (filters, table, load-more) + rail (heatmap, signal stream) */
 .qy-discover-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-bottom: 14px; }
-@media (min-width: 1100px) {
+/* The rail only earns its 320px once the table already fits beside it.
+   At 1366-1440 (ordinary laptops) sidebar + rail left the table ~800px
+   against ~980px of columns, so it was permanently scrolling. Below 1600px
+   the heatmap and signal stream stack under the table instead — still there,
+   just not competing with the thing people came for. */
+@media (min-width: 1600px) {
   .qy-discover-layout { grid-template-columns: minmax(0, 1fr) 320px; }
   .qy-discover-main { min-width: 0; }
   .qy-discover-rail { display: flex; flex-direction: column; gap: 14px; }
 }
-@media (max-width: 1099px) {
+@media (max-width: 1599px) {
   .qy-discover-main,
   .qy-discover-rail { display: contents; }
 }
@@ -831,6 +836,11 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-terminal-table-wrap {
   border: 1px solid var(--line); border-radius: 14px;
   overflow: auto;
+  /* Required: between 768-1099px .qy-discover-main is `display: contents`, so
+     this box becomes the grid item directly. A grid item defaults to
+     min-width: auto and refuses to shrink below its content, so the row's
+     min-width leaked outward and the page scrolled instead of the table. */
+  min-width: 0;
   max-height: calc(100vh - 230px);
   background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92));
   scrollbar-color: rgba(255,255,255,0.28) transparent;
@@ -852,8 +862,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
      overflow-x had nothing to scroll and Actions stayed unreachable.
      TVL trimmed again (it only ever holds "$17.7B"); Grade widened — it was
      the narrowest column while carrying the most text. */
-  min-width: 1150px;
-  grid-template-columns: minmax(190px, 1.7fr) minmax(78px, 0.7fr) minmax(82px, 0.7fr) minmax(72px, 0.55fr) minmax(72px, 0.55fr) minmax(84px, 0.7fr) minmax(76px, 0.55fr) minmax(124px, 0.95fr) minmax(232px, 1.3fr);
+  min-width: 980px;
+  grid-template-columns: minmax(180px, 1.7fr) minmax(74px, 0.7fr) minmax(80px, 0.7fr) minmax(68px, 0.55fr) minmax(68px, 0.55fr) minmax(78px, 0.6fr) minmax(74px, 0.55fr) minmax(120px, 0.9fr) minmax(112px, 0.7fr);
   gap: 12px;
   align-items: center;
   padding: 14px 18px;
@@ -870,7 +880,19 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-terminal-metric strong { font-family: var(--font-mono); font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .qy-terminal-right { text-align: right; justify-self: end; }
 .qy-terminal-submetric { color: var(--ink-mute); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
-.qy-terminal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap; }
+.qy-terminal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+/* Compact icon actions — same three actions, ~130px less per row. */
+.qy-icon-action {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; flex-shrink: 0;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: transparent; color: var(--ink-dim); cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.qy-icon-action:hover { color: var(--ink); border-color: var(--line-hover); background: rgba(255,255,255,0.04); }
+.qy-icon-action.is-on { color: var(--brand-green); border-color: rgba(0,230,118,0.35); background: rgba(0,230,118,0.08); }
+.qy-icon-action:disabled { cursor: default; }
+.qy-icon-action:disabled:hover { background: rgba(0,230,118,0.08); }
 .qy-rank-reason {
   margin-top: 5px;
   color: var(--ink-dim);

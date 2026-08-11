@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import { Bookmark, Filter, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowUpRight, Bell, Bookmark, Filter, Search, SlidersHorizontal } from 'lucide-react'
 import { categories, chains, timeCosts } from '../../lib/constants'
 import { ProtocolLogo } from '../protocol-logo'
 import { GradeChip, SparklineCell } from './shared'
@@ -262,16 +262,37 @@ export function DiscoverView({
               <GradeChip item={item} />
               <span className="qy-terminal-submetric">{item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}</span>
             </div>
+            {/* Icon actions on the desktop row: three text buttons cost ~230px
+                per row, which is what pushed Grade and Actions off screen. The
+                mobile cards below keep the labelled buttons. */}
             <div className="qy-terminal-actions">
-              <Link href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">
-                View details
+              <button
+                type="button"
+                className={`qy-icon-action ${watched.has(item.id) ? 'is-on' : ''}`}
+                onClick={() => onToggleWatch(item.id)}
+                disabled={watched.has(item.id)}
+                title={watched.has(item.id) ? 'Saved to watchlist' : 'Save to watchlist'}
+                aria-label={watched.has(item.id) ? `${item.platform} ${item.asset} saved to watchlist` : `Save ${item.platform} ${item.asset} to watchlist`}
+              >
+                <Bookmark size={15} />
+              </button>
+              <button
+                type="button"
+                className="qy-icon-action"
+                onClick={() => onCreateAlert(item)}
+                title="Set alert"
+                aria-label={`Set alert for ${item.platform} ${item.asset}`}
+              >
+                <Bell size={15} />
+              </button>
+              <Link
+                href={`/terminal/pools/${encodeURIComponent(item.id)}`}
+                className="qy-icon-action"
+                title="View details"
+                aria-label={`View details for ${item.platform} ${item.asset}`}
+              >
+                <ArrowUpRight size={15} />
               </Link>
-              <button type="button" className="qy-btn qy-btn-sm qy-btn-primary" onClick={() => onCreateAlert(item)} aria-label={`Set alert for ${item.platform} ${item.asset}`}>
-                Set alert
-              </button>
-              <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
-                {watched.has(item.id) ? 'Saved' : 'Save'}
-              </button>
             </div>
           </div>
         ))}
