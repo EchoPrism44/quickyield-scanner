@@ -354,6 +354,7 @@ export async function deleteAlertRule(userId: string, alertId: string) {
 export async function cacheOpportunities(opportunities: Opportunity[]) {
   if (!hasDatabase()) {
     memory.opportunities = opportunities
+    memory.opportunitiesUpdatedAt = new Date()
     return
   }
   if (opportunities.length === 0) return
@@ -452,6 +453,22 @@ export async function getCachedOpportunities() {
   if (!hasDatabase()) return memory.opportunities
   const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt))
   return rows.map((row) => JSON.parse(row.payloadJson) as Opportunity)
+}
+
+/**
+ * Cached pools plus when they were last refreshed, so callers can decide
+ * whether the cache is fresh enough to serve instead of re-scanning. Rows are
+ * ordered by lastSeenAt desc, so the first row carries the newest timestamp.
+ */
+export async function getCachedOpportunitiesWithMeta(): Promise<{ items: Opportunity[]; updatedAt: Date | null }> {
+  if (!hasDatabase()) {
+    return { items: memory.opportunities, updatedAt: memory.opportunitiesUpdatedAt }
+  }
+  const rows = await getDb().select().from(opportunitiesCache).orderBy(desc(opportunitiesCache.lastSeenAt))
+  return {
+    items: rows.map((row) => JSON.parse(row.payloadJson) as Opportunity),
+    updatedAt: rows.length > 0 ? new Date(rows[0].lastSeenAt) : null,
+  }
 }
 
 export async function getCachedOpportunityById(opportunityId: string) {

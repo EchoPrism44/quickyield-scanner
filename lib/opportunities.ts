@@ -1,7 +1,7 @@
 import { categories, chains, riskLevels, timeCosts } from './constants'
 import { curatedOpportunities } from './curated'
 import { getProtocolUrlIndex } from './llama-protocols'
-import { cacheOpportunities, getCachedOpportunities, storeOpportunitySnapshots } from './store'
+import { cacheOpportunities, getCachedOpportunities, getCachedOpportunitiesWithMeta, storeOpportunitySnapshots } from './store'
 import { poolToOpportunity } from './scoring'
 import { safetyGradeOf } from './grade'
 import { isRwaOpportunity } from './rwa'
@@ -154,8 +154,41 @@ export async function scanAndCacheYields() {
   }
 }
 
+/**
+ * How long a cached scan is considered good enough to serve directly. The
+ * hourly cron refreshes the cache, so in normal operation every page load is
+ * a cache hit; this window only decides how long we coast if that job is late.
+ */
+const CACHE_MAX_AGE_MS = 30 * 60 * 1000
+
+/**
+ * Pools for a page render. Reads the cache first and only falls back to a live
+ * DeFiLlama scan when the cache is empty or stale.
+ *
+ * Previously every request called scanAndCacheYields(), so each visitor paid
+ * for a live upstream fetch plus cache and snapshot writes — 6-8s per page.
+ * The cache existed but was only consulted when the live fetch threw, so it
+ * never actually served anyone.
+ */
+async function readOpportunities() {
+  try {
+    const { items, updatedAt } = await getCachedOpportunitiesWithMeta()
+    const age = updatedAt ? Date.now() - updatedAt.getTime() : Infinity
+    if (items.length > 0 && age < CACHE_MAX_AGE_MS) {
+      return {
+        opportunities: items,
+        dataStatus: 'live' as const,
+        lastUpdated: (updatedAt as Date).toISOString(),
+      }
+    }
+  } catch {
+    // Cache unreadable — fall through to a live scan rather than failing.
+  }
+  return scanAndCacheYields()
+}
+
 export async function getOpportunities(filters: OpportunityFilters = {}) {
-  const scan = await scanAndCacheYields()
+  const scan = await readOpportunities()
   const filtered = applyFilters(scan.opportunities, filters)
   return {
     ...scan,

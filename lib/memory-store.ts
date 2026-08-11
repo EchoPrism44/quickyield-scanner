@@ -3,6 +3,8 @@ import type { AlertActivity, AlertRule, NotificationChannel, Opportunity, Opport
 
 export const memory = {
   opportunities: [] as Opportunity[],
+  /** When `opportunities` was last written, so cache freshness works without a DB. */
+  opportunitiesUpdatedAt: null as Date | null,
   snapshots: new Map<string, OpportunitySnapshot[]>(),
   positions: new Map<string, Position[]>(),
   watchlists: new Map<string, string[]>([['local-beta-user', ['curated-jito-sol', 'curated-aave-usdc-base']]]),
