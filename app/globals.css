@@ -193,12 +193,33 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 
 /* ============== Dashboard layout ============== */
 .qy-app { display: flex; min-height: 100vh; background: var(--bg-page); }
+/* 240px was a lot of permanent furniture for 4 links on a data-dense screen.
+   208px by default, and collapsing to icons hands ~144px back to the table —
+   which is what the Grade and Actions columns were short of. */
 .qy-aside {
-  display: none; width: 240px; flex-shrink: 0;
+  display: none; width: 208px; flex-shrink: 0;
   border-right: 1px solid var(--line); background: var(--bg-surface);
   flex-direction: column;
+  transition: width 0.18s ease;
 }
 @media (min-width: 768px) { .qy-aside { display: flex; } }
+
+.qy-aside--collapsed { width: 64px; }
+.qy-aside--collapsed .qy-aside-label,
+.qy-aside--collapsed .qy-aside-user,
+.qy-aside--collapsed .qy-logo-text { display: none; }
+.qy-aside--collapsed .qy-aside-head { padding: 20px 0; display: flex; justify-content: center; }
+.qy-aside--collapsed .qy-aside-nav { padding: 12px 8px; }
+.qy-aside--collapsed .qy-aside-link { justify-content: center; padding: 10px 0; }
+.qy-aside--collapsed .qy-aside-foot { padding: 12px 8px; justify-items: center; }
+
+.qy-aside-collapse {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 8px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--ink-mute); cursor: pointer;
+  font-size: 12px; transition: color 0.15s, background 0.15s;
+}
+.qy-aside-collapse:hover { background: rgba(255,255,255,0.04); color: var(--ink); }
 .qy-aside-head { padding: 20px; border-bottom: 1px solid var(--line); }
 .qy-aside-nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
 .qy-aside-link {
@@ -790,10 +811,22 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   font-size: 12px;
   line-height: 1.45;
 }
-.qy-terminal-table-wrap { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92)); }
+/* overflow-x must be auto at every width: with `overflow: hidden` the Grade and
+   Actions columns were silently clipped whenever the row was wider than the
+   viewport, with no scrollbar to reach them — hiding the single thing the
+   product exists to show. */
+.qy-terminal-table-wrap {
+  border: 1px solid var(--line); border-radius: 14px;
+  overflow-x: auto; overflow-y: hidden;
+  background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92));
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
 .qy-terminal-table-head, .qy-terminal-row {
   display: grid;
-  grid-template-columns: minmax(200px, 1.9fr) minmax(80px, 0.7fr) minmax(84px, 0.7fr) minmax(78px, 0.6fr) minmax(78px, 0.6fr) minmax(96px, 0.8fr) minmax(110px, 0.85fr) minmax(80px, 0.7fr) minmax(230px, 1.4fr);
+  /* TVL trimmed (it only ever holds a short string like "$17.7B"), Grade given
+     the room it was missing — it was the narrowest column while carrying the
+     most text. */
+  grid-template-columns: minmax(200px, 1.9fr) minmax(80px, 0.7fr) minmax(84px, 0.7fr) minmax(78px, 0.6fr) minmax(78px, 0.6fr) minmax(96px, 0.8fr) minmax(88px, 0.6fr) minmax(124px, 0.95fr) minmax(230px, 1.4fr);
   gap: 14px;
   align-items: center;
   padding: 14px 18px;

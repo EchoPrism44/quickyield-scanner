@@ -3,7 +3,7 @@
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useEffect, useMemo, useState, useTransition } from 'react'
-import { Bell, Bookmark, Radar, Settings as SettingsIcon } from 'lucide-react'
+import { Bell, Bookmark, PanelLeftClose, PanelLeftOpen, Radar, Settings as SettingsIcon } from 'lucide-react'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
 import { Onboarding } from './onboarding'
 import { BrandLogo } from './brand-logo'
@@ -51,6 +51,17 @@ function SignedOutCard({ title, body }: { title: string; body: string }) {
 export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   const [data, setData] = useState(initialData)
   const [tab, setTab] = useState<Tab>('discover')
+  // Collapsed sidebar is a per-person preference, so it persists. Read on mount
+  // rather than in the initialiser to keep the server and first client render
+  // identical (otherwise hydration mismatches).
+  const [navCollapsed, setNavCollapsed] = useState(false)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client-only read on mount, intentional to avoid hydration mismatch
+    setNavCollapsed(window.localStorage.getItem('qy-nav-collapsed') === '1')
+  }, [])
+  useEffect(() => {
+    window.localStorage.setItem('qy-nav-collapsed', navCollapsed ? '1' : '0')
+  }, [navCollapsed])
   const isAnonymous = Boolean(initialData.user.isAnonymous)
   const [chain, setChain] = useState(initialData.settings.chain)
   const [risk, setRisk] = useState(initialData.settings.risk)
@@ -249,7 +260,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   return (
     <div className="qy-app qy-terminal-app">
       <Onboarding />
-      <aside className="qy-aside" data-testid="dash-sidebar">
+      <aside className={`qy-aside ${navCollapsed ? 'qy-aside--collapsed' : ''}`} data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <BrandLogo href="/" />
         </div>
@@ -260,13 +271,25 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               type="button"
               className={`qy-aside-link ${tab === itemTab ? 'active' : ''}`}
               onClick={() => setTab(itemTab)}
+              title={navCollapsed ? label : undefined}
+              aria-label={label}
             >
               <Icon className="qy-aside-icon" />
-              {label}
+              <span className="qy-aside-label">{label}</span>
             </button>
           ))}
         </nav>
         <div className="qy-aside-foot">
+          <button
+            type="button"
+            className="qy-aside-collapse"
+            onClick={() => setNavCollapsed((v) => !v)}
+            title={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!navCollapsed}
+          >
+            {navCollapsed ? <PanelLeftOpen size={16} /> : <><PanelLeftClose size={16} /><span className="qy-aside-label">Collapse</span></>}
+          </button>
           {isAnonymous ? (
             <div style={{ display: 'grid', gap: 8 }}>
               <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary qy-btn-sm" style={{ justifyContent: 'center' }}>Sign in</Link>
@@ -295,7 +318,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             <span className="qy-mono qy-topbar-updated">{data.total} pools scanned</span>
           </div>
           <div className="qy-terminal-topbar-actions">
-            <Link href="/" className="qy-btn qy-btn-secondary qy-btn-sm qy-topbar-home-link">Landing page</Link>
+            {/* No "Landing page" button — the sidebar logo already links home. */}
             {isAnonymous ? (
               <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary qy-btn-sm">Sign in</Link>
             ) : (
