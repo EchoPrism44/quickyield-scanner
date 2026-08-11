@@ -8,7 +8,7 @@ export default function TerminalLoading() {
           <BrandLogo />
         </div>
         <nav className="qy-aside-nav">
-          {['Discover', 'Alerts', 'Settings'].map((l) => (
+          {['Discover', 'Watchlist', 'Alerts', 'Settings'].map((l) => (
             <div key={l} className="qy-aside-link" style={{ opacity: 0.4 }}>
               {l}
             </div>

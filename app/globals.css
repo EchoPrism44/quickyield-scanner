@@ -208,19 +208,23 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-aside--collapsed .qy-aside-label,
 .qy-aside--collapsed .qy-aside-user,
 .qy-aside--collapsed .qy-logo-text { display: none; }
-.qy-aside--collapsed .qy-aside-head { padding: 20px 0; display: flex; justify-content: center; }
+.qy-aside--collapsed .qy-aside-head { padding: 16px 0; justify-content: center; }
+.qy-aside--collapsed .qy-logo-mark { margin: 0 auto; }
 .qy-aside--collapsed .qy-aside-nav { padding: 12px 8px; }
 .qy-aside--collapsed .qy-aside-link { justify-content: center; padding: 10px 0; }
 .qy-aside--collapsed .qy-aside-foot { padding: 12px 8px; justify-items: center; }
 
+/* Toggle sits in the header next to the logo, where these controls normally
+   live, rather than buried at the bottom of the sidebar. */
 .qy-aside-collapse {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 8px; border: 0; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; width: 28px; height: 28px;
+  border: 0; border-radius: 6px;
   background: transparent; color: var(--ink-mute); cursor: pointer;
-  font-size: 12px; transition: color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s;
 }
-.qy-aside-collapse:hover { background: rgba(255,255,255,0.04); color: var(--ink); }
-.qy-aside-head { padding: 20px; border-bottom: 1px solid var(--line); }
+.qy-aside-collapse:hover { background: rgba(255,255,255,0.06); color: var(--ink); }
+.qy-aside-head { padding: 16px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .qy-aside-nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
 .qy-aside-link {
   display: flex; align-items: center; gap: 12px;
@@ -819,15 +823,25 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   border: 1px solid var(--line); border-radius: 14px;
   overflow-x: auto; overflow-y: hidden;
   background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92));
-  scrollbar-color: rgba(255,255,255,0.2) transparent;
+  scrollbar-color: rgba(255,255,255,0.28) transparent;
+  scrollbar-width: thin;
 }
+/* Always-visible track: an overlay scrollbar that only appears mid-scroll
+   doesn't tell anyone there is more table to the right. */
+.qy-terminal-table-wrap::-webkit-scrollbar { height: 10px; }
+.qy-terminal-table-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 0 0 13px 13px; }
+.qy-terminal-table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.22); border-radius: 999px; }
+.qy-terminal-table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.34); }
 .qy-terminal-table-head, .qy-terminal-row {
   display: grid;
-  /* TVL trimmed (it only ever holds a short string like "$17.7B"), Grade given
-     the room it was missing — it was the narrowest column while carrying the
-     most text. */
-  grid-template-columns: minmax(200px, 1.9fr) minmax(80px, 0.7fr) minmax(84px, 0.7fr) minmax(78px, 0.6fr) minmax(78px, 0.6fr) minmax(96px, 0.8fr) minmax(88px, 0.6fr) minmax(124px, 0.95fr) minmax(230px, 1.4fr);
-  gap: 14px;
+  /* An explicit min-width is what actually produces the scrollbar: with only
+     `fr` units the grid shrinks to its container instead of overflowing, so
+     overflow-x had nothing to scroll and Actions stayed unreachable.
+     TVL trimmed again (it only ever holds "$17.7B"); Grade widened — it was
+     the narrowest column while carrying the most text. */
+  min-width: 1150px;
+  grid-template-columns: minmax(190px, 1.7fr) minmax(78px, 0.7fr) minmax(82px, 0.7fr) minmax(72px, 0.55fr) minmax(72px, 0.55fr) minmax(84px, 0.7fr) minmax(76px, 0.55fr) minmax(124px, 0.95fr) minmax(232px, 1.3fr);
+  gap: 12px;
   align-items: center;
   padding: 14px 18px;
 }

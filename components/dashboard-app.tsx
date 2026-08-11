@@ -263,6 +263,16 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
       <aside className={`qy-aside ${navCollapsed ? 'qy-aside--collapsed' : ''}`} data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <BrandLogo href="/" />
+          <button
+            type="button"
+            className="qy-aside-collapse"
+            onClick={() => setNavCollapsed((v) => !v)}
+            title={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!navCollapsed}
+          >
+            {navCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
         </div>
         <nav className="qy-aside-nav">
           {navItems.map(({ tab: itemTab, label, icon: Icon }) => (
@@ -280,16 +290,6 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
           ))}
         </nav>
         <div className="qy-aside-foot">
-          <button
-            type="button"
-            className="qy-aside-collapse"
-            onClick={() => setNavCollapsed((v) => !v)}
-            title={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            aria-label={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            aria-expanded={!navCollapsed}
-          >
-            {navCollapsed ? <PanelLeftOpen size={16} /> : <><PanelLeftClose size={16} /><span className="qy-aside-label">Collapse</span></>}
-          </button>
           {isAnonymous ? (
             <div style={{ display: 'grid', gap: 8 }}>
               <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary qy-btn-sm" style={{ justifyContent: 'center' }}>Sign in</Link>
