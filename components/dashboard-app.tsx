@@ -260,18 +260,28 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
   return (
     <div className="qy-app qy-terminal-app">
       <Onboarding />
+      {/* Only way back once the sidebar is fully collapsed. */}
+      <button
+        type="button"
+        className={`qy-aside-reveal ${navCollapsed ? 'qy-aside-reveal--on' : ''}`}
+        onClick={() => setNavCollapsed(false)}
+        title="Show sidebar"
+        aria-label="Show sidebar"
+      >
+        <PanelLeftOpen size={17} />
+      </button>
       <aside className={`qy-aside ${navCollapsed ? 'qy-aside--collapsed' : ''}`} data-testid="dash-sidebar">
         <div className="qy-aside-head">
           <BrandLogo href="/" />
           <button
             type="button"
             className="qy-aside-collapse"
-            onClick={() => setNavCollapsed((v) => !v)}
-            title={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            aria-label={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={() => setNavCollapsed(true)}
+            title="Hide sidebar"
+            aria-label="Hide sidebar"
             aria-expanded={!navCollapsed}
           >
-            {navCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+            <PanelLeftClose size={16} />
           </button>
         </div>
         <nav className="qy-aside-nav">

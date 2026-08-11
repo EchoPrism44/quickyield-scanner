@@ -204,15 +204,20 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 }
 @media (min-width: 768px) { .qy-aside { display: flex; } }
 
-.qy-aside--collapsed { width: 64px; }
-.qy-aside--collapsed .qy-aside-label,
-.qy-aside--collapsed .qy-aside-user,
-.qy-aside--collapsed .qy-logo-text { display: none; }
-.qy-aside--collapsed .qy-aside-head { padding: 16px 0; justify-content: center; }
-.qy-aside--collapsed .qy-logo-mark { margin: 0 auto; }
-.qy-aside--collapsed .qy-aside-nav { padding: 12px 8px; }
-.qy-aside--collapsed .qy-aside-link { justify-content: center; padding: 10px 0; }
-.qy-aside--collapsed .qy-aside-foot { padding: 12px 8px; justify-items: center; }
+/* Collapsed means gone, not narrow — a 64px rail is still furniture. The
+   floating button below brings it back, the way editors and docs apps do it. */
+.qy-aside--collapsed { width: 0; border-right: 0; overflow: hidden; }
+
+.qy-aside-reveal {
+  display: none;
+  position: fixed; top: 14px; left: 14px; z-index: 60;
+  width: 34px; height: 34px; align-items: center; justify-content: center;
+  border: 1px solid var(--line); border-radius: 9999px;
+  background: var(--bg-surface); color: var(--ink-dim);
+  cursor: pointer; transition: color 0.15s, border-color 0.15s;
+}
+.qy-aside-reveal:hover { color: var(--ink); border-color: var(--line-hover); }
+@media (min-width: 768px) { .qy-aside-reveal--on { display: inline-flex; } }
 
 /* Toggle sits in the header next to the logo, where these controls normally
    live, rather than buried at the bottom of the sidebar. */
@@ -819,13 +824,21 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
    Actions columns were silently clipped whenever the row was wider than the
    viewport, with no scrollbar to reach them — hiding the single thing the
    product exists to show. */
+/* The table scrolls inside its own viewport-height box rather than growing
+   down the page. Otherwise the horizontal scrollbar sits below all 50 rows,
+   and you have to scroll to the bottom of the page before you can scroll
+   sideways — which is no better than the columns being clipped. */
 .qy-terminal-table-wrap {
   border: 1px solid var(--line); border-radius: 14px;
-  overflow-x: auto; overflow-y: hidden;
+  overflow: auto;
+  max-height: calc(100vh - 230px);
   background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92));
   scrollbar-color: rgba(255,255,255,0.28) transparent;
   scrollbar-width: thin;
+  overscroll-behavior: contain;
 }
+/* Header stays put while the rows scroll under it. */
+.qy-terminal-table-head { position: sticky; top: 0; z-index: 2; }
 /* Always-visible track: an overlay scrollbar that only appears mid-scroll
    doesn't tell anyone there is more table to the right. */
 .qy-terminal-table-wrap::-webkit-scrollbar { height: 10px; }
@@ -845,7 +858,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   align-items: center;
   padding: 14px 18px;
 }
-.qy-terminal-table-head { border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.02); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-mute); }
+/* Opaque, not translucent — a sticky header has rows sliding underneath it. */
+.qy-terminal-table-head { border-bottom: 1px solid var(--line); background: #14171c; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-mute); }
 .qy-sort-link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-align: left; }
 .qy-sort-link.active { color: var(--ink); }
 .qy-terminal-row { border-top: 1px solid rgba(255,255,255,0.04); }
