@@ -1,0 +1,61 @@
+name: Scan staleness watchdog
+
+# The hourly scan job can only report on runs that actually happen. This checks
+# the opposite direction — how old the data the site is serving actually is —
+# so a scan that silently stops running, or succeeds without persisting, still
+# surfaces instead of quietly ageing out.
+#
+# Limitation: this is another GitHub Actions schedule, so it cannot catch
+# Actions being disabled wholesale (GitHub deactivates scheduled workflows
+# after 60 days of repository inactivity, with an email warning first).
+
+on:
+  schedule:
+    - cron: '30 */3 * * *' # every 3 hours, offset from the scan on the hour
+  workflow_dispatch:
+
+jobs:
+  check-freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check how old the served pool data is
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          set -uo pipefail
+          BASE="${APP_URL:-https://www.getlitmus.xyz}"
+
+          # Public endpoint — no secret needed, and it reads the same cache the
+          # terminal renders from, so this measures what visitors actually get.
+          body=$(curl -sS -L --max-time 60 "$BASE/api/opportunities?pageSize=1") || {
+            echo "::error::Could not reach $BASE/api/opportunities"
+            exit 1
+          }
+
+          status=$(printf "%s" "$body" | jq -r '.dataStatus // "missing"')
+          last=$(printf "%s" "$body" | jq -r '.lastUpdated // ""')
+          total=$(printf "%s" "$body" | jq -r '.total // 0')
+
+          if [ -z "$last" ]; then
+            echo "::error::Response has no lastUpdated field"
+            printf "%s\n" "$body" | head -c 500
+            exit 1
+          fi
+
+          age_min=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 60 ))
+          echo "dataStatus=$status  total=$total  lastUpdated=$last  age=${age_min}m"
+
+          # The scan runs hourly and the app treats a cache as fresh for 90
+          # minutes (CACHE_FRESH_MS in lib/opportunities.ts). 180 minutes means
+          # at least two consecutive runs were missed — a pattern, not a blip.
+          if [ "$age_min" -gt 180 ]; then
+            echo "::error::Pool data is ${age_min} minutes old — the hourly scan is not landing"
+            exit 1
+          fi
+
+          if [ "$status" != "live" ]; then
+            echo "::error::Site is serving dataStatus=$status"
+            exit 1
+          fi
+
+          echo "Data is fresh (${age_min}m old, $total pools)"

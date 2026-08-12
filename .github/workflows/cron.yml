@@ -15,12 +15,66 @@ jobs:
           # job from the Vercel-generated hostname. Falls back to the current
           # deployment URL so nothing breaks before that secret exists.
           APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
+          set -uo pipefail
           BASE="${APP_URL:-https://quickyield-scanner.vercel.app}"
           echo "Using base: $BASE"
-          response=$(curl -X GET "$BASE/api/cron/scan-yields?secret=${{ secrets.CRON_SECRET }}" \
-            --silent --show-error --max-time 60 --write-out "\n%{http_code}")
+
+          # The scan fetches and persists ~2,600 pools; 60s was tight enough to
+          # abort a healthy-but-slow run.
+          response=$(curl -sS -X GET "$BASE/api/cron/scan-yields" \
+            --header "Authorization: Bearer $CRON_SECRET" \
+            --max-time 120 --write-out "\n%{http_code}")
           body=$(printf "%s" "$response" | sed '$d')
-          status=$(printf "%s" "$response" | tail -n 1)
+          code=$(printf "%s" "$response" | tail -n 1)
+
+          echo "HTTP $code"
           printf "%s\n" "$body"
-          test "$status" -ge 200 -a "$status" -lt 300
+
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "::error::Scan endpoint returned HTTP $code"
+            exit 1
+          fi
+
+          # A 2xx alone does not mean the scan worked. Check what it reported.
+          status=$(printf "%s" "$body" | jq -r '.status // "missing"')
+          scanned=$(printf "%s" "$body" | jq -r '.scanned // 0')
+          fallback=$(printf "%s" "$body" | jq -r '.fallbackReason // ""')
+          failures=$(printf "%s" "$body" | jq -r '.failures // [] | length')
+
+          ok=1
+
+          # 'fallback' means the upstream feed failed and cached pools were
+          # served instead — nothing new was persisted this hour.
+          if [ "$status" != "live" ]; then
+            echo "::error::Scan degraded: status=$status (expected 'live')"
+            ok=0
+          fi
+
+          # Set even when status is 'live', e.g. "Storage unavailable" — the
+          # pools were fetched but never cached, so readers keep going stale.
+          if [ -n "$fallback" ]; then
+            echo "::error::Scan reported a problem: $fallback"
+            ok=0
+          fi
+
+          # Guards against the feed returning a near-empty result that still
+          # parses. A healthy scan is ~2,600 pools; the curated fallback list
+          # alone is far below this floor.
+          if [ "$scanned" -lt 500 ]; then
+            echo "::error::Only $scanned pools scanned (floor is 500)"
+            ok=0
+          fi
+
+          # Alert-delivery and prune problems. Non-fatal to the cache, but they
+          # mean someone's alert did not go out.
+          if [ "$failures" -gt 0 ]; then
+            echo "::error::Scan reported $failures failure(s) — see the body above"
+            ok=0
+          fi
+
+          if [ "$ok" -ne 1 ]; then
+            exit 1
+          fi
+          echo "Scan healthy: $scanned pools, status=$status"
