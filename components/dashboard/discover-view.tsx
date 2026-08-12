@@ -19,6 +19,13 @@ const presetItems: { key: OpportunityPreset | 'all'; label: string }[] = [
   { key: 'saved', label: 'Saved' },
 ]
 
+/**
+ * Mirrors STABLE_ASSETS in lib/opportunities.ts. Duplicated rather than
+ * imported because that module is server-only — importing from it would drag
+ * the scanner and store into the client bundle.
+ */
+const STABLE_ASSETS = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
+
 /** Signed APY change, colored like CMC (green up / red down). */
 function Delta({ value }: { value?: number }) {
   if (value === undefined || Number.isNaN(value)) return <span className="qy-terminal-submetric">—</span>
@@ -86,29 +93,22 @@ export function DiscoverView({
     return items
   }, [data.opportunities, sortBy])
 
-  const saferCount = data.opportunities.filter((item) => item.risk === 'Low').length
-  const stableAssets = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
-  const stablecoinBest = data.opportunities
-    .filter((item) => item.category.toLowerCase().includes('stable') || stableAssets.has(item.asset.toUpperCase()))
+  // Headline figures come from the server, computed across every pool matching
+  // the current filters. Deriving them from data.opportunities would describe
+  // only the page that happens to be loaded.
+  const { avgApy, totalTvlUsd, saferCount, bestStablecoinApy, highestApy, apyBands } = data.stats
+  // These two name a specific pool, so they can only come from loaded rows —
+  // the wording below says "loaded" rather than implying a market-wide best.
+  const stablecoinBestLoaded = data.opportunities
+    .filter((item) => item.category.toLowerCase().includes('stable') || STABLE_ASSETS.has(item.asset.toUpperCase()))
     .sort((a, b) => b.apy - a.apy)[0]
-  const highestApy = [...data.opportunities].sort((a, b) => b.apy - a.apy)[0]
-  const avgApy = data.opportunities.length
-    ? data.opportunities.reduce((sum, item) => sum + item.apy, 0) / data.opportunities.length
-    : 0
-  const totalTvlUsd = data.opportunities.reduce((sum, item) => sum + item.tvlUsd, 0)
+  const highestApyLoaded = [...data.opportunities].sort((a, b) => b.apy - a.apy)[0]
   const fmtTvl = (v: number) => (v >= 1e9 ? `$${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `$${(v / 1e6).toFixed(0)}M` : `$${Math.round(v)}`)
   const lastScan = new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   const sortArrow = (key: typeof sortBy) => (sortBy === key ? ' ▾' : '')
-  const marketBands = ['0-4%', '4-8%', '8-12%', '12%+'].map((band) => {
-    const [min, max] = band === '12%+' ? [12, Infinity] : band.replace('%', '').split('-').map(Number)
-    const items = data.opportunities.filter((item) => item.apy >= min && item.apy < max)
-    const low = items.filter((item) => item.risk === 'Low').length
-    const avgSafety = items.length ? Math.round(items.reduce((sum, item) => sum + item.confidence, 0) / items.length) : 0
-    return { band, items, low, avgSafety }
-  })
   const scannerUpdates = [
-    stablecoinBest ? `Stablecoin leader: ${stablecoinBest.asset} on ${stablecoinBest.platform} at ${stablecoinBest.apy.toFixed(2)}% APY` : 'Stablecoin leader will appear after the next scan.',
-    highestApy ? `Highest current APY: ${highestApy.asset} on ${highestApy.chain} at ${highestApy.apy.toFixed(2)}%` : 'Highest APY will appear after the next scan.',
+    stablecoinBestLoaded ? `Stablecoin leader in view: ${stablecoinBestLoaded.asset} on ${stablecoinBestLoaded.platform} at ${stablecoinBestLoaded.apy.toFixed(2)}% APY` : 'Stablecoin leader will appear after the next scan.',
+    highestApyLoaded ? `Highest APY in view: ${highestApyLoaded.asset} on ${highestApyLoaded.chain} at ${highestApyLoaded.apy.toFixed(2)}%` : 'Highest APY will appear after the next scan.',
     `${saferCount} lower-risk pools match the current view.`,
     data.fallbackReason ? `Fallback feed active: ${data.fallbackReason}` : `Live scanner refreshed at ${lastScan}.`,
   ]
@@ -124,8 +124,8 @@ export function DiscoverView({
           <p>Scan live pools, understand why they rank, save candidates, and set target alerts.</p>
         </div>
         <div className="qy-terminal-kpis">
-          <div className="qy-terminal-kpi"><span className="qy-overline">Best stablecoin yield</span><strong>{stablecoinBest ? `${stablecoinBest.apy.toFixed(2)}%` : '--'}</strong></div>
-          <div className="qy-terminal-kpi"><span className="qy-overline">Highest APY</span><strong>{highestApy ? `${highestApy.apy.toFixed(2)}%` : '--'}</strong></div>
+          <div className="qy-terminal-kpi"><span className="qy-overline">Best stablecoin yield</span><strong>{bestStablecoinApy !== null ? `${bestStablecoinApy.toFixed(2)}%` : '--'}</strong></div>
+          <div className="qy-terminal-kpi"><span className="qy-overline">Highest APY</span><strong>{highestApy !== null ? `${highestApy.toFixed(2)}%` : '--'}</strong></div>
           <div className="qy-terminal-kpi">
             <span className="qy-overline">Pools scanned</span>
             <strong>{data.total}</strong>
@@ -363,11 +363,11 @@ export function DiscoverView({
             </div>
           </div>
           <div className="qy-market-map">
-            {marketBands.map(({ band, items, low, avgSafety }, index) => (
+            {apyBands.map(({ band, count, lowRisk, avgSafety }, index) => (
               <div key={band} className={`qy-market-map-cell heat-${index}`}>
                 <span className="qy-overline">{band} APY</span>
-                <strong>{heatmapMetric === 'apy' ? items.length : avgSafety || '--'}</strong>
-                <small>{heatmapMetric === 'apy' ? `${low} lower risk` : `${items.length} pools sampled`}</small>
+                <strong>{heatmapMetric === 'apy' ? count : avgSafety || '--'}</strong>
+                <small>{heatmapMetric === 'apy' ? `${lowRisk} lower risk` : `${count} pools`}</small>
               </div>
             ))}
           </div>

@@ -5,7 +5,7 @@ import { cacheOpportunities, getCachedOpportunities, getCachedOpportunitiesWithM
 import { poolToOpportunity } from './scoring'
 import { safetyGradeOf } from './grade'
 import { isRwaOpportunity } from './rwa'
-import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
+import type { LlamaPool, Opportunity, OpportunityFilters, OpportunityStats } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
 const DEFAULT_PAGE_SIZE = 50
@@ -59,6 +59,50 @@ export function getRankReason(item: Opportunity) {
   return 'Included after the current safety, liquidity, and data checks.'
 }
 
+const STABLE_ASSETS = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
+
+/** APY buckets for the yield heatmap. Upper bound is exclusive. */
+const APY_BANDS: { band: string; min: number; max: number }[] = [
+  { band: '0-4%', min: 0, max: 4 },
+  { band: '4-8%', min: 4, max: 8 },
+  { band: '8-12%', min: 8, max: 12 },
+  { band: '12%+', min: 12, max: Infinity },
+]
+
+/**
+ * Aggregates across every pool matching the current filters.
+ *
+ * These are computed here, over the full filtered set, because the client only
+ * receives one page. Deriving them from that page instead produced figures
+ * labelled "Total TVL tracked" and "Market map" that actually described 50
+ * rows — the same defect that was fixed for chainCount.
+ */
+function summarize(opportunities: Opportunity[]): OpportunityStats {
+  const count = opportunities.length
+  const stablecoins = opportunities.filter(
+    (item) => item.category.toLowerCase().includes('stable') || STABLE_ASSETS.has(item.asset.toUpperCase()),
+  )
+  return {
+    avgApy: count ? opportunities.reduce((sum, item) => sum + item.apy, 0) / count : 0,
+    totalTvlUsd: opportunities.reduce((sum, item) => sum + item.tvlUsd, 0),
+    saferCount: opportunities.filter((item) => item.risk === 'Low').length,
+    bestStablecoinApy: stablecoins.length ? Math.max(...stablecoins.map((item) => item.apy)) : null,
+    highestApy: count ? Math.max(...opportunities.map((item) => item.apy)) : null,
+    apyBands: APY_BANDS.map(({ band, min, max }) => {
+      const items = opportunities.filter((item) => item.apy >= min && item.apy < max)
+      return {
+        band,
+        count: items.length,
+        lowRisk: items.filter((item) => item.risk === 'Low').length,
+        // Rounded here so Infinity/NaN never reach the wire; JSON has no Infinity.
+        avgSafety: items.length
+          ? Math.round(items.reduce((sum, item) => sum + item.confidence, 0) / items.length)
+          : 0,
+      }
+    }),
+  }
+}
+
 function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
   const page = Math.max(1, Math.floor(Number(filters.page) || 1))
   const requestedPageSize = Math.floor(Number(filters.pageSize) || DEFAULT_PAGE_SIZE)
@@ -68,6 +112,7 @@ function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
     opportunities: opportunities.slice(start, start + pageSize),
     total: opportunities.length,
     chainCount: new Set(opportunities.map((o) => o.chain)).size,
+    stats: summarize(opportunities),
     page,
     pageSize,
     hasMore: start + pageSize < opportunities.length,
@@ -124,6 +169,8 @@ export async function scanAndCacheYields() {
     try {
       await cacheOpportunities(opportunities)
       await storeOpportunitySnapshots(opportunities)
+      // A fresh scan supersedes anything this instance has memoised.
+      hot = null
     } catch (error) {
       return {
         opportunities,
@@ -155,30 +202,69 @@ export async function scanAndCacheYields() {
 }
 
 /**
- * How long a cached scan is considered good enough to serve directly. The
- * hourly cron refreshes the cache, so in normal operation every page load is
- * a cache hit; this window only decides how long we coast if that job is late.
+ * How long a cached scan still counts as "live".
+ *
+ * This MUST stay comfortably above the scan cron's period, or the window
+ * between refreshes is served as stale. It was 30 minutes while the cron in
+ * .github/workflows/cron.yml runs hourly, so for roughly half of every hour
+ * the cache was considered expired and visitors paid for a blocking upstream
+ * scan. 90 minutes leaves a full period of headroom for a late or retried job.
  */
-const CACHE_MAX_AGE_MS = 30 * 60 * 1000
+const CACHE_FRESH_MS = 90 * 60 * 1000
 
 /**
- * Pools for a page render. Reads the cache first and only falls back to a live
- * DeFiLlama scan when the cache is empty or stale.
+ * Pools for a page render. Cached data is served whenever we have any, so a
+ * visitor never waits on the upstream feed.
  *
- * Previously every request called scanAndCacheYields(), so each visitor paid
- * for a live upstream fetch plus cache and snapshot writes — 6-8s per page.
- * The cache existed but was only consulted when the live fetch threw, so it
- * never actually served anyone.
+ * Two earlier versions of this both put a live scan on the request path: first
+ * unconditionally (6-8s per page), then whenever the cache looked stale (which
+ * was half of every hour, costing up to the 15s fetch timeout plus cache and
+ * snapshot writes). A page render now only scans when there is nothing cached
+ * at all — a cold database, not a routine request.
+ *
+ * Refreshing the cache is the cron's job (/api/cron/scan-yields), not the
+ * visitor's. Stale-but-present data is still served, and labelled 'fallback'
+ * so the UI reports the feed honestly rather than calling old numbers live.
  */
+/**
+ * Per-instance memo in front of the database read.
+ *
+ * The cache table holds ~2,600 rows that every render pulls in full and
+ * JSON.parses, only to filter and slice one page out of it. The terminal is
+ * force-dynamic, so without this each visitor pays that round trip and parse
+ * again. A warm serverless instance now does it at most once a minute.
+ *
+ * The TTL only needs to be short relative to the hourly scan — a request may
+ * serve data up to a minute behind the table, which is far inside the window
+ * the data itself is refreshed on.
+ */
+const HOT_TTL_MS = 60 * 1000
+let hot: { items: Opportunity[]; updatedAt: Date | null; readAt: number } | null = null
+
+async function readCachedWithMemo() {
+  if (hot && Date.now() - hot.readAt < HOT_TTL_MS) {
+    return { items: hot.items, updatedAt: hot.updatedAt }
+  }
+  const { items, updatedAt } = await getCachedOpportunitiesWithMeta()
+  // Only memo a real result; an empty read should retry, not be cached in.
+  if (items.length > 0) hot = { items, updatedAt, readAt: Date.now() }
+  return { items, updatedAt }
+}
+
 async function readOpportunities() {
   try {
-    const { items, updatedAt } = await getCachedOpportunitiesWithMeta()
-    const age = updatedAt ? Date.now() - updatedAt.getTime() : Infinity
-    if (items.length > 0 && age < CACHE_MAX_AGE_MS) {
+    const { items, updatedAt } = await readCachedWithMemo()
+    if (items.length > 0) {
+      const age = updatedAt ? Date.now() - updatedAt.getTime() : Infinity
+      const lastUpdated = (updatedAt ?? new Date()).toISOString()
+      if (age < CACHE_FRESH_MS) {
+        return { opportunities: items, dataStatus: 'live' as const, lastUpdated }
+      }
       return {
         opportunities: items,
-        dataStatus: 'live' as const,
-        lastUpdated: (updatedAt as Date).toISOString(),
+        dataStatus: 'fallback' as const,
+        lastUpdated,
+        fallbackReason: `Showing the last completed scan; the hourly refresh is overdue (cached ${Math.round(age / 60000)} min ago).`,
       }
     }
   } catch {
