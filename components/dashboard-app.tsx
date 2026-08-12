@@ -3,22 +3,24 @@
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useEffect, useMemo, useState, useTransition } from 'react'
-import { Bell, Bookmark, PanelLeftClose, PanelLeftOpen, Radar, Settings as SettingsIcon } from 'lucide-react'
+import { Bell, Bookmark, Briefcase, PanelLeftClose, PanelLeftOpen, Radar, Settings as SettingsIcon } from 'lucide-react'
 import { AlertTargetDialog, alertDraftFromOpportunity, type AlertDraft } from './alert-target-dialog'
 import { Onboarding } from './onboarding'
 import { BrandLogo } from './brand-logo'
 import { DiscoverView } from './dashboard/discover-view'
 import { WatchlistView } from './dashboard/watchlist-view'
+import { PortfolioView } from './dashboard/portfolio-view'
 import { AlertsView } from './dashboard/alerts-view'
 import { SettingsView } from './dashboard/settings-view'
 import type { AlertActivity, AlertRule, DashboardData, Opportunity, OpportunityPreset } from '../lib/types'
 
-type Tab = 'discover' | 'watchlist' | 'alerts' | 'settings'
+type Tab = 'discover' | 'watchlist' | 'portfolio' | 'alerts' | 'settings'
 type Toast = { id: number; type: 'success' | 'error'; msg: string }
 
 const navItems: { tab: Tab; label: string; icon: typeof Radar }[] = [
   { tab: 'discover', label: 'Discover', icon: Radar },
   { tab: 'watchlist', label: 'Watchlist', icon: Bookmark },
+  { tab: 'portfolio', label: 'Portfolio', icon: Briefcase },
   { tab: 'alerts', label: 'Alerts', icon: Bell },
   { tab: 'settings', label: 'Settings', icon: SettingsIcon },
 ]
@@ -374,6 +376,19 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
               onToggleWatch={toggleWatch}
               onCreateAlert={openAlertBuilder}
               onGoDiscover={() => setTab('discover')}
+            />
+            )
+          )}
+          {tab === 'portfolio' && (
+            isAnonymous ? (
+              <SignedOutCard
+                title="Track your positions here"
+                body="Sign in to record what you're holding and watch its grade over time. Read-only — Litmus never touches your funds or wallet."
+              />
+            ) : (
+            <PortfolioView
+              onGoDiscover={() => setTab('discover')}
+              pushToast={toasts.push}
             />
             )
           )}
