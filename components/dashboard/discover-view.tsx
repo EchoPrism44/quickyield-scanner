@@ -206,7 +206,7 @@ export function DiscoverView({
         ) : null}
       </div>
 
-      <div className="qy-terminal-table-wrap qy-desktop-results">
+      <div className="qy-terminal-table-wrap">
         <div className="qy-terminal-table-head">
           <span>Protocol</span>
           <span>Asset</span>
@@ -241,7 +241,11 @@ export function DiscoverView({
               <strong>{item.asset}</strong>
               <span className="qy-terminal-submetric">{item.chain}</span>
             </div>
+            {/* The column header is hidden below 720px, where each row becomes
+                a card, so these two cells carry their own label there. Both are
+                display:none on desktop, where the header names them. */}
             <div className="qy-terminal-metric">
+              <span className="qy-terminal-submetric qy-label-mobile">APY</span>
               <strong>{item.apy.toFixed(2)}%</strong>
               <SparklineCell poolId={item.id} />
             </div>
@@ -257,7 +261,10 @@ export function DiscoverView({
               <Delta value={item.apyPct30D} />
               <span className="qy-terminal-submetric">30d</span>
             </div>
-            <div className="qy-terminal-metric qy-terminal-right"><strong>{item.tvl}</strong></div>
+            <div className="qy-terminal-metric qy-terminal-right">
+              <span className="qy-terminal-submetric qy-label-mobile">TVL</span>
+              <strong>{item.tvl}</strong>
+            </div>
             <div className="qy-terminal-metric">
               <GradeChip item={item} />
               <span className="qy-terminal-submetric">{item.risk === 'Low' ? 'Lower risk' : 'Review carefully'}</span>
@@ -295,39 +302,6 @@ export function DiscoverView({
               </Link>
             </div>
           </div>
-        ))}
-      </div>
-
-      <div className="qy-mobile-results" aria-label="Pool results">
-        {sorted.map((item) => (
-          <article key={item.id} className="qy-pool-card">
-            <div className="qy-pool-card-head">
-              <div className="qy-asset-cell">
-                <ProtocolLogo name={item.platform} logoUrl={item.logoUrl} />
-                <div>
-                  <h2>{item.platform}</h2>
-                  <p>{item.asset} / {item.chain}</p>
-                </div>
-              </div>
-              <GradeChip item={item} />
-            </div>
-            <div className="qy-pool-card-metrics">
-              <div><span>APY</span><strong>{item.apy.toFixed(2)}%</strong></div>
-              <div><span>24h</span><Delta value={item.apyPct1D} /></div>
-              <div><span>7d</span><Delta value={item.apyPct7D} /></div>
-              <div><span>30d</span><Delta value={item.apyPct30D} /></div>
-              <div><span>TVL</span><strong>{item.tvl}</strong></div>
-              <div><span>Chain</span><strong>{item.chain}</strong></div>
-            </div>
-            <p className="qy-rank-reason">{item.rankReason}</p>
-            <div className="qy-terminal-actions">
-              <Link href={`/terminal/pools/${encodeURIComponent(item.id)}`} className="qy-btn qy-btn-sm qy-btn-outline">View details</Link>
-              <button type="button" className="qy-btn qy-btn-sm qy-btn-primary" onClick={() => onCreateAlert(item)} aria-label={`Set alert for ${item.platform} ${item.asset}`}>Set alert</button>
-              <button type="button" className={`qy-btn qy-btn-sm ${watched.has(item.id) ? 'qy-btn-disabled' : 'qy-btn-watch'}`} onClick={() => onToggleWatch(item.id)} disabled={watched.has(item.id)}>
-                {watched.has(item.id) ? 'Saved' : 'Save'}
-              </button>
-            </div>
-          </article>
         ))}
       </div>
 
