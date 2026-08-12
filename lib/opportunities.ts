@@ -5,7 +5,7 @@ import { cacheOpportunities, getCachedOpportunities, getCachedOpportunitiesWithM
 import { poolToOpportunity } from './scoring'
 import { safetyGradeOf } from './grade'
 import { isRwaOpportunity } from './rwa'
-import type { LlamaPool, Opportunity, OpportunityFilters } from './types'
+import type { LlamaPool, Opportunity, OpportunityFilters, OpportunityStats } from './types'
 
 const LIVE_FEED_TIMEOUT_MS = 15000
 const DEFAULT_PAGE_SIZE = 50
@@ -59,6 +59,50 @@ export function getRankReason(item: Opportunity) {
   return 'Included after the current safety, liquidity, and data checks.'
 }
 
+const STABLE_ASSETS = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
+
+/** APY buckets for the yield heatmap. Upper bound is exclusive. */
+const APY_BANDS: { band: string; min: number; max: number }[] = [
+  { band: '0-4%', min: 0, max: 4 },
+  { band: '4-8%', min: 4, max: 8 },
+  { band: '8-12%', min: 8, max: 12 },
+  { band: '12%+', min: 12, max: Infinity },
+]
+
+/**
+ * Aggregates across every pool matching the current filters.
+ *
+ * These are computed here, over the full filtered set, because the client only
+ * receives one page. Deriving them from that page instead produced figures
+ * labelled "Total TVL tracked" and "Market map" that actually described 50
+ * rows — the same defect that was fixed for chainCount.
+ */
+function summarize(opportunities: Opportunity[]): OpportunityStats {
+  const count = opportunities.length
+  const stablecoins = opportunities.filter(
+    (item) => item.category.toLowerCase().includes('stable') || STABLE_ASSETS.has(item.asset.toUpperCase()),
+  )
+  return {
+    avgApy: count ? opportunities.reduce((sum, item) => sum + item.apy, 0) / count : 0,
+    totalTvlUsd: opportunities.reduce((sum, item) => sum + item.tvlUsd, 0),
+    saferCount: opportunities.filter((item) => item.risk === 'Low').length,
+    bestStablecoinApy: stablecoins.length ? Math.max(...stablecoins.map((item) => item.apy)) : null,
+    highestApy: count ? Math.max(...opportunities.map((item) => item.apy)) : null,
+    apyBands: APY_BANDS.map(({ band, min, max }) => {
+      const items = opportunities.filter((item) => item.apy >= min && item.apy < max)
+      return {
+        band,
+        count: items.length,
+        lowRisk: items.filter((item) => item.risk === 'Low').length,
+        // Rounded here so Infinity/NaN never reach the wire; JSON has no Infinity.
+        avgSafety: items.length
+          ? Math.round(items.reduce((sum, item) => sum + item.confidence, 0) / items.length)
+          : 0,
+      }
+    }),
+  }
+}
+
 function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
   const page = Math.max(1, Math.floor(Number(filters.page) || 1))
   const requestedPageSize = Math.floor(Number(filters.pageSize) || DEFAULT_PAGE_SIZE)
@@ -68,6 +112,7 @@ function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
     opportunities: opportunities.slice(start, start + pageSize),
     total: opportunities.length,
     chainCount: new Set(opportunities.map((o) => o.chain)).size,
+    stats: summarize(opportunities),
     page,
     pageSize,
     hasMore: start + pageSize < opportunities.length,

@@ -204,9 +204,26 @@ export type OpportunityFilters = {
 
 export type OpportunityPreset = 'safe-stablecoins' | 'eth-staking' | 'solana-yield' | 'rwa' | 'high-apy' | 'saved'
 
+/**
+ * Aggregates over the whole filtered result set, not the page that was
+ * returned. Computed server-side because the client only ever receives one
+ * page — anything derived from `opportunities` describes those rows alone and
+ * must not be labelled as describing the market.
+ */
+export type OpportunityStats = {
+  avgApy: number
+  totalTvlUsd: number
+  saferCount: number
+  bestStablecoinApy: number | null
+  highestApy: number | null
+  apyBands: { band: string; count: number; lowRisk: number; avgSafety: number }[]
+}
+
 export type OpportunitiesResult = {
   opportunities: Opportunity[]
   total: number
+  chainCount: number
+  stats: OpportunityStats
   page: number
   pageSize: number
   hasMore: boolean
@@ -280,6 +297,8 @@ export type DashboardData = {
   user: DashboardUser
   opportunities: Opportunity[]
   total: number
+  chainCount: number
+  stats: OpportunityStats
   page: number
   pageSize: number
   hasMore: boolean
