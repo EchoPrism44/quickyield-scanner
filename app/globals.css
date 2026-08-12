@@ -880,6 +880,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-terminal-metric strong { font-family: var(--font-mono); font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .qy-terminal-right { text-align: right; justify-self: end; }
 .qy-terminal-submetric { color: var(--ink-mute); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+/* Cell labels for the card layout below 720px; the column header names these
+   on desktop, so showing them there would just repeat it. */
+.qy-label-mobile { display: none; }
 .qy-terminal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
 /* Compact icon actions — same three actions, ~130px less per row. */
 .qy-icon-action {
@@ -899,37 +902,6 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   font-size: 12px;
   line-height: 1.45;
 }
-.qy-mobile-results { display: none; }
-.qy-pool-card {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--bg-surface);
-  padding: 16px;
-}
-.qy-pool-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.qy-pool-card h2 { font-family: var(--font-display); font-size: 16px; color: var(--ink); }
-.qy-pool-card p { color: var(--ink-mute); font-size: 12px; }
-.qy-pool-card-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 16px 0 10px;
-}
-.qy-pool-card-metrics > div {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px;
-  background: rgba(255,255,255,0.02);
-}
-.qy-pool-card-metrics span {
-  display: block;
-  color: var(--ink-mute);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.qy-pool-card-metrics strong { display: block; margin-top: 6px; color: var(--ink); font-family: var(--font-display); font-size: 18px; }
 .qy-load-more { display: flex; justify-content: center; margin-top: 18px; }
 .qy-table-empty-state { border: 0; border-radius: 0; }
 .qy-activity-panel { padding: 22px; margin-top: 18px; }
@@ -1068,10 +1040,40 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   .qy-analytics-table-row .qy-analytics-badge { justify-self: start; }
   .qy-analytics-market-map,
   .qy-health-grid { grid-template-columns: 1fr 1fr; }
-  .qy-terminal-table-wrap { overflow-x: auto; }
   .qy-risk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .qy-desktop-results { display: none; }
-  .qy-mobile-results { display: grid; gap: 12px; }
+
+  /* Below 720px the same rows become cards, rather than shipping a second
+     copy of every pool as a separate mobile list. That duplicate markup was
+     ~76KB of the terminal's HTML — a fifth of the page — for rows that were
+     display:none on whichever breakpoint you were not on. */
+  .qy-terminal-table-wrap {
+    /* No longer a scrolling table: drop the min-width that forced horizontal
+       scroll, and the height cap that kept a sticky header in view. */
+    border: 0; background: none; overflow: visible; max-height: none;
+    display: grid; gap: 12px;
+  }
+  .qy-terminal-table-head { display: none; }
+  .qy-terminal-row {
+    min-width: 0;
+    /* Metrics flow two-up; the pool identity and the actions span the card. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92));
+    padding: 16px;
+  }
+  .qy-terminal-row:hover { background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.92)); }
+  .qy-terminal-pool { grid-column: 1 / -1; }
+  .qy-terminal-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  /* TVL is right-aligned in the table; in a card it reads as a stray column. */
+  .qy-terminal-right { text-align: left; justify-self: start; }
+  .qy-label-mobile { display: block; }
+  /* Icon-only actions were sized for a dense table row. 30px is below the
+     44px touch target guidance, and this is the only control on touch now
+     that the labelled card buttons are gone. */
+  .qy-icon-action { width: 44px; height: 44px; }
   .qy-detail-title-row { align-items: flex-start; }
   .qy-detail-stat-grid { grid-template-columns: 1fr; }
   .qy-detail-actions { flex-direction: column; align-items: stretch; }
