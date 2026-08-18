@@ -15,6 +15,7 @@ tags:
   - data integrity
   - A-F safety grades
 snapshot: "2026-08-17"
+ogImage: "/blog/2026-08-17-audit-tvl.svg"
 readMinutes: "9"
 ---
 
