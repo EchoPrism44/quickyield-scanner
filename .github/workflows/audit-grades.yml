@@ -1,0 +1,25 @@
+name: Audit grades snapshot
+
+on:
+  push:
+    branches:
+      - 'audit/grades-2026-08-17'
+
+jobs:
+  run-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Run audit script
+        run: |
+          node --version
+          node scripts/audit-grades.js
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: grade-audit-reports
+          path: audit-reports/
