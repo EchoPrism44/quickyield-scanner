@@ -67,7 +67,7 @@ export default async function PoolDetailPage({ params }: { params: Promise<{ id:
             <div className="qy-detail-stat-grid">
               <div className="qy-detail-stat"><span className="qy-overline">APY</span><strong>{opportunity.apy.toFixed(2)}%</strong></div>
               <div className="qy-detail-stat"><span className="qy-overline">TVL</span><strong>{opportunity.tvl}</strong></div>
-              <div className="qy-detail-stat"><span className="qy-overline">Safety score</span><strong>{opportunity.confidence}</strong></div>
+              <div className="qy-detail-stat"><span className="qy-overline">Safety score</span><strong>{grade.score}</strong></div>
               <div className="qy-detail-stat"><span className="qy-overline">24h move</span><strong>{opportunity.volatility.toFixed(2)}%</strong></div>
             </div>
 
