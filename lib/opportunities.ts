@@ -15,6 +15,26 @@ function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
 }
 
+async function fetchJson(url: string, init?: RequestInit) {
+  const response = await fetch(url, init)
+  const contentType = response.headers.get('content-type') ?? 'unknown'
+  const body = await response.text()
+
+  if (!response.ok) {
+    throw new Error(`Upstream ${url} returned HTTP ${response.status} (${contentType}): ${body.slice(0, 300)}`)
+  }
+
+  if (!contentType.toLowerCase().includes('application/json')) {
+    throw new Error(`Upstream ${url} returned non-JSON (${contentType}): ${body.slice(0, 300)}`)
+  }
+
+  try {
+    return JSON.parse(body)
+  } catch (error) {
+    throw new Error(`Upstream ${url} returned invalid JSON (${contentType}): ${body.slice(0, 300)}${error instanceof Error ? `; ${error.message}` : ''}`)
+  }
+}
+
 function valid(value: string | undefined, options: string[], fallback: string) {
   return value && options.includes(value) ? value : fallback
 }
@@ -26,7 +46,6 @@ function applyFilters(opportunities: Opportunity[], filters: OpportunityFilters)
   const time = valid(filters.time, timeCosts, 'Any time')
   const category = valid(filters.category, categories, 'All categories')
   const capital = Number.isFinite(filters.capital) ? Number(filters.capital) : 100
-
   const savedIds = new Set(filters.savedIds ?? [])
   return opportunities
     .filter((item) => !q || [item.name, item.platform, item.category, item.chain, item.asset, item.symbol, item.notes].join(' ').toLowerCase().includes(q))
@@ -60,8 +79,6 @@ export function getRankReason(item: Opportunity) {
 }
 
 const STABLE_ASSETS = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
-
-/** APY buckets for the yield heatmap. Upper bound is exclusive. */
 const APY_BANDS: { band: string; min: number; max: number }[] = [
   { band: '0-4%', min: 0, max: 4 },
   { band: '4-8%', min: 4, max: 8 },
@@ -69,19 +86,9 @@ const APY_BANDS: { band: string; min: number; max: number }[] = [
   { band: '12%+', min: 12, max: Infinity },
 ]
 
-/**
- * Aggregates across every pool matching the current filters.
- *
- * These are computed here, over the full filtered set, because the client only
- * receives one page. Deriving them from that page instead produced figures
- * labelled "Total TVL tracked" and "Market map" that actually described 50
- * rows — the same defect that was fixed for chainCount.
- */
 function summarize(opportunities: Opportunity[]): OpportunityStats {
   const count = opportunities.length
-  const stablecoins = opportunities.filter(
-    (item) => item.category.toLowerCase().includes('stable') || STABLE_ASSETS.has(item.asset.toUpperCase()),
-  )
+  const stablecoins = opportunities.filter((item) => item.category.toLowerCase().includes('stable') || STABLE_ASSETS.has(item.asset.toUpperCase()))
   return {
     avgApy: count ? opportunities.reduce((sum, item) => sum + item.apy, 0) / count : 0,
     totalTvlUsd: opportunities.reduce((sum, item) => sum + item.tvlUsd, 0),
@@ -90,15 +97,7 @@ function summarize(opportunities: Opportunity[]): OpportunityStats {
     highestApy: count ? Math.max(...opportunities.map((item) => item.apy)) : null,
     apyBands: APY_BANDS.map(({ band, min, max }) => {
       const items = opportunities.filter((item) => item.apy >= min && item.apy < max)
-      return {
-        band,
-        count: items.length,
-        lowRisk: items.filter((item) => item.risk === 'Low').length,
-        // Rounded here so Infinity/NaN never reach the wire; JSON has no Infinity.
-        avgSafety: items.length
-          ? Math.round(items.reduce((sum, item) => sum + item.confidence, 0) / items.length)
-          : 0,
-      }
+      return { band, count: items.length, lowRisk: items.filter((item) => item.risk === 'Low').length, avgSafety: items.length ? Math.round(items.reduce((sum, item) => sum + item.confidence, 0) / items.length) : 0 }
     }),
   }
 }
@@ -108,35 +107,19 @@ function paginate(opportunities: Opportunity[], filters: OpportunityFilters) {
   const requestedPageSize = Math.floor(Number(filters.pageSize) || DEFAULT_PAGE_SIZE)
   const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, requestedPageSize))
   const start = (page - 1) * pageSize
-  return {
-    opportunities: opportunities.slice(start, start + pageSize),
-    total: opportunities.length,
-    chainCount: new Set(opportunities.map((o) => o.chain)).size,
-    stats: summarize(opportunities),
-    page,
-    pageSize,
-    hasMore: start + pageSize < opportunities.length,
-  }
+  return { opportunities: opportunities.slice(start, start + pageSize), total: opportunities.length, chainCount: new Set(opportunities.map((o) => o.chain)).size, stats: summarize(opportunities), page, pageSize, hasMore: start + pageSize < opportunities.length }
 }
 
 async function fetchLiveOpportunities() {
-  const response = await fetch('https://yields.llama.fi/pools', {
-    cache: 'no-store',
-    signal: AbortSignal.timeout(LIVE_FEED_TIMEOUT_MS),
-  })
-  if (!response.ok) throw new Error(`Market feed returned ${response.status}`)
-  const payload = (await response.json()) as { data?: LlamaPool[] }
+  const payload = (await fetchJson('https://yields.llama.fi/pools', { cache: 'no-store', signal: AbortSignal.timeout(LIVE_FEED_TIMEOUT_MS) })) as { data?: LlamaPool[] }
   const live = (payload.data ?? [])
     .filter((pool) => Number(pool.tvlUsd) >= 1_000_000)
     .filter((pool) => Number(pool.apy ?? pool.apyBase ?? 0) > 0.3)
     .filter((pool) => Number(pool.apy ?? pool.apyBase ?? 0) <= 22)
     .sort((a, b) => {
-      const aApy = Number(a.apy ?? a.apyBase ?? 0)
-      const bApy = Number(b.apy ?? b.apyBase ?? 0)
-      const aVol = Math.abs(Number(a.apyPct1D ?? 0))
-      const bVol = Math.abs(Number(b.apyPct1D ?? 0))
-      const aRewardShare = Number(a.apyReward ?? 0) / Math.max(aApy || 1, 1)
-      const bRewardShare = Number(b.apyReward ?? 0) / Math.max(bApy || 1, 1)
+      const aApy = Number(a.apy ?? a.apyBase ?? 0), bApy = Number(b.apy ?? b.apyBase ?? 0)
+      const aVol = Math.abs(Number(a.apyPct1D ?? 0)), bVol = Math.abs(Number(b.apyPct1D ?? 0))
+      const aRewardShare = Number(a.apyReward ?? 0) / Math.max(aApy || 1, 1), bRewardShare = Number(b.apyReward ?? 0) / Math.max(bApy || 1, 1)
       const aCompleteness = [a.apyBase, a.apyReward, a.apyPct1D, a.apyMean30d].filter((v) => v !== undefined).length
       const bCompleteness = [b.apyBase, b.apyReward, b.apyPct1D, b.apyMean30d].filter((v) => v !== undefined).length
       const aScore = Number(a.tvlUsd) / 1_000_000 + aApy * 2.5 - aVol * 8 - aRewardShare * 12 + aCompleteness * 3
@@ -146,19 +129,13 @@ async function fetchLiveOpportunities() {
     .map(poolToOpportunity)
     .sort((a, b) => b.confidence - a.confidence || b.tvlUsd - a.tvlUsd)
     .map((item, index) => ({ ...item, rank: index + 1 }))
-
   if (live.length === 0) throw new Error('No live pools matched the safety screen')
-
-  // Enrich pools whose protocol site we don't have from the curated catalog
-  // with DeFiLlama's official URL directory (cached, best-effort).
   const urlIndex = await getProtocolUrlIndex()
-  if (urlIndex.size > 0) {
-    return live.map((item) => {
-      if (item.officialUrl.startsWith('http')) return item
-      const url = urlIndex.get(item.protocolSlug)
-      return url ? { ...item, officialUrl: url, actionUrl: url, sourceUrl: url } : item
-    })
-  }
+  if (urlIndex.size > 0) return live.map((item) => {
+    if (item.officialUrl.startsWith('http')) return item
+    const url = urlIndex.get(item.protocolSlug)
+    return url ? { ...item, officialUrl: url, actionUrl: url, sourceUrl: url } : item
+  })
   return live
 }
 
@@ -169,84 +146,29 @@ export async function scanAndCacheYields() {
     try {
       await cacheOpportunities(opportunities)
       await storeOpportunitySnapshots(opportunities)
-      // A fresh scan supersedes anything this instance has memoised.
       hot = null
     } catch (error) {
-      return {
-        opportunities,
-        dataStatus: 'live' as const,
-        lastUpdated: new Date().toISOString(),
-        fallbackReason: `Storage unavailable: ${errorMessage(error, 'Cache update failed')}`,
-      }
+      return { opportunities, dataStatus: 'live' as const, lastUpdated: new Date().toISOString(), fallbackReason: `Storage unavailable: ${errorMessage(error, 'Cache update failed')}` }
     }
     return { opportunities, dataStatus: 'live' as const, lastUpdated: new Date().toISOString() }
   } catch (error) {
     try {
       const cached = await getCachedOpportunities()
       const opportunities = cached.length > 0 ? cached : curatedOpportunities
-      return {
-        opportunities,
-        dataStatus: 'fallback' as const,
-        lastUpdated: new Date().toISOString(),
-        fallbackReason: errorMessage(error, 'Market scan failed'),
-      }
+      return { opportunities, dataStatus: 'fallback' as const, lastUpdated: new Date().toISOString(), fallbackReason: errorMessage(error, 'Market scan failed') }
     } catch (cacheError) {
-      return {
-        opportunities: curatedOpportunities,
-        dataStatus: 'fallback' as const,
-        lastUpdated: new Date().toISOString(),
-        fallbackReason: `${errorMessage(error, 'Market scan failed')}; cache unavailable: ${errorMessage(cacheError, 'Cache read failed')}`,
-      }
+      return { opportunities: curatedOpportunities, dataStatus: 'fallback' as const, lastUpdated: new Date().toISOString(), fallbackReason: `${errorMessage(error, 'Market scan failed')}; cache unavailable: ${errorMessage(cacheError, 'Cache read failed')}` }
     }
   }
 }
 
-/**
- * How long a cached scan still counts as "live".
- *
- * This MUST stay comfortably above the scan cron's period, or the window
- * between refreshes is served as stale. It was 30 minutes while the cron in
- * .github/workflows/cron.yml runs hourly, so for roughly half of every hour
- * the cache was considered expired and visitors paid for a blocking upstream
- * scan. 90 minutes leaves a full period of headroom for a late or retried job.
- */
 const CACHE_FRESH_MS = 90 * 60 * 1000
-
-/**
- * Pools for a page render. Cached data is served whenever we have any, so a
- * visitor never waits on the upstream feed.
- *
- * Two earlier versions of this both put a live scan on the request path: first
- * unconditionally (6-8s per page), then whenever the cache looked stale (which
- * was half of every hour, costing up to the 15s fetch timeout plus cache and
- * snapshot writes). A page render now only scans when there is nothing cached
- * at all — a cold database, not a routine request.
- *
- * Refreshing the cache is the cron's job (/api/cron/scan-yields), not the
- * visitor's. Stale-but-present data is still served, and labelled 'fallback'
- * so the UI reports the feed honestly rather than calling old numbers live.
- */
-/**
- * Per-instance memo in front of the database read.
- *
- * The cache table holds ~2,600 rows that every render pulls in full and
- * JSON.parses, only to filter and slice one page out of it. The terminal is
- * force-dynamic, so without this each visitor pays that round trip and parse
- * again. A warm serverless instance now does it at most once a minute.
- *
- * The TTL only needs to be short relative to the hourly scan — a request may
- * serve data up to a minute behind the table, which is far inside the window
- * the data itself is refreshed on.
- */
 const HOT_TTL_MS = 60 * 1000
 let hot: { items: Opportunity[]; updatedAt: Date | null; readAt: number } | null = null
 
 async function readCachedWithMemo() {
-  if (hot && Date.now() - hot.readAt < HOT_TTL_MS) {
-    return { items: hot.items, updatedAt: hot.updatedAt }
-  }
+  if (hot && Date.now() - hot.readAt < HOT_TTL_MS) return { items: hot.items, updatedAt: hot.updatedAt }
   const { items, updatedAt } = await getCachedOpportunitiesWithMeta()
-  // Only memo a real result; an empty read should retry, not be cached in.
   if (items.length > 0) hot = { items, updatedAt, readAt: Date.now() }
   return { items, updatedAt }
 }
@@ -257,15 +179,8 @@ async function readOpportunities() {
     if (items.length > 0) {
       const age = updatedAt ? Date.now() - updatedAt.getTime() : Infinity
       const lastUpdated = (updatedAt ?? new Date()).toISOString()
-      if (age < CACHE_FRESH_MS) {
-        return { opportunities: items, dataStatus: 'live' as const, lastUpdated }
-      }
-      return {
-        opportunities: items,
-        dataStatus: 'fallback' as const,
-        lastUpdated,
-        fallbackReason: `Showing the last completed scan; the hourly refresh is overdue (cached ${Math.round(age / 60000)} min ago).`,
-      }
+      if (age < CACHE_FRESH_MS) return { opportunities: items, dataStatus: 'live' as const, lastUpdated }
+      return { opportunities: items, dataStatus: 'fallback' as const, lastUpdated, fallbackReason: `Showing the last completed scan; the hourly refresh is overdue (cached ${Math.round(age / 60000)} min ago).` }
     }
   } catch {
     // Cache unreadable — fall through to a live scan rather than failing.
@@ -276,8 +191,5 @@ async function readOpportunities() {
 export async function getOpportunities(filters: OpportunityFilters = {}) {
   const scan = await readOpportunities()
   const filtered = applyFilters(scan.opportunities, filters)
-  return {
-    ...scan,
-    ...paginate(filtered, filters),
-  }
+  return { ...scan, ...paginate(filtered, filters) }
 }
