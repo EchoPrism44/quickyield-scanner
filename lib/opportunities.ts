@@ -15,6 +15,29 @@ function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
 }
 
+async function fetchJson(url: string, init?: RequestInit) {
+  const response = await fetch(url, init)
+  const contentType = response.headers.get('content-type') ?? 'unknown'
+  const body = await response.text()
+
+  if (!response.ok) {
+    throw new Error(`Upstream ${url} returned HTTP ${response.status} (${contentType}): ${body.slice(0, 300)}`)
+  }
+
+  if (!contentType.toLowerCase().includes('application/json')) {
+    throw new Error(`Upstream ${url} returned non-JSON (${contentType}): ${body.slice(0, 300)}`)
+  }
+
+  try {
+    return JSON.parse(body)
+  } catch (error) {
+    throw new Error(
+      `Upstream ${url} returned invalid JSON (${contentType}): ${body.slice(0, 300)}${error instanceof Error ? `; ${error.message}` : ''}`,
+      { cause: error }
+    )
+  }
+}
+
 function valid(value: string | undefined, options: string[], fallback: string) {
   return value && options.includes(value) ? value : fallback
 }
