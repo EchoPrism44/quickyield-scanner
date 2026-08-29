@@ -61,7 +61,9 @@ function summarize(results: Result[]) {
   const byScore = [...results].sort((a, b) => a.score - b.score)
   const q = Math.max(1, Math.floor(byScore.length / 5))
   const quintiles = Array.from({ length: 5 }, (_, i) => {
-    const slice = byScore.slice(i * q, i === 4 ? undefined : (i + 1) * q))
+    const start = i * q
+    const end = i === 4 ? undefined : (i + 1) * q
+    const slice = byScore.slice(start, end)
     return {
       quintile: i + 1,
       n: slice.length,
