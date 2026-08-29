@@ -55,13 +55,13 @@ function loadSnapshots(): Snapshot[] {
 function summarize(results: Result[]) {
   if (!results.length) return null
   const collapseRate = results.filter((r) => r.collapsed).length / results.length
-  const disappearedRate = results.filter((r) => r.disappeared).length / results.length
+  const disappearanceRate = results.filter((r) => r.disappeared).length / results.length
   const meanChange = results.reduce((s, r) => s + r.tvlChange, 0) / results.length
 
   const byScore = [...results].sort((a, b) => a.score - b.score)
   const q = Math.max(1, Math.floor(byScore.length / 5))
   const quintiles = Array.from({ length: 5 }, (_, i) => {
-    const slice = byScore.slice(i * q, i === 4 ? undefined : (i + 1) * q)
+    const slice = byScore.slice(i * q, i === 4 ? undefined : (i + 1) * q))
     return {
       quintile: i + 1,
       n: slice.length,
@@ -72,7 +72,13 @@ function summarize(results: Result[]) {
     }
   })
 
-  return { n: results.length, collapseRate, disappearanceRate, meanTvlChange, quintiles }
+  return {
+    n: results.length,
+    collapseRate,
+    disappearanceRate,
+    meanTvlChange: meanChange,
+    quintiles,
+  }
 }
 
 function main() {
