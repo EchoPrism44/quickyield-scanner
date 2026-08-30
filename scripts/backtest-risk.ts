@@ -24,7 +24,7 @@ type SnapshotPool = {
 type Snapshot = { date: string; capturedAt?: string; pools: SnapshotPool[] }
 type Observation = SnapshotPool & { date: string }
 type Result = Observation & { targetDate: string; futureTvlUsd: number; tvlChange: number; collapsed: boolean; disappeared: boolean }
-type Summary = { n: number; collapseRate: number; disappearanceRate: number; meanTvlChange: number; quintiles: unknown[] }
+type Summary = { n: number; collapseRate: number; disappearanceRate: number; meanTvlChange: number; quintiles: Array<{ quintile: number; n: number; avgScore: number; collapseRate: number; disappearanceRate: number; meanTvlChange: number }> }
 type BacktestOutput = { modelVersion: string; collapseDefinition: string; snapshots: number; dateRange: string[]; windows: Record<string, Summary | null> }
 
 function loadSnapshots(): Snapshot[] {
