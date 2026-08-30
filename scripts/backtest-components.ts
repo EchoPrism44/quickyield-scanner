@@ -17,6 +17,34 @@ type Obs = Pool & { date: string }
 type Result = Obs & { futureDate: string; actualDays: number; futureTvl: number; tvlChange: number; collapsed: boolean }
 type Metric = 'tvlUsd' | 'apy' | 'liquidity' | 'stability' | 'sustainability' | 'completeness' | 'score'
 
+type Evaluation = {
+  n: number
+  spearmanRho: number | null
+  quintiles: Array<{ q: number; n: number; meanValue: number; collapseRate: number; meanTvlChange: number }>
+  topBottomDecile: {
+    bottomN: number
+    topN: number
+    bottomCollapseRate: number
+    topCollapseRate: number
+    collapseRateDifference: number
+    bootstrap95: ReturnType<typeof bootstrapDiff>
+  }
+}
+
+type ComponentWindow = {
+  targetDays: number
+  actualHorizon: { minDays: number; maxDays: number; meanDays: number } | null
+  metrics: Record<Metric, Evaluation | null>
+}
+
+type ComponentOutput = {
+  modelVersion: string
+  collapseDefinition: string
+  targetToleranceDays: number
+  bootstrapReplicates: number
+  windows: Record<string, ComponentWindow>
+}
+
 const metrics: Metric[] = ['tvlUsd', 'apy', 'liquidity', 'stability', 'sustainability', 'completeness', 'score']
 
 function load(): Snapshot[] {
@@ -25,8 +53,19 @@ function load(): Snapshot[] {
 }
 
 function value(o: Obs, metric: Metric): number | undefined {
-  if (metric === 'liquidity' || metric === 'stability' || metric === 'sustainability' || metric === 'completeness') return o.scoreBreakdown?.[metric]
-  return o[metric]
+  switch (metric) {
+    case 'liquidity':
+    case 'stability':
+    case 'sustainability':
+    case 'completeness':
+      return o.scoreBreakdown?.[metric]
+    case 'tvlUsd':
+      return o.tvlUsd
+    case 'apy':
+      return o.apy
+    case 'score':
+      return o.score
+  }
 }
 
 function rankCorrelation(xs: number[], ys: number[]) {
@@ -73,7 +112,7 @@ function bootstrapDiff(a: boolean[], b: boolean[]) {
   return { difference: a.filter(Boolean).length / a.length - b.filter(Boolean).length / b.length, ci95: [quantile(diffs, 0.025), quantile(diffs, 0.975)] }
 }
 
-function evaluate(results: Result[], metric: Metric) {
+function evaluate(results: Result[], metric: Metric): Evaluation | null {
   const usable = results.filter((r) => Number.isFinite(value(r, metric)))
   if (!usable.length) return null
   const xs = usable.map((r) => Number(value(r, metric)))
@@ -109,7 +148,7 @@ function findFutureSnapshot(snapshots: Snapshot[], obsDate: string, days: number
 function main() {
   const snapshots = load()
   const observations: Obs[] = snapshots.flatMap((s) => s.pools.filter((p) => p.tvlUsd > 0).map((p) => ({ ...p, date: s.date })))
-  const output: { modelVersion: string; collapseDefinition: string; targetToleranceDays: number; bootstrapReplicates: number; windows: Record<string, unknown> } = { modelVersion: 'v1', collapseDefinition: 'future TVL decline >= 50%', targetToleranceDays: TOLERANCE_DAYS, bootstrapReplicates: BOOTSTRAPS, windows: {} }
+  const output: ComponentOutput = { modelVersion: 'v1', collapseDefinition: 'future TVL decline >= 50%', targetToleranceDays: TOLERANCE_DAYS, bootstrapReplicates: BOOTSTRAPS, windows: {} }
   for (const days of WINDOWS) {
     const results: Result[] = []
     for (const obs of observations) {
@@ -121,7 +160,7 @@ function main() {
       const tvlChange = future.tvlUsd / obs.tvlUsd - 1
       results.push({ ...obs, futureDate: futureSnapshot.date, actualDays, futureTvl: future.tvlUsd, tvlChange, collapsed: tvlChange <= COLLAPSE_THRESHOLD })
     }
-    output.windows[String(days)] = { targetDays: days, actualHorizon: results.length ? { minDays: Math.min(...results.map((r) => r.actualDays)), maxDays: Math.max(...results.map((r) => r.actualDays)), meanDays: results.reduce((s, r) => s + r.actualDays, 0) / results.length } : null, metrics: Object.fromEntries(metrics.map((m) => [m, evaluate(results, m)])) }
+    output.windows[String(days)] = { targetDays: days, actualHorizon: results.length ? { minDays: Math.min(...results.map((r) => r.actualDays)), maxDays: Math.max(...results.map((r) => r.actualDays)), meanDays: results.reduce((s, r) => s + r.actualDays, 0) / results.length } : null, metrics: Object.fromEntries(metrics.map((m) => [m, evaluate(results, m)])) as Record<Metric, Evaluation | null> }
   }
   console.log(JSON.stringify(output, null, 2))
 }
