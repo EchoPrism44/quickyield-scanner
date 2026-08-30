@@ -1,14 +1,5 @@
 /**
  * Component and baseline comparison for the frozen v1 risk model.
- *
- * Forward targets use a tolerance window around 7/30/60 days. We select the
- * snapshot whose date is closest to the target, provided it is within the
- * configured tolerance. This avoids silently turning a 30-day test into a
- * 35-day test just because snapshots are weekly.
- *
- * Reports rank correlation, collapse-rate separation, top/bottom deciles and
- * bootstrap confidence intervals for the collapse-rate difference.
- *
  * This intentionally does not tune weights. It is an evidence report.
  */
 import { readdirSync, readFileSync } from 'node:fs'
@@ -19,29 +10,22 @@ const TOLERANCE_DAYS = 4
 const COLLAPSE_THRESHOLD = -0.5
 const BOOTSTRAPS = 2000
 
-type Pool = {
-  poolId: string
-  tvlUsd: number
-  apy: number
-  score: number
-  scoreBreakdown?: Record<string, number>
-}
+type Breakdown = { liquidity: number; stability: number; sustainability: number; completeness: number }
+type Pool = { poolId: string; tvlUsd: number; apy: number; score: number; scoreBreakdown?: Breakdown }
 type Snapshot = { date: string; pools: Pool[] }
 type Obs = Pool & { date: string }
 type Result = Obs & { futureDate: string; actualDays: number; futureTvl: number; tvlChange: number; collapsed: boolean }
+type Metric = 'tvlUsd' | 'apy' | 'liquidity' | 'stability' | 'sustainability' | 'completeness' | 'score'
 
-const metrics = ['tvlUsd', 'apy', 'liquidity', 'stability', 'sustainability', 'completeness', 'score'] as const
-
-type Metric = typeof metrics[number]
+const metrics: Metric[] = ['tvlUsd', 'apy', 'liquidity', 'stability', 'sustainability', 'completeness', 'score']
 
 function load(): Snapshot[] {
   const dir = join(process.cwd(), 'data', 'grades')
-  return readdirSync(dir).filter(f => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort()
-    .map(f => JSON.parse(readFileSync(join(dir, f), 'utf8')) as Snapshot)
+  return readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')) as Snapshot)
 }
 
-function value(o: Obs, metric: Metric) {
-  if (['liquidity', 'stability', 'sustainability', 'completeness'].includes(metric)) return o.scoreBreakdown?.[metric]
+function value(o: Obs, metric: Metric): number | undefined {
+  if (metric === 'liquidity' || metric === 'stability' || metric === 'sustainability' || metric === 'completeness') return o.scoreBreakdown?.[metric]
   return o[metric]
 }
 
@@ -86,42 +70,27 @@ function bootstrapDiff(a: boolean[], b: boolean[]) {
     diffs.push(sa / a.length - sb / b.length)
   }
   diffs.sort((x, y) => x - y)
-  return {
-    difference: a.filter(Boolean).length / a.length - b.filter(Boolean).length / b.length,
-    ci95: [quantile(diffs, 0.025), quantile(diffs, 0.975)],
-  }
+  return { difference: a.filter(Boolean).length / a.length - b.filter(Boolean).length / b.length, ci95: [quantile(diffs, 0.025), quantile(diffs, 0.975)] }
 }
 
 function evaluate(results: Result[], metric: Metric) {
-  const usable = results.filter(r => Number.isFinite(value(r, metric)))
+  const usable = results.filter((r) => Number.isFinite(value(r, metric)))
   if (!usable.length) return null
-  const xs = usable.map(r => Number(value(r, metric)))
-  const ys = usable.map(r => r.tvlChange)
+  const xs = usable.map((r) => Number(value(r, metric)))
+  const ys = usable.map((r) => r.tvlChange)
   const rho = rankCorrelation(xs, ys)
   const ordered = [...usable].sort((a, b) => Number(value(a, metric)) - Number(value(b, metric)))
   const q = Math.max(1, Math.floor(ordered.length / 5))
   const quintiles = Array.from({ length: 5 }, (_, i) => {
-    const slice = ordered.slice(i * q, i === 4 ? undefined : (i + 1) * q)
-    return {
-      q: i + 1,
-      n: slice.length,
-      meanValue: slice.reduce((s, r) => s + Number(value(r, metric)), 0) / slice.length,
-      collapseRate: slice.filter(r => r.collapsed).length / slice.length,
-      meanTvlChange: slice.reduce((s, r) => s + r.tvlChange, 0) / slice.length,
-    }
+    const start = i * q
+    const end = i === 4 ? ordered.length : (i + 1) * q
+    const slice = ordered.slice(start, end)
+    return { q: i + 1, n: slice.length, meanValue: slice.reduce((s, r) => s + Number(value(r, metric)), 0) / slice.length, collapseRate: slice.filter((r) => r.collapsed).length / slice.length, meanTvlChange: slice.reduce((s, r) => s + r.tvlChange, 0) / slice.length }
   })
   const decileN = Math.max(1, Math.floor(ordered.length / 10))
   const bottom = ordered.slice(0, decileN)
   const top = ordered.slice(-decileN)
-  const topBottom = {
-    bottomN: bottom.length,
-    topN: top.length,
-    bottomCollapseRate: bottom.filter(r => r.collapsed).length / bottom.length,
-    topCollapseRate: top.filter(r => r.collapsed).length / top.length,
-    collapseRateDifference: bottom.filter(r => r.collapsed).length / bottom.length - top.filter(r => r.collapsed).length / top.length,
-    bootstrap95: bootstrapDiff(bottom.map(r => r.collapsed), top.map(r => r.collapsed)),
-  }
-  return { n: usable.length, spearmanRho: rho, quintiles, topBottomDecile: topBottom }
+  return { n: usable.length, spearmanRho: rho, quintiles, topBottomDecile: { bottomN: bottom.length, topN: top.length, bottomCollapseRate: bottom.filter((r) => r.collapsed).length / bottom.length, topCollapseRate: top.filter((r) => r.collapsed).length / top.length, collapseRateDifference: bottom.filter((r) => r.collapsed).length / bottom.length - top.filter((r) => r.collapsed).length / top.length, bootstrap95: bootstrapDiff(bottom.map((r) => r.collapsed), top.map((r) => r.collapsed)) } }
 }
 
 function findFutureSnapshot(snapshots: Snapshot[], obsDate: string, days: number) {
@@ -132,45 +101,27 @@ function findFutureSnapshot(snapshots: Snapshot[], obsDate: string, days: number
     const delta = Date.parse(s.date) - target
     if (delta < -TOLERANCE_DAYS * 86400_000 || delta > TOLERANCE_DAYS * 86400_000) continue
     const distance = Math.abs(delta)
-    if (distance < bestDistance) {
-      best = s
-      bestDistance = distance
-    }
+    if (distance < bestDistance) { best = s; bestDistance = distance }
   }
   return best
 }
 
 function main() {
   const snapshots = load()
-  const observations: Obs[] = snapshots.flatMap(s => s.pools.filter(p => p.tvlUsd > 0).map(p => ({ ...p, date: s.date })))
-  const output: Record<string, unknown> = {
-    modelVersion: 'v1',
-    collapseDefinition: 'future TVL decline >= 50%',
-    targetToleranceDays: TOLERANCE_DAYS,
-    bootstrapReplicates: BOOTSTRAPS,
-    windows: {},
-  }
-
+  const observations: Obs[] = snapshots.flatMap((s) => s.pools.filter((p) => p.tvlUsd > 0).map((p) => ({ ...p, date: s.date })))
+  const output: { modelVersion: string; collapseDefinition: string; targetToleranceDays: number; bootstrapReplicates: number; windows: Record<string, unknown> } = { modelVersion: 'v1', collapseDefinition: 'future TVL decline >= 50%', targetToleranceDays: TOLERANCE_DAYS, bootstrapReplicates: BOOTSTRAPS, windows: {} }
   for (const days of WINDOWS) {
     const results: Result[] = []
     for (const obs of observations) {
       const futureSnapshot = findFutureSnapshot(snapshots, obs.date, days)
       if (!futureSnapshot) continue
-      const future = futureSnapshot.pools.find(p => p.poolId === obs.poolId)
+      const future = futureSnapshot.pools.find((p) => p.poolId === obs.poolId)
       if (!future) continue
       const actualDays = (Date.parse(futureSnapshot.date) - Date.parse(obs.date)) / 86400_000
       const tvlChange = future.tvlUsd / obs.tvlUsd - 1
       results.push({ ...obs, futureDate: futureSnapshot.date, actualDays, futureTvl: future.tvlUsd, tvlChange, collapsed: tvlChange <= COLLAPSE_THRESHOLD })
     }
-    output.windows[String(days)] = {
-      targetDays: days,
-      actualHorizon: results.length ? {
-        minDays: Math.min(...results.map(r => r.actualDays)),
-        maxDays: Math.max(...results.map(r => r.actualDays)),
-        meanDays: results.reduce((s, r) => s + r.actualDays, 0) / results.length,
-      } : null,
-      metrics: Object.fromEntries(metrics.map(m => [m, evaluate(results, m)])),
-    }
+    output.windows[String(days)] = { targetDays: days, actualHorizon: results.length ? { minDays: Math.min(...results.map((r) => r.actualDays)), maxDays: Math.max(...results.map((r) => r.actualDays)), meanDays: results.reduce((s, r) => s + r.actualDays, 0) / results.length } : null, metrics: Object.fromEntries(metrics.map((m) => [m, evaluate(results, m)])) }
   }
   console.log(JSON.stringify(output, null, 2))
 }
