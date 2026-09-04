@@ -20,7 +20,8 @@
     "backtest:risk": "tsx scripts/backtest-risk.ts",
     "backtest:components": "tsx scripts/backtest-components.ts",
     "validate:snapshots": "tsx scripts/validate-snapshots.ts",
-    "lift-test": "tsx scripts/lift-test.ts"
+    "lift-test": "tsx scripts/lift-test.ts",
+    "harm-coverage": "tsx scripts/harm-coverage.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.0",
