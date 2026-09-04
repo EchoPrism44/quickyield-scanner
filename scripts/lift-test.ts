@@ -22,6 +22,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 type Pool = { poolId: string; tvlUsd: number; score: number }
 type Snap = { date: string; t: number; pools: Pool[]; map: Map<string, Pool> }
@@ -165,4 +166,4 @@ function main() {
   for (const nb of [10, 20, 40, 80]) console.log(`  ${String(nb).padStart(3)} bins -> ${stratified(rows, nb).avgPerverse.toFixed(2)} pts`)
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) main()
+if (import.meta.url === pathToFileURL(process.argv[1]).href) main()

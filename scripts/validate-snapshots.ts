@@ -31,6 +31,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 const DIR = join(process.cwd(), 'data', 'grades')
 
@@ -102,7 +103,7 @@ export function tripwire(p: Pool, prev?: Snapshot): string | null {
   return null
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const snaps = loadSnapshots()
   const { flagged } = flagGlitches(snaps)
   const total = snaps.reduce((s, x) => s + x.pools.length, 0)
