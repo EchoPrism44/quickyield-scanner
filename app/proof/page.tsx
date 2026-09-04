@@ -33,11 +33,13 @@ export default function ProofPage() {
           <span className="ql-eyebrow">Accountability</span>
           <h1 className="ql-h2" style={{ marginTop: 'var(--sp-4)' }}>Graded in the open.</h1>
           <p className="ql-lead">
-            We won&apos;t show you a backtest, because an honest one is impossible — the pools that
-            fail vanish from public data, so any &ldquo;our grades predicted doom&rdquo; chart is
-            survivorship bias dressed up as proof. So we do the opposite.{' '}
+            We won&apos;t sell you a cherry-picked backtest — the pools that fail vanish from public
+            data, so a naive &ldquo;our grades predicted doom&rdquo; chart is just survivorship bias
+            dressed up as proof. So we do the harder thing.{' '}
             <strong>Every week we grade every live pool and publish the record</strong> — recorded
             before the outcome is known, and anchored on-chain so it can&apos;t be quietly rewritten.
+            Then we test the grades against that record the honest way, counting the pools that
+            vanished as failures — including when the answer isn&apos;t flattering.
           </p>
           <div style={{ marginTop: 'var(--sp-5)' }}>
             <OnChainBadge />

@@ -18,7 +18,9 @@
     "blog:draft": "tsx scripts/analyze-snapshot.ts --draft",
     "blog:charts": "tsx scripts/chart-snapshot.ts",
     "backtest:risk": "tsx scripts/backtest-risk.ts",
-    "backtest:components": "tsx scripts/backtest-components.ts"
+    "backtest:components": "tsx scripts/backtest-components.ts",
+    "validate:snapshots": "tsx scripts/validate-snapshots.ts",
+    "lift-test": "tsx scripts/lift-test.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.0",
