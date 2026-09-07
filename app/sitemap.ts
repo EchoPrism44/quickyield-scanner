@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { getAllPosts } from '../lib/blog'
 
-const base = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://getlitmus.xyz')
+// Keep the sitemap on Litmus's single canonical public origin.
+const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 
 const assets = ['usdc', 'usdt', 'dai', 'eth', 'steth', 'sol']
 
