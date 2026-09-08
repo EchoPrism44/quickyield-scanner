@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowUpRight, Check, ShieldCheck } from 'lucide-react'
+import { Check, ShieldCheck } from 'lucide-react'
 import { MarketingNav } from '../../../components/marketing-nav'
 import { MarketingFooter } from '../../../components/marketing/marketing-footer'
 import { AnimatedSection } from '../../../components/marketing/animated-section'
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pool: str
     return { title: 'Assessment Not Found | Litmus' }
   }
 
-  const { protocol, pool: poolName, chain, date, grade, signals, methodologyVersion } = assessment
+  const { protocol, pool: poolName, chain, date, grade } = assessment
 
   return {
     title: `${protocol} — ${poolName} Assessment (Grade ${grade.letter}) | Litmus`,
@@ -158,28 +158,28 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Liquidity</h3>
-                <span className={`ql-signal-score ql-grade-${signals.liquidity >= 85 ? 'a' : signals.liquidity >= 72 ? 'b' : signals.liquidity >= 60 ? 'c' : signals.liquidity >= 45 ? 'd' : 'f'}`}>{signals.liquidity}/100</span>
+                <span className={`ql-signal-score ql-grade-${signals.liquidity >= 85 ? 'a' : signals.liquidity >= 72 ? 'b' : signals.liquidity >= 60 ? 'c' : signals.liquidity >= 45 ? 'd' : 'f'}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.liquidity}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>APY Stability</h3>
-                <span className={`ql-signal-score ql-grade-${signals.stability >= 85 ? 'a' : signals.stability >= 72 ? 'b' : signals.stability >= 60 ? 'c' : signals.stability >= 45 ? 'd' : 'f'}`}>{signals.stability}/100</span>
+                <span className={`ql-signal-score ql-grade-${signals.stability >= 85 ? 'a' : signals.stability >= 72 ? 'b' : signals.stability >= 60 ? 'c' : signals.stability >= 45 ? 'd' : 'f'}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.stability}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Reward Quality</h3>
-                <span className={`ql-signal-score ql-grade-${signals.sustainability >= 85 ? 'a' : signals.sustainability >= 72 ? 'b' : signals.sustainability >= 60 ? 'c' : signals.sustainability >= 45 ? 'd' : 'f'}`}>{signals.sustainability}/100</span>
+                <span className={`ql-signal-score ql-grade-${signals.sustainability >= 85 ? 'a' : signals.sustainability >= 72 ? 'b' : signals.sustainability >= 60 ? 'c' : signals.sustainability >= 45 ? 'd' : 'f'}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.sustainability}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Data Completeness</h3>
-                <span className={`ql-signal-score ql-grade-${signals.completeness >= 85 ? 'a' : signals.completeness >= 72 ? 'b' : signals.completeness >= 60 ? 'c' : signals.completeness >= 45 ? 'd' : 'f'}`}>{signals.completeness}/100</span>
+                <span className={`ql-signal-score ql-grade-${signals.completeness >= 85 ? 'a' : signals.completeness >= 72 ? 'b' : signals.completeness >= 60 ? 'c' : signals.completeness >= 45 ? 'd' : 'f'}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.completeness}%`}} /></div>
             </AnimatedItem>
@@ -277,8 +277,4 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
       <MarketingFooter />
     </main>
   )
-}
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 }
