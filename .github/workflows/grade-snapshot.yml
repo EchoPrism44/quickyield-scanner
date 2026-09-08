@@ -33,3 +33,15 @@ jobs:
             git commit -m "chore(ledger): weekly grade snapshot $(date -u +%Y-%m-%d)"
             git push
           fi
+
+      # Anchor the snapshot hash on Base (tamper-proof, verifiable on BaseScan).
+      # Skips cleanly until the GRADE_LEDGER_ADDRESS / RECORDER_PRIVATE_KEY /
+      # BASE_RPC_URL repo secrets are set, so the ledger works before deploy.
+      - name: Anchor snapshot on Base
+        env:
+          GRADE_LEDGER_ADDRESS: ${{ secrets.GRADE_LEDGER_ADDRESS }}
+          RECORDER_PRIVATE_KEY: ${{ secrets.RECORDER_PRIVATE_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+        run: |
+          npm i viem@2 --no-save --silent
+          npx -y tsx scripts/record-onchain.ts
