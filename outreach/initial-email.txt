@@ -1,0 +1,24 @@
+Subject: Independent A–F Grade for your [Protocol Name] yield pool
+
+Hi [Founder Name/BD Team],
+
+We independently assess DeFi yield pools using a published quantitative methodology.
+
+For $200, we provide:
+- A–F grade with quantitative signal breakdown (liquidity, APY stability, reward quality, data completeness)
+- Historical analysis of TVL, APY, and signal trends
+- Public assessment page at `getlitmus.xyz/assessments/[pool]`
+- Litmus Assessed badge for your UI/website
+- Permanent record in our weekly snapshot
+
+The critical promise: **Payment does not influence the resulting grade.** The algorithm is deterministic and published.
+
+We've assessed [Protocol A] → [Grade], [Protocol B] → [Grade] (can share if NDA allows).
+
+Are you interested in independent credibility for your pool? No obligation — happy to answer questions.
+
+Best,
+[Your Name]
+echo@litmus.xyz
+
+P.S. First pool is 50% off if you'd like to try it.

@@ -175,15 +175,63 @@ export default async function HomePage() {
             <div className="ql-bars">
               <WeightBars />
               <div className="ql-thresholds">
-                {BANDS.map((b) => (
-                  <div className="ql-threshold" key={b.letter}>
-                    <b style={{ color: `var(--grade-${b.letter.toLowerCase()})` }}>{b.letter}</b>
-                    <span>{b.min > 0 ? `≥ ${b.min}` : `< 45`}</span>
-                  </div>
-                ))}
+                {BANDS.map((b) => {
+                  const gradeLetter = b.letter
+                  const minScore = b.min
+                  return (
+                    <div className="ql-threshold" key={b.letter}>
+                      <b style={{ color: `var(--grade-${b.letter.toLowerCase()})` }}>{b.letter}</b>
+                      <span>{b.min > 0 ? `≥ ${b.min}` : `< 45`}</span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </AnimatedItem>
+        </div>
+      </AnimatedSection>
+
+      {/* ---------------- Independent DeFi Pool Assessments ---------------- */}
+      <AnimatedSection className="ql-section ql-section--tight" id="assessments">
+        <div className="ql-wrap ql-intel">
+          <div>
+            <span className="ql-eyebrow">Independent DeFi Pool Assessments</span>
+            <h2 className="ql-h2">Quantitative A–F grading for protocols</h2>
+            <p className="ql-lead">
+              Litmus provides independent quantitative assessments of DeFi yield pools using a published A–F methodology. Every assessment is deterministic: the same inputs always produce the same output, regardless of payment.
+            </p>
+          </div>
+          <div className="ql-assessments-grid">
+            <div className="ql-assessment-card">
+              <h3>One Pool</h3>
+              <p className="ql-price">$200</p>
+              <ul>
+                <li>A–F grade with quantitative signal breakdown</li>
+                <li>Historical analysis of TVL, APY, and signal trends</li>
+                <li>Public assessment page at <code>getlitmus.xyz/assessments/[pool]</code></li>
+                <li>Litmus Assessed badge for your UI/website</li>
+                <li>Permanent record in our weekly snapshot</li>
+              </ul>
+            </div>
+            <div className="ql-assessment-card">
+              <h3>Three Pools</h3>
+              <p className="ql-price">$500</p>
+              <ul>
+                <li>Assess up to 3 pools at once</li>
+                <li>Individual grade reports for each</li>
+                <li>Shared historical analysis section</li>
+                <li>Bulk badge codes</li>
+              </ul>
+            </div>
+          </div>
+          <div className="ql-assurance">
+            <p><strong>Critical promise:</strong> Payment does not influence the resulting grade.</p>
+          </div>
+          <div className="ql-assessment-cta">
+            <a href="/assessments" className="ql-btn ql-btn--primary">
+              Request an Assessment
+            </a>
+          </div>
         </div>
       </AnimatedSection>
 

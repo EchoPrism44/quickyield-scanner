@@ -5,6 +5,7 @@ import { getAllPosts } from '../lib/blog'
 const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 
 const assets = ['usdc', 'usdt', 'dai', 'eth', 'steth', 'sol']
+const assessmentPools = ['example-usdc']
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
@@ -15,6 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...assets.map((a) => ({ url: `${base}/yields/${a}`, lastModified: now, changeFrequency: 'hourly' as const, priority: 0.7 })),
     { url: `${base}/blog`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${base}/roadmap`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/assessments`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    ...assessmentPools.map((p) => ({ url: `${base}/assessments/${p}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 })),
     ...getAllPosts()
       .filter((p) => !p.noindex)
       .map((p) => ({
