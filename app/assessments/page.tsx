@@ -170,7 +170,7 @@ export default function AssessmentsPage() {
           </div>
           <div className="ql-contact-card">
             <p>We'll need your pool address/ID and chain. Assessment delivery: 3–5 business days.</p>
-            <Link href="mailto:echo@litmus.xyz?subject=Assessment%20Request%20-%20%5BProtocol%20Name%5D&body=Protocol%20Name%3A%20%0D%0APool%20Address%2FID%3A%20%0D%0AChain%3A%20%0D%0AContact%20N[...]"
+            <Link href="mailto:echo@litmus.xyz?subject=Assessment%20Request">
               Request an Assessment
             </Link>
           </div>

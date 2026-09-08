@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import {
-  ArrowUpRight,
   Bell,
   Check,
   Database,
@@ -193,7 +192,7 @@ export default async function HomePage() {
             <span className="ql-eyebrow">Independent DeFi Pool Assessments</span>
             <h2 className="ql-h2">Quantitative A–F grading for protocols</h2>
             <p className="ql-lead">
-              Litmus provides independent quantitative assessments of DeFi yield pools using a published A–F methodology. Every assessment is deterministic: the same inputs always produce the s[...]
+              Litmus provides independent quantitative assessments of DeFi yield pools using a published A–F methodology. Every assessment is deterministic: the same inputs always produce the same score.
             </p>
           </div>
           <div className="ql-assessments-grid">
