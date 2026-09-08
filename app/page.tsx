@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import {
-  ArrowRight,
   ArrowUpRight,
   Bell,
   Check,
@@ -83,10 +82,10 @@ export default async function HomePage() {
             </p>
             <div className="ql-cta-row">
               <Link href="/terminal" className="ql-btn ql-btn--primary">
-                Launch terminal <ArrowRight size={16} strokeWidth={2.5} />
+                Launch terminal
               </Link>
               <Link href="/proof" className="ql-btn ql-btn--ghost">
-                See the track record <ArrowUpRight size={15} />
+                See the track record
               </Link>
             </div>
             <div className="ql-proof">
@@ -175,16 +174,12 @@ export default async function HomePage() {
             <div className="ql-bars">
               <WeightBars />
               <div className="ql-thresholds">
-                {BANDS.map((b) => {
-                  const gradeLetter = b.letter
-                  const minScore = b.min
-                  return (
-                    <div className="ql-threshold" key={b.letter}>
-                      <b style={{ color: `var(--grade-${b.letter.toLowerCase()})` }}>{b.letter}</b>
-                      <span>{b.min > 0 ? `≥ ${b.min}` : `< 45`}</span>
-                    </div>
-                  )
-                })}
+                {BANDS.map((b) => (
+                  <div className="ql-threshold" key={b.letter}>
+                    <b style={{ color: `var(--grade-${b.letter.toLowerCase()})` }}>{b.letter}</b>
+                    <span>{b.min > 0 ? `≥ ${b.min}` : `< 45`}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </AnimatedItem>
@@ -198,7 +193,7 @@ export default async function HomePage() {
             <span className="ql-eyebrow">Independent DeFi Pool Assessments</span>
             <h2 className="ql-h2">Quantitative A–F grading for protocols</h2>
             <p className="ql-lead">
-              Litmus provides independent quantitative assessments of DeFi yield pools using a published A–F methodology. Every assessment is deterministic: the same inputs always produce the same output, regardless of payment.
+              Litmus provides independent quantitative assessments of DeFi yield pools using a published A–F methodology. Every assessment is deterministic: the same inputs always produce the s[...]
             </p>
           </div>
           <div className="ql-assessments-grid">
@@ -335,7 +330,7 @@ export default async function HomePage() {
             </p>
             <div className="ql-cta-row">
               <Link href="/terminal" className="ql-btn ql-btn--primary">
-                Launch terminal <ArrowRight size={16} strokeWidth={2.5} />
+                Launch terminal
               </Link>
               <Link href="/sign-up" className="ql-btn ql-btn--ghost">Create account</Link>
             </div>
