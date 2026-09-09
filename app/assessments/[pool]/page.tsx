@@ -54,6 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pool: str
       title: `${protocol} ${poolName} — Litmus Grade ${grade.letter}`,
       description: `${grade.letter} grade (${grade.score}/100) — ${grade.summary}`,
       type: 'website',
+      url: `/assessments/${pool}`,
       images: [{
         url: '/opengraph-image.png',
         width: 1200,
@@ -66,35 +67,8 @@ export async function generateMetadata({ params }: { params: Promise<{ pool: str
       title: `${protocol} ${poolName} — Litmus Grade ${grade.letter}`,
       description: `${grade.letter} grade (${grade.score}/100)`,
     },
-    other: {
-      'script:ld+json': JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: `${protocol} ${poolName} Litmus Assessment`,
-        description: `${grade.letter} grade (${grade.score}/100) — ${grade.summary}`,
-        datePublished: date,
-        author: {
-          '@type': 'Organization',
-          name: 'Litmus',
-          url: 'https://getlitmus.xyz',
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Litmus',
-          url: 'https://getlitmus.xyz',
-        },
-        mainEntity: {
-          '@type': 'Product',
-          name: `${protocol} ${poolName}`,
-          brand: 'Litmus',
-          offers: {
-            '@type': 'Offer',
-            price: '0',
-            priceCurrency: 'USD',
-            availability: 'https://schema.org/InStock',
-          },
-        },
-      }),
+    alternates: {
+      canonical: `/assessments/${pool}`,
     },
   }
 }
@@ -109,12 +83,43 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
 
   const { protocol, pool: poolName, chain, date, grade, signals, strengths, watchpoints, methodologyVersion } = assessment
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${protocol} ${poolName} Litmus Assessment`,
+    description: `${grade.letter} grade (${grade.score}/100) — ${grade.summary}`,
+    datePublished: date,
+    dateModified: date,
+    mainEntityOfPage: `https://www.getlitmus.xyz/assessments/${pool}`,
+    author: {
+      '@type': 'Organization',
+      '@id': 'https://www.getlitmus.xyz/#organization',
+      name: 'Litmus',
+      url: 'https://www.getlitmus.xyz',
+    },
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://www.getlitmus.xyz/#organization',
+      name: 'Litmus',
+      url: 'https://www.getlitmus.xyz',
+    },
+    about: {
+      '@type': 'DefinedTerm',
+      name: 'DeFi yield pool assessment',
+    },
+  }
+
   const formatDate = (d: string) => {
     return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   }
 
   return (
-    <main className="ql">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <main className="ql">
       <div className="ql-grain" aria-hidden="true" />
       <MarketingNav />
 
@@ -283,6 +288,7 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
       </AnimatedSection>
 
       <MarketingFooter />
-    </main>
+      </main>
+    </>
   )
 }

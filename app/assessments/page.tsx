@@ -13,41 +13,50 @@ export const metadata: Metadata = {
     title: 'Independent DeFi Yield Pool Assessments | Litmus',
     description: 'Quantitative A–F assessments for DeFi yield pools with public verification.',
     type: 'website',
+    url: '/assessments',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Independent DeFi Yield Pool Assessments | Litmus',
     description: 'Quantitative A–F assessments for DeFi yield pools.',
   },
-  other: {
-    'script:ld+json': JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      name: 'Litmus Independent Protocol Assessment',
-      description: 'Independent quantitative A–F assessments for DeFi yield pools using published methodology.',
-      provider: {
-        '@type': 'Organization',
-        name: 'Litmus',
-        url: 'https://getlitmus.xyz',
-      },
-      offers: [
-        {
-          '@type': 'Offer',
-          name: 'One Pool Assessment',
-          price: '200',
-          priceCurrency: 'USD',
-          description: 'A–F grade, signal breakdown, historical analysis, public page, badge',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Three Pool Assessment',
-          price: '500',
-          priceCurrency: 'USD',
-          description: 'Up to 3 pools, individual reports, shared analysis, bulk badges',
-        },
-      ],
-    }),
+  alternates: {
+    canonical: '/assessments',
   },
+}
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Litmus Independent Protocol Assessment',
+  description: 'Independent quantitative A–F assessments for DeFi yield pools using published methodology.',
+  url: 'https://www.getlitmus.xyz/assessments',
+  serviceType: 'DeFi yield pool assessment',
+  provider: {
+    '@type': 'Organization',
+    '@id': 'https://www.getlitmus.xyz/#organization',
+    name: 'Litmus',
+    url: 'https://www.getlitmus.xyz',
+  },
+  areaServed: 'Worldwide',
+  offers: [
+    {
+      '@type': 'Offer',
+      name: 'One Pool Assessment',
+      price: '200',
+      priceCurrency: 'USD',
+      description: 'A–F grade, signal breakdown, historical analysis, public page, badge',
+      url: 'https://www.getlitmus.xyz/assessments#contact',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Three Pool Assessment',
+      price: '500',
+      priceCurrency: 'USD',
+      description: 'Up to 3 pools, individual reports, shared analysis, bulk badges',
+      url: 'https://www.getlitmus.xyz/assessments#contact',
+    },
+  ],
 }
 
 const benefits = [
@@ -67,7 +76,12 @@ const threePoolBenefits = [
 
 export default function AssessmentsPage() {
   return (
-    <main className="ql">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <main className="ql">
       <div className="ql-grain" aria-hidden="true" />
       <MarketingNav />
 
@@ -178,6 +192,7 @@ export default function AssessmentsPage() {
       </AnimatedSection>
 
       <MarketingFooter />
-    </main>
+      </main>
+    </>
   )
 }
