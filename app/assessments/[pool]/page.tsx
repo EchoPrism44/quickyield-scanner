@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pool: str
     return { title: 'Assessment Not Found | Litmus' }
   }
 
-  const { protocol, pool: poolName, chain, date, grade } = assessment
+  const { protocol, pool: poolName, chain, grade } = assessment
 
   return {
     title: `${protocol} — ${poolName} Assessment (Grade ${grade.letter}) | Litmus`,
