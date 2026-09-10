@@ -330,7 +330,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             <span className="qy-mono qy-topbar-updated">{data.total} pools scanned</span>
           </div>
           <div className="qy-terminal-topbar-actions">
-            {/* No "Landing page" button — the sidebar logo already links home. */}
+            {/* No "Landing page" button  -  the sidebar logo already links home. */}
             {isAnonymous ? (
               <Link href="/sign-in?redirect_url=/terminal" className="qy-btn qy-btn-primary qy-btn-sm">Sign in</Link>
             ) : (
@@ -383,7 +383,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             isAnonymous ? (
               <SignedOutCard
                 title="Track your positions here"
-                body="Sign in to record what you're holding and watch its grade over time. Read-only — Litmus never touches your funds or wallet."
+                body="Sign in to record what you're holding and watch its grade over time. Read-only  -  Litmus never touches your funds or wallet."
               />
             ) : (
             <PortfolioView
@@ -396,7 +396,7 @@ export function DashboardApp({ initialData }: { initialData: DashboardData }) {
             isAnonymous ? (
               <SignedOutCard
                 title="Alerts need an account"
-                body="Sign in to set plain-language rules — APY thresholds, TVL drains, reward spikes — and get Telegram or email alerts the moment a pool matches."
+                body="Sign in to set plain-language rules  -  APY thresholds, TVL drains, reward spikes  -  and get Telegram or email alerts the moment a pool matches."
               />
             ) : (
             <AlertsView alerts={data.alerts} activity={activity} onDelete={deleteAlert} onToggle={toggleAlert} onCreate={() => openAlertBuilder()} />

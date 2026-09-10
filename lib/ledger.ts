@@ -10,7 +10,7 @@ import {
 } from './ledger-shared'
 
 /**
- * Public grade ledger — server-side aggregation.
+ * Public grade ledger  -  server-side aggregation.
  *
  * Every Monday a GitHub Action grades all live pools and commits
  * `data/grades/<YYYY-MM-DD>.json` (~5k pools each). These files are the
@@ -18,7 +18,7 @@ import {
  * bytes of summary data for the marketing surfaces (landing hero, /proof),
  * so raw snapshots are never shipped to the client.
  *
- * Node `fs` only — call from server components / build time. Fails soft to
+ * Node `fs` only  -  call from server components / build time. Fails soft to
  * `null` so pages render a static fallback if the ledger is missing.
  * Client-safe types/constants live in lib/ledger-shared.ts.
  */

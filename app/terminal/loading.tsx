@@ -8,7 +8,7 @@ export default function TerminalLoading() {
           <BrandLogo />
         </div>
         <nav className="qy-aside-nav">
-          {/* Mirrors navItems in components/dashboard-app.tsx — keep in sync,
+          {/* Mirrors navItems in components/dashboard-app.tsx  -  keep in sync,
               otherwise the sidebar jumps when the real nav swaps in. */}
           {['Discover', 'Watchlist', 'Portfolio', 'Alerts', 'Settings'].map((l) => (
             <div key={l} className="qy-aside-link" style={{ opacity: 0.4 }}>

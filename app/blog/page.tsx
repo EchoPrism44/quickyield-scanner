@@ -5,7 +5,7 @@ import { MarketingFooter } from '../../components/marketing/marketing-footer'
 import { getAllPosts } from '../../lib/blog'
 
 export const metadata: Metadata = {
-  title: 'Research — the weekly grade record, analyzed',
+  title: 'Field Notes | Litmus market reports',
   description:
     'Weekly analysis of the Litmus grade record: which pools upgraded, which downgraded, and what it says about onchain yield right now.',
   alternates: { canonical: '/blog' },
@@ -24,10 +24,10 @@ export default function BlogIndexPage() {
 
       <div className="ql-wrap">
         <header className="ql-blog-masthead">
-          <span className="ql-eyebrow">Research</span>
+          <span className="ql-eyebrow">Field Notes</span>
           <h1>The record, analyzed.</h1>
           <p>
-            Every Monday we grade every live pool and publish the record. Here we read it —
+            Every Monday we grade every live pool and publish the record. Here we read it  -
             upgrades, downgrades, and what moved in onchain yield this week.
           </p>
         </header>

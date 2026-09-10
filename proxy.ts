@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 // Only run Clerk when a real publishable key is configured. clerkMiddleware()
 // throws `throwMissingPublishableKeyError` on every request when the key is
-// absent/invalid — which would 500 the ENTIRE dynamic site (landing, yields,
+// absent/invalid  -  which would 500 the ENTIRE dynamic site (landing, yields,
 // terminal), not just auth. Guarding here keeps the public site up even if
 // Clerk is misconfigured in the deployment env; auth-only routes still
 // self-guard via requireUserId() -> 401.
@@ -21,7 +21,7 @@ const withClerk = clerkMiddleware(async (auth, req) => {
   // CMC model: the terminal is public read-only; only user-scoped APIs and
   // /analytics require auth. Every user-scoped route also does its own
   // requireUserId() -> 401 (defense in depth).
-  const publicApiRoutes = ['/api/opportunities', '/api/cron/scan-yields', '/api/cron/weekly-digest', '/api/telegram/webhook', '/api/pools', '/api/ledger']
+  const publicApiRoutes = ['/api/opportunities', '/api/assessment-requests', '/api/cron/scan-yields', '/api/cron/weekly-digest', '/api/cron/publish-assessments', '/api/telegram/webhook', '/api/pools', '/api/ledger']
   const isPublicApi = publicApiRoutes.some((route) => pathname.startsWith(route))
   const isProtectedRoute = pathname.startsWith('/analytics') || (pathname.startsWith('/api/') && !isPublicApi)
 

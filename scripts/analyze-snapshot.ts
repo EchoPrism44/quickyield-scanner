@@ -1,5 +1,5 @@
 /**
- * Week-over-week snapshot analysis — the research step behind each weekly
+ * Week-over-week snapshot analysis  -  the research step behind each weekly
  * blog post. Compares the two most recent data/grades/<date>.json files
  * (or two dates passed as args) and reports:
  *   - grade distribution shift
@@ -13,7 +13,7 @@
  *   npm run blog:draft                                   # also write a blog draft
  *
  * The diff engine itself (analyze()) lives in lib/snapshot-delta.ts and is
- * shared with the terminal's Market Pulse strip (lib/dashboard.ts) — this
+ * shared with the terminal's Market Pulse strip (lib/dashboard.ts)  -  this
  * script is just the CLI/report/draft-writing layer on top of it.
  */
 import fs from 'node:fs'
@@ -96,13 +96,13 @@ function draftPost(a: Analysis, curr: Snapshot, prev: Snapshot): string {
   }).join('\n')
 
   const tvlMovers = a.tvlMovers.slice(0, 4)
-    .map((m) => `- **${label(m.pool)}** — ${fmtTvl(m.prevTvl)} → ${fmtTvl(m.pool.tvlUsd)} (${m.deltaPct >= 0 ? '+' : ''}${Math.round(m.deltaPct)}%), graded ${m.pool.grade}`)
+    .map((m) => `- **${label(m.pool)}**  -  ${fmtTvl(m.prevTvl)} → ${fmtTvl(m.pool.tvlUsd)} (${m.deltaPct >= 0 ? '+' : ''}${Math.round(m.deltaPct)}%), graded ${m.pool.grade}`)
     .join('\n')
 
   return `---
-title: "Weekly grade record — ${a.currDate}"
+title: "Weekly grade record  -  ${a.currDate}"
 date: "${a.currDate}"
-excerpt: "${a.currCount.toLocaleString()} pools graded: ${up} upgraded, ${down} downgraded — ${tone} for onchain yield."
+excerpt: "${a.currCount.toLocaleString()} pools graded: ${up} upgraded, ${down} downgraded  -  ${tone} for onchain yield."
 author: "Vivek"
 readMinutes: 4
 ---
@@ -112,7 +112,7 @@ Every Monday we grade every live pool on the feed and publish the record. Here i
 ## The week at a glance
 
 - **${a.currCount.toLocaleString()} pools graded** (${a.currCount - a.prevCount >= 0 ? '+' : ''}${a.currCount - a.prevCount} vs last week)
-- **${up} pools upgraded**, **${down} downgraded** — ${tone}
+- **${up} pools upgraded**, **${down} downgraded**  -  ${tone}
 - **Safe share (A or B): ${safeShare(a.currDist, a.currCount)}%** (was ${safeShare(a.prevDist, a.prevCount)}%)
 
 ## Grade distribution

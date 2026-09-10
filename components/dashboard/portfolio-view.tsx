@@ -96,7 +96,7 @@ export function PortfolioView({
         <div>
           <span className="qy-overline qy-overline-signal">Positions</span>
           <h1>Portfolio</h1>
-          <p>Track what you&apos;re actually deployed in — blended yield and Safety Grades, no wallet, no custody.</p>
+          <p>Track what you&apos;re actually deployed in  -  blended yield and Safety Grades, no wallet, no custody.</p>
         </div>
         <button type="button" className="qy-btn qy-btn-primary" onClick={openDialog}>
           <Plus size={14} /> Add position
@@ -125,7 +125,7 @@ export function PortfolioView({
         <div className="qy-empty">
           <Briefcase className="qy-empty-icon" />
           <h3>No positions tracked yet</h3>
-          <p>Add a position to see your blended APY and projected yield. It&apos;s manual and read-only — Litmus never touches your funds or wallet.</p>
+          <p>Add a position to see your blended APY and projected yield. It&apos;s manual and read-only  -  Litmus never touches your funds or wallet.</p>
           <button type="button" className="qy-btn qy-btn-primary qy-empty-action" onClick={openDialog}>
             <Plus size={14} /> Add your first position
           </button>
@@ -156,7 +156,7 @@ export function PortfolioView({
                   <div><span>Since entry</span><strong><Delta value={sinceEntry} /></strong></div>
                 </div>
 
-                {!p.current ? <p className="qy-asset-meta" style={{ marginBottom: 12 }}>Pool not in the current scan — showing entry APY.</p> : null}
+                {!p.current ? <p className="qy-asset-meta" style={{ marginBottom: 12 }}>Pool not in the current scan  -  showing entry APY.</p> : null}
 
                 <div className="qy-terminal-actions">
                   <button type="button" className="qy-btn qy-btn-sm qy-btn-outline" onClick={() => remove(p.id)} aria-label={`Remove ${p.platform} position`}>
@@ -202,7 +202,7 @@ export function PortfolioView({
                   <label>
                     <span>Amount (USD)</span>
                     <input className="qy-input" type="number" min={1} step={50} value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
-                    <small>How much capital you have in this pool — used for blended APY and projected yield.</small>
+                    <small>How much capital you have in this pool  -  used for blended APY and projected yield.</small>
                   </label>
                 </>
               )}

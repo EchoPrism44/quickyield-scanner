@@ -38,7 +38,7 @@ function TooltipBox({ active, payload, label }: {
 }
 
 /**
- * Stacked-area view of the grade mix across every weekly snapshot —
+ * Stacked-area view of the grade mix across every weekly snapshot  -
  * the share of pools at each grade (A–F) over time. Descriptive only.
  */
 export function GradeDistributionChart({ snapshots }: { snapshots: LedgerSnapshotSummary[] }) {

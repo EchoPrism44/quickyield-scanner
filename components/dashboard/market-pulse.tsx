@@ -3,7 +3,7 @@ import type { WeekOverWeekDelta } from '../../lib/snapshot-delta'
 
 /**
  * Week-over-week summary strip, above the Discover KPI cards. Reuses the
- * same diff engine as scripts/analyze-snapshot.ts (lib/snapshot-delta.ts) —
+ * same diff engine as scripts/analyze-snapshot.ts (lib/snapshot-delta.ts)  -
  * every number here is real, sourced from the two most recent committed
  * grade snapshots. Renders nothing if fewer than two snapshots exist yet.
  */

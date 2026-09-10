@@ -1,5 +1,5 @@
 /* ============================================================
-   Litmus marketing / landing — premium dark, ledger-first.
+   Litmus marketing / landing  -  premium dark, ledger-first.
    Self-contained `.ql-*` namespace (no collision with dashboard
    `.qy-*` classes). Keys off styles/tokens.css.
    ============================================================ */
@@ -10,6 +10,22 @@
   color: var(--ink);
 }
 .ql-wrap { width: min(var(--maxw), 100%); margin: 0 auto; padding-inline: var(--ql-gutter); }
+.ql-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.ql-contact-card label { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; color: var(--ink-dim); font-size: var(--fs-sm); }
+.ql-contact-card input, .ql-contact-card select, .ql-contact-card textarea { width: 100%; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--bg-elevated); color: var(--ink); padding: 11px 12px; }
+.ql-contact-card textarea { resize: vertical; }
+.ql-form-actions { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+.ql-form-actions [role="alert"] { color: var(--risk); font-size: var(--fs-sm); }
+.ql-honeypot { position: absolute; left: -10000px; opacity: 0; pointer-events: none; }
+.ql-report-list, .ql-ops-list { display: grid; gap: 12px; }
+.ql-report-item, .ql-ops-item { display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid var(--line); border-radius: 8px; padding: 22px; background: var(--bg-surface); }
+.ql-report-item h2, .ql-ops-item h2 { margin-top: 8px; font-size: var(--fs-lg); }
+.ql-report-item p, .ql-ops-item p { margin-top: 8px; color: var(--ink-dim); line-height: 1.5; }
+.ql-ops-item select { min-width: 150px; background: var(--bg-elevated); color: var(--ink); border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px; }
+.ql-ops-editor { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+.ql-ops-editor summary { cursor: pointer; color: var(--accent); font-weight: 700; }
+.ql-form-span { grid-column: 1 / -1; }
+@media (max-width: 700px) { .ql-form-grid { grid-template-columns: 1fr; } .ql-report-item, .ql-ops-item { align-items: flex-start; flex-direction: column; } }
 
 /* ---- shared section primitives ---- */
 .ql-section { padding-block: var(--sp-10); position: relative; }
@@ -77,7 +93,7 @@
    Hero
    ============================================================ */
 .ql-hero { position: relative; overflow: hidden; padding-top: 112px; }
-/* Aurora backdrop — soft color blooms instead of a grid */
+/* Aurora backdrop  -  soft color blooms instead of a grid */
 .ql-hero-aurora { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .ql-hero-aurora::before,
 .ql-hero-aurora::after { content: ""; position: absolute; border-radius: 50%; filter: blur(80px); }
@@ -416,7 +432,7 @@
 .ql-asset-chip:hover { border-color: var(--line-hover); color: var(--ink); background: rgba(255, 255, 255, 0.03); }
 
 /* ============================================================
-   Marketing nav (ql — replaces the old qy-nav on public pages)
+   Marketing nav (ql  -  replaces the old qy-nav on public pages)
    ============================================================ */
 .ql-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; transition: background var(--dur) var(--ease-out), border-color var(--dur); border-bottom: 1px solid transparent; }
 .ql-nav--scrolled { background: rgba(7, 9, 13, 0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--line); }
@@ -431,7 +447,7 @@
 .ql-nav-signin:hover { color: var(--ink); }
 
 /* ============================================================
-   Ledger hero — the public track record as the centerpiece
+   Ledger hero  -  the public track record as the centerpiece
    ============================================================ */
 .ql-ledger {
   border: 1px solid var(--line-strong); border-radius: var(--r-lg);

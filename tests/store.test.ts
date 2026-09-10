@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest'
 import type { UserSettings, AlertRule } from '../lib/types'
 
-// In-memory store tests — tests the store logic shape without a database
+// In-memory store tests  -  tests the store logic shape without a database
 function createMemoryStore() {
   const settings = new Map<string, UserSettings>()
   const alerts = new Map<string, AlertRule[]>()

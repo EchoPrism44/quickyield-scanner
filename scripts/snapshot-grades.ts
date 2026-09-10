@@ -1,5 +1,5 @@
 /**
- * Public grade ledger — Option 1 (the forward proof).
+ * Public grade ledger  -  Option 1 (the forward proof).
  *
  * Grades every live DeFiLlama pool with the production model and writes a dated
  * snapshot to data/grades/<YYYY-MM-DD>.json. A weekly GitHub Action commits this
@@ -139,10 +139,10 @@ async function main() {
 
   const byGrade = pools.reduce<Record<string, number>>((m, p) => ((m[p.grade] = (m[p.grade] ?? 0) + 1), m), {})
   const flagged = pools.filter((p) => p.dataQualityFlags.length > 0)
-  console.log(`Wrote ${out} — ${pools.length} pools graded`)
+  console.log(`Wrote ${out}  -  ${pools.length} pools graded`)
   console.log('  by grade:', ['A', 'B', 'C', 'D', 'F'].map((g) => `${g}:${byGrade[g] ?? 0}`).join('  '))
   console.log(`  data-quality flags: ${flagged.length}`)
-  for (const p of flagged) console.log(`    ${p.project} ${p.symbol} ${p.poolId} — ${p.dataQualityFlags.join(', ')}`)
+  for (const p of flagged) console.log(`    ${p.project} ${p.symbol} ${p.poolId}  -  ${p.dataQualityFlags.join(', ')}`)
 }
 
 main().catch((e) => {

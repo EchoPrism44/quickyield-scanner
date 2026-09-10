@@ -1,7 +1,7 @@
 name: Scan staleness watchdog
 
 # The hourly scan job can only report on runs that actually happen. This checks
-# the opposite direction — how old the data the site is serving actually is —
+# the opposite direction  -  how old the data the site is serving actually is  -
 # so a scan that silently stops running, or succeeds without persisting, still
 # surfaces instead of quietly ageing out.
 #
@@ -25,7 +25,7 @@ jobs:
           set -uo pipefail
           BASE="${APP_URL:-https://www.getlitmus.xyz}"
 
-          # Public endpoint — no secret needed, and it reads the same cache the
+          # Public endpoint  -  no secret needed, and it reads the same cache the
           # terminal renders from, so this measures what visitors actually get.
           body=$(curl -sS -L --max-time 60 "$BASE/api/opportunities?pageSize=1") || {
             echo "::error::Could not reach $BASE/api/opportunities"
@@ -47,9 +47,9 @@ jobs:
 
           # The scan runs hourly and the app treats a cache as fresh for 90
           # minutes (CACHE_FRESH_MS in lib/opportunities.ts). 180 minutes means
-          # at least two consecutive runs were missed — a pattern, not a blip.
+          # at least two consecutive runs were missed  -  a pattern, not a blip.
           if [ "$age_min" -gt 180 ]; then
-            echo "::error::Pool data is ${age_min} minutes old — the hourly scan is not landing"
+            echo "::error::Pool data is ${age_min} minutes old  -  the hourly scan is not landing"
             exit 1
           fi
 

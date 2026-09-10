@@ -7,7 +7,7 @@ import type { Opportunity, SafetyGrade } from '../../lib/types'
 
 export function GradeBadge({ grade, showLabel = true }: { grade: SafetyGrade; showLabel?: boolean }) {
   return (
-    <span className="qy-grade-cell" title={`Safety Grade ${grade.letter} (${grade.score}/100) — ${grade.summary}`}>
+    <span className="qy-grade-cell" title={`Safety Grade ${grade.letter} (${grade.score}/100)  -  ${grade.summary}`}>
       <span className={`qy-grade qy-grade-${grade.letter.toLowerCase()}`}>{grade.letter}</span>
       {showLabel ? <small>{grade.label}</small> : null}
     </span>

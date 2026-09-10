@@ -1,5 +1,5 @@
 /**
- * Lift test — does the composite grade earn its non-TVL weight?
+ * Lift test  -  does the composite grade earn its non-TVL weight?
  * -------------------------------------------------------------
  * The decisive validation for the current model: once you control for pool size
  * (TVL), do the other three signals (stability, sustainability, completeness)

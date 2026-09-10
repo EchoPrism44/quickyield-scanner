@@ -37,7 +37,7 @@ The largest absolute weekly move came between June 29 and July 6, when TVL incre
 
 After the peak, capital remained relatively stable for several weeks, mostly between $123M and $135M. It then declined again, including an $22.3M (-18.1%) weekly drop between August 10 and August 17.
 
-The final snapshot recorded **$102.9M** — 27.9% below the historical peak, but still 4.32× the starting level.
+The final snapshot recorded **$102.9M**  -  27.9% below the historical peak, but still 4.32× the starting level.
 
 So the historical pattern is better described as **initial contraction → rapid capital expansion → peak → partial retracement**, rather than simple steady growth.
 
@@ -45,7 +45,7 @@ So the historical pattern is better described as **initial contraction → rapid
 
 APY followed a different direction during the main capital expansion.
 
-It opened at **12.05%**, reached a series high of **16.97%** on June 15, and then declined across the following snapshots to a series low of **7.01%** on July 6 — the same date TVL reached its historical peak.
+It opened at **12.05%**, reached a series high of **16.97%** on June 15, and then declined across the following snapshots to a series low of **7.01%** on July 6  -  the same date TVL reached its historical peak.
 
 By August 24, APY was **8.56%**.
 

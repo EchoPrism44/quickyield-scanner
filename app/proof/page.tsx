@@ -13,9 +13,9 @@ import { getLedgerSummary } from '../../lib/ledger'
 import { GRADE_LEDGER_CONTRACT, ledgerBasescanUrl } from '../../lib/onchain'
 
 export const metadata: Metadata = {
-  title: 'Track record — every grade, on the record',
+  title: 'Track record  -  every grade, on the record',
   description:
-    'Every week Litmus grades every live pool and publishes the record — anchored on Base so it can’t be quietly rewritten. No edits, no hindsight, no survivorship bias.',
+    'Every week Litmus grades every live pool and publishes the record  -  anchored on Base so it can’t be quietly rewritten. No edits, no hindsight, no survivorship bias.',
   alternates: { canonical: '/proof' },
 }
 
@@ -33,13 +33,13 @@ export default function ProofPage() {
           <span className="ql-eyebrow">Accountability</span>
           <h1 className="ql-h2" style={{ marginTop: 'var(--sp-4)' }}>Graded in the open.</h1>
           <p className="ql-lead">
-            We won&apos;t sell you a cherry-picked backtest — the pools that fail vanish from public
+            We won&apos;t sell you a cherry-picked backtest  -  the pools that fail vanish from public
             data, so a naive &ldquo;our grades predicted doom&rdquo; chart is just survivorship bias
             dressed up as proof. So we do the harder thing.{' '}
-            <strong>Every week we grade every live pool and publish the record</strong> — recorded
+            <strong>Every week we grade every live pool and publish the record</strong>  -  recorded
             before the outcome is known, and anchored on-chain so it can&apos;t be quietly rewritten.
             Then we test the grades against that record the honest way, counting the pools that
-            vanished as failures — including when the answer isn&apos;t flattering.
+            vanished as failures  -  including when the answer isn&apos;t flattering.
           </p>
           <div style={{ marginTop: 'var(--sp-5)' }}>
             <OnChainBadge />
@@ -66,7 +66,7 @@ export default function ProofPage() {
                 <h2 className="ql-h2">How the grades have moved.</h2>
                 <p className="ql-lead">
                   The share of pools at each grade, A through F, across every weekly snapshot.
-                  Descriptive only — this shows what we said, not yet how it played out.
+                  Descriptive only  -  this shows what we said, not yet how it played out.
                 </p>
               </div>
               <GradeDistributionChart snapshots={ledger.snapshots} />
@@ -103,7 +103,7 @@ export default function ProofPage() {
           </div>
           <div className="ql-proof-steps">
             <div className="ql-proof-step">
-              <p><strong style={{ color: 'var(--ink)' }}>Recorded before the outcome.</strong> Every Monday we grade every live pool and write the result down — while nobody yet knows how those pools will perform.</p>
+              <p><strong style={{ color: 'var(--ink)' }}>Recorded before the outcome.</strong> Every Monday we grade every live pool and write the result down  -  while nobody yet knows how those pools will perform.</p>
             </div>
             <div className="ql-proof-step">
               <p><strong style={{ color: 'var(--ink)' }}>Every pool, no cherry-picking.</strong> The failures stay in the record too, so there&apos;s no survivorship bias hiding the misses.</p>
@@ -111,7 +111,7 @@ export default function ProofPage() {
             <div className="ql-proof-step">
               <p>
                 {GRADE_LEDGER_CONTRACT ? (
-                  <><strong style={{ color: 'var(--ink)' }}>Anchored on Base.</strong> Each snapshot&apos;s hash is written to our on-chain ledger, so the record is tamper-proof — verify it yourself on Basescan.</>
+                  <><strong style={{ color: 'var(--ink)' }}>Anchored on Base.</strong> Each snapshot&apos;s hash is written to our on-chain ledger, so the record is tamper-proof  -  verify it yourself on Basescan.</>
                 ) : (
                   <><strong style={{ color: 'var(--ink)' }}>Append-only, anchoring soon.</strong> The record only grows; a past week can&apos;t be edited. On-chain anchoring on Base is launching soon to make that cryptographically verifiable.</>
                 )}
@@ -129,7 +129,7 @@ export default function ProofPage() {
                 <>
                   Each weekly snapshot&apos;s hash is anchored to our GradeLedger contract on Base.
                   Because the chain is append-only, a grade we published can never be quietly changed
-                  after the fact — anyone can confirm the on-chain hash matches the record.{' '}
+                  after the fact  -  anyone can confirm the on-chain hash matches the record.{' '}
                   <a href={basescanUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--signal)', fontFamily: 'var(--font-mono)' }}>
                     View the contract on Basescan ↗
                   </a>
@@ -137,8 +137,8 @@ export default function ProofPage() {
               ) : (
                 <>
                   The record is recorded before outcomes are known and is append-only. On-chain
-                  anchoring on Base — writing each snapshot&apos;s hash to an immutable ledger so the
-                  record is verifiable by anyone, not just trusted — is launching soon. The predictive
+                  anchoring on Base  -  writing each snapshot&apos;s hash to an immutable ledger so the
+                  record is verifiable by anyone, not just trusted  -  is launching soon. The predictive
                   track record matures over the coming months; grades are descriptive estimates of
                   current pool quality, not guarantees.
                 </>
@@ -148,7 +148,7 @@ export default function ProofPage() {
 
           <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-5)' }}>
             <span>
-              Safety Grades are our opinion under a published methodology. Informational only — not
+              Safety Grades are our opinion under a published methodology. Informational only  -  not
               investment advice, not an audit, and not a guarantee. Always verify with the
               underlying protocol before depositing.
             </span>

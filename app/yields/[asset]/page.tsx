@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ asset: st
   const bestLine = best ? ` Top safe pool: ${best.platform} at ${best.apy.toFixed(2)}% APY.` : ''
   return {
     title: `Best & Safest ${data.asset} Yield Right Now | Litmus`,
-    description: `Live, safety-graded ${data.asset} yield pools across major chains.${bestLine} Research only — no wallet, no custody.`,
+    description: `Live, safety-graded ${data.asset} yield pools across major chains.${bestLine} Research only  -  no wallet, no custody.`,
     alternates: { canonical: `/yields/${data.asset.toLowerCase()}` },
   }
 }
@@ -56,7 +56,7 @@ export default async function AssetYieldsPage({ params }: { params: Promise<{ as
           <p className="ql-lead">
             {items.length > 0
               ? `${items.length} ${asset} pools tracked. ${best ? `Strongest safe pick: ${best.platform} on ${best.chain} at ${best.apy.toFixed(2)}% APY.` : ''} Sorted by Safety Grade, then APY.`
-              : `No ${asset} pools match the safety screen right now — check back after the next scan.`}
+              : `No ${asset} pools match the safety screen right now  -  check back after the next scan.`}
           </p>
           <div className="ql-cta-row">
             <Link href="/terminal" className="ql-btn ql-btn--primary">Open in terminal <ArrowRight size={16} strokeWidth={2.5} /></Link>

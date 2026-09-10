@@ -21,9 +21,9 @@ async function loadRwa() {
 }
 
 export const metadata: Metadata = {
-  title: 'Best RWA & Tokenized T-Bill Yields — Safety-Graded | Litmus',
+  title: 'Best RWA & Tokenized T-Bill Yields  -  Safety-Graded | Litmus',
   description:
-    'Live, safety-graded yields on tokenized real-world assets — treasuries, T-bills, and on-chain private credit (Ondo, BlackRock BUIDL, Maple, Centrifuge, OpenEden and more). Research only, no wallet, no custody.',
+    'Live, safety-graded yields on tokenized real-world assets  -  treasuries, T-bills, and on-chain private credit (Ondo, BlackRock BUIDL, Maple, Centrifuge, OpenEden and more). Research only, no wallet, no custody.',
   alternates: { canonical: '/yields/rwa' },
 }
 
@@ -42,8 +42,8 @@ export default async function RwaYieldsPage() {
           </h1>
           <p className="ql-lead">
             {items.length > 0
-              ? `${items.length} tokenized real-world-asset pools tracked — treasuries, T-bills, and on-chain private credit. ${best ? `Strongest safe pick: ${best.platform} on ${best.chain} at ${best.apy.toFixed(2)}% APY.` : ''} Sorted by Safety Grade, then APY.`
-              : 'No RWA pools match the safety screen right now — check back after the next scan.'}
+              ? `${items.length} tokenized real-world-asset pools tracked  -  treasuries, T-bills, and on-chain private credit. ${best ? `Strongest safe pick: ${best.platform} on ${best.chain} at ${best.apy.toFixed(2)}% APY.` : ''} Sorted by Safety Grade, then APY.`
+              : 'No RWA pools match the safety screen right now  -  check back after the next scan.'}
           </p>
           <div className="ql-cta-row">
             <Link href="/terminal" className="ql-btn ql-btn--primary">Open in terminal <ArrowRight size={16} strokeWidth={2.5} /></Link>
@@ -64,11 +64,11 @@ export default async function RwaYieldsPage() {
             <span className="ql-eyebrow">What counts as RWA here</span>
             <h2 className="ql-h2"><Landmark size={20} style={{ marginRight: 8, verticalAlign: '-3px' }} />On-chain, so it&apos;s auditable.</h2>
             <p className="ql-lead" style={{ maxWidth: '70ch' }}>
-              These are tokenized real-world assets that live on-chain — money-market funds, short-term
+              These are tokenized real-world assets that live on-chain  -  money-market funds, short-term
               treasuries and private credit from protocols like Ondo, BlackRock&apos;s BUIDL, Maple,
               Centrifuge and OpenEden. Because they settle on-chain, they carry the same public,
               verifiable data trail every other pool here does, and they get the same A–F Safety Grade.
-              Grades are our opinion under a published methodology — not investment advice, and never a
+              Grades are our opinion under a published methodology  -  not investment advice, and never a
               substitute for reading the issuer&apos;s own disclosures.
             </p>
           </div>

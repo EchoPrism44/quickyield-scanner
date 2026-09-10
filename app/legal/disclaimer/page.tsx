@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Risk Disclaimer — Litmus',
+  title: 'Risk Disclaimer  -  Litmus',
   description: 'Litmus is research and alerting only. Not financial advice. DeFi carries significant risk.',
 }
 

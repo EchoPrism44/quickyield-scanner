@@ -2,11 +2,84 @@ import { desc, eq, sql } from 'drizzle-orm'
 import { ALERT_LIMIT, POSITION_LIMIT, WATCHLIST_LIMIT, defaultSettings } from './constants'
 import { getDb, hasDatabase } from './db'
 import { memory } from './memory-store'
-import { alertDeliveries, alertRules, notificationChannels, opportunitiesCache, opportunitySnapshots, positions, telegramConnectTokens, users, watchlistItems } from './schema'
-import type { AlertActivity, AlertRule, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, Position, UserSettings } from './types'
+import { alertDeliveries, alertRules, assessmentLeads, assessments, notificationChannels, opportunitiesCache, opportunitySnapshots, positions, telegramConnectTokens, users, watchlistItems } from './schema'
+import type { AlertActivity, AlertRule, AssessmentLead, AssessmentLeadStatus, AssessmentTier, LitmusScoreBreakdown, NotificationChannel, NotificationChannelType, NotificationStatus, Opportunity, OpportunitySnapshot, PoolDetail, Position, PublishedAssessment, SafetyGrade, UserSettings } from './types'
 
 function id(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`
+}
+
+function seedDemoAssessment(): PublishedAssessment {
+  return {
+    id: 'assessment-demo-example-usdc', leadId: 'lead-demo-example-usdc', slug: 'example-usdc',
+    protocol: 'Example Protocol', pool: 'USDC Pool', chain: 'Ethereum', assessedAt: '2026-09-07', methodologyVersion: 'v1.0',
+    grade: { letter: 'B', score: 78, label: 'Safe', summary: 'Weighted blend of liquidity, APY stability, reward quality, and data completeness. Weakest factor: APY stability (72/100).', weakest: 'APY stability' },
+    signals: { liquidity: 84, stability: 72, sustainability: 81, completeness: 91 },
+    strengths: ['Strong liquidity base', 'Good data availability'], watchpoints: ['APY volatility observed', 'Reward dependence noted'],
+    summary: 'Example local assessment for testing the public report and operations workflow.', status: 'published', publishedAt: '2026-09-07',
+  }
+}
+
+function rowToAssessment(row: typeof assessments.$inferSelect): PublishedAssessment {
+  const grade: SafetyGrade = { letter: row.gradeLetter as SafetyGrade['letter'], score: row.gradeScore, label: row.gradeLabel, summary: row.gradeSummary, weakest: row.weakestSignal }
+  return { id: row.id, leadId: row.leadId, slug: row.slug, protocol: row.protocol, pool: row.pool, chain: row.chain, assessedAt: row.assessedAt.toISOString(), methodologyVersion: row.methodologyVersion, grade, signals: JSON.parse(row.signalsJson) as LitmusScoreBreakdown, strengths: JSON.parse(row.strengthsJson) as string[], watchpoints: JSON.parse(row.watchpointsJson) as string[], summary: row.summary, status: row.status as 'factual_review' | 'published', factualReviewDeadline: row.factualReviewDeadline?.toISOString(), publishedAt: row.publishedAt?.toISOString() }
+}
+
+function rowToLead(row: typeof assessmentLeads.$inferSelect): AssessmentLead {
+  return { id: row.id, protocol: row.protocol, pool: row.pool, chain: row.chain, poolId: row.poolId ?? undefined, llamaUrl: row.llamaUrl ?? undefined, tvlUsd: row.tvlUsd ? Number(row.tvlUsd) : undefined, requesterName: row.requesterName, workEmail: row.workEmail, role: row.role ?? undefined, tier: row.tier as AssessmentTier, timing: row.timing ?? undefined, notes: row.notes ?? undefined, status: row.status as AssessmentLeadStatus, createdAt: row.createdAt.toISOString() }
+}
+
+export async function createAssessmentLead(input: Omit<AssessmentLead, 'id' | 'status' | 'createdAt'>): Promise<AssessmentLead> {
+  const lead: AssessmentLead = { ...input, id: id('lead'), status: 'submitted', createdAt: new Date().toISOString() }
+  if (!hasDatabase()) { memory.assessmentLeads.unshift(lead); return lead }
+  await getDb().insert(assessmentLeads).values({ id: lead.id, protocol: lead.protocol, pool: lead.pool, chain: lead.chain, poolId: lead.poolId ?? null, llamaUrl: lead.llamaUrl ?? null, tvlUsd: lead.tvlUsd === undefined ? null : String(lead.tvlUsd), requesterName: lead.requesterName, workEmail: lead.workEmail, role: lead.role ?? null, tier: lead.tier, timing: lead.timing ?? null, notes: lead.notes ?? null, status: lead.status, createdAt: new Date(lead.createdAt) })
+  return lead
+}
+
+export async function getAssessmentLeads(): Promise<AssessmentLead[]> {
+  if (!hasDatabase()) return [...memory.assessmentLeads]
+  return (await getDb().select().from(assessmentLeads).orderBy(desc(assessmentLeads.createdAt))).map(rowToLead)
+}
+
+export async function updateAssessmentLeadStatus(leadId: string, status: AssessmentLeadStatus) {
+  if (!hasDatabase()) { memory.assessmentLeads = memory.assessmentLeads.map((lead) => lead.id === leadId ? { ...lead, status } : lead); return memory.assessmentLeads.find((lead) => lead.id === leadId) ?? null }
+  await getDb().update(assessmentLeads).set({ status }).where(eq(assessmentLeads.id, leadId))
+  const [row] = await getDb().select().from(assessmentLeads).where(eq(assessmentLeads.id, leadId)).limit(1)
+  return row ? rowToLead(row) : null
+}
+
+export async function createAssessment(input: Omit<PublishedAssessment, 'id'>): Promise<PublishedAssessment> {
+  const assessment: PublishedAssessment = { ...input, id: id('assessment') }
+  if (!hasDatabase()) { memory.assessments = [...memory.assessments.filter((item) => item.slug !== assessment.slug), assessment]; return assessment }
+  await getDb().insert(assessments).values({ id: assessment.id, leadId: assessment.leadId, slug: assessment.slug, protocol: assessment.protocol, pool: assessment.pool, chain: assessment.chain, assessedAt: new Date(assessment.assessedAt), methodologyVersion: assessment.methodologyVersion, gradeLetter: assessment.grade.letter, gradeScore: assessment.grade.score, gradeLabel: assessment.grade.label, gradeSummary: assessment.grade.summary, weakestSignal: assessment.grade.weakest, signalsJson: JSON.stringify(assessment.signals), strengthsJson: JSON.stringify(assessment.strengths), watchpointsJson: JSON.stringify(assessment.watchpoints), summary: assessment.summary, status: assessment.status, factualReviewDeadline: assessment.factualReviewDeadline ? new Date(assessment.factualReviewDeadline) : null, publishedAt: assessment.publishedAt ? new Date(assessment.publishedAt) : null })
+  return assessment
+}
+
+export async function getPublishedAssessments(): Promise<PublishedAssessment[]> {
+  if (!hasDatabase()) return memory.assessments.filter((item) => item.status === 'published' && item.publishedAt).length ? memory.assessments.filter((item) => item.status === 'published' && item.publishedAt) : [seedDemoAssessment()]
+  return (await getDb().select().from(assessments).where(sql`${assessments.publishedAt} is not null`).orderBy(desc(assessments.publishedAt))).map(rowToAssessment)
+}
+
+export async function publishDueAssessments() {
+  const now = new Date()
+  if (!hasDatabase()) {
+    let published = 0
+    memory.assessments = memory.assessments.map((assessment) => {
+      if (assessment.status !== 'factual_review' || !assessment.factualReviewDeadline || new Date(assessment.factualReviewDeadline) > now) return assessment
+      published += 1
+      return { ...assessment, status: 'published', publishedAt: now.toISOString() }
+    })
+    return published
+  }
+  const due = await getDb().select().from(assessments).where(sql`${assessments.status} = 'factual_review' and ${assessments.factualReviewDeadline} <= now()`)
+  for (const row of due) await getDb().update(assessments).set({ status: 'published', publishedAt: now }).where(eq(assessments.id, row.id))
+  return due.length
+}
+
+export async function getPublishedAssessment(slug: string) {
+  if (!hasDatabase()) return (memory.assessments.filter((item) => item.status === 'published' && item.publishedAt).length ? memory.assessments.filter((item) => item.status === 'published' && item.publishedAt) : [seedDemoAssessment()]).find((item) => item.slug === slug) ?? null
+  const [row] = await getDb().select().from(assessments).where(sql`${assessments.slug} = ${slug} and ${assessments.publishedAt} is not null`).limit(1)
+  return row ? rowToAssessment(row) : null
 }
 
 function parseSettings(value?: string | null): UserSettings {

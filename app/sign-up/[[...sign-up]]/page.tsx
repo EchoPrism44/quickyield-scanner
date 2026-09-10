@@ -16,7 +16,7 @@ export default function SignUpPage() {
           <BrandLogo href="/" className="qy-auth-logo" />
           <h1>Try the demo terminal</h1>
           <p>
-            Sign-up isn&apos;t configured in this environment, but you can explore the full terminal in local-demo mode — no account needed.
+            Sign-up isn&apos;t configured in this environment, but you can explore the full terminal in local-demo mode  -  no account needed.
           </p>
           <Link className="qy-btn qy-btn-primary qy-btn-lg" href="/terminal" style={{ width: '100%' }}>
             Open demo terminal

@@ -54,7 +54,7 @@ async function main() {
   const rpc = process.env.BASE_RPC_URL
 
   if (!address || !pk || !rpc) {
-    console.log('on-chain anchoring skipped — GRADE_LEDGER_ADDRESS / RECORDER_PRIVATE_KEY / BASE_RPC_URL not set.')
+    console.log('on-chain anchoring skipped  -  GRADE_LEDGER_ADDRESS / RECORDER_PRIVATE_KEY / BASE_RPC_URL not set.')
     return
   }
 

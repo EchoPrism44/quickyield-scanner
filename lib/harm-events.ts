@@ -2,7 +2,7 @@
  * Harm-event source for the safety-signal validation (Phase 1 feasibility slice).
  * ------------------------------------------------------------------------------
  * The lift-test proved the composite grade adds no predictive lift over raw TVL
- * for *TVL-collapse* — but TVL-collapse is a size proxy, not harm. To validate
+ * for *TVL-collapse*  -  but TVL-collapse is a size proxy, not harm. To validate
  * the grade as a SAFETY signal we need real harm events (exploits, rugs, oracle
  * manipulation, access-control drains). This module sources them from DeFiLlama's
  * public, key-less /hacks endpoint and bridges each event's protocol onto the
@@ -11,7 +11,7 @@
  * Pattern mirrors lib/llama-protocols.ts: global fetch, revalidate cache, an
  * AbortSignal timeout, and try/catch -> [] on any failure. No new deps, no key.
  *
- * This module only READS public data and maps it to slugs — it never touches the
+ * This module only READS public data and maps it to slugs  -  it never touches the
  * append-only grade ledger.
  */
 

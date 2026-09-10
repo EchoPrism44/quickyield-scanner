@@ -15,7 +15,7 @@ import type { Opportunity, PoolDetail } from '../../../../lib/types'
 export const dynamic = 'force-dynamic'
 
 export default async function PoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  // Public read-only page (CMC model) — watchlist state only when signed in.
+  // Public read-only page (CMC model)  -  watchlist state only when signed in.
   const userId = await optionalUserId()
   const { id } = await params
   let detail = await getPoolDetail(id)

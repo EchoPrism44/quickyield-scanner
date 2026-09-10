@@ -1,4 +1,4 @@
-# QuickYield GradeLedger — on-chain anchor (Base)
+# QuickYield GradeLedger  -  on-chain anchor (Base)
 
 A minimal contract that anchors QuickYield's weekly **public Safety-Grade ledger**
 on Base. Each Monday the GitHub Action grades every live DeFi pool, commits a dated
@@ -7,7 +7,7 @@ Snapshots are **write-once** on-chain → the record is cryptographically tamper
 and anyone can verify it on BaseScan.
 
 The contract holds **no funds**. The only privileged action is recording a hash, so
-even if the recorder key leaks, the worst case is spurious dates — existing entries
+even if the recorder key leaks, the worst case is spurious dates  -  existing entries
 are immutable and no value is at risk.
 
 ## Prerequisites
@@ -23,7 +23,7 @@ cp .env.example .env                  # fill in PRIVATE_KEY, RPC URLs, BASESCAN_
 forge test -vvv                       # all tests should pass
 ```
 
-## Deploy — testnet first
+## Deploy  -  testnet first
 
 ```bash
 # 1) Get free Base Sepolia ETH: https://docs.base.org/tools/network-faucets
@@ -42,10 +42,10 @@ BASE_RPC_URL=$BASE_SEPOLIA_RPC_URL \
 npx tsx ../scripts/record-onchain.ts
 ```
 
-Check it on https://sepolia.basescan.org/address/0xYourSepoliaAddr — you should see the
+Check it on https://sepolia.basescan.org/address/0xYourSepoliaAddr  -  you should see the
 `SnapshotRecorded` event and the `latest()` hash.
 
-## Deploy — mainnet (once testnet works)
+## Deploy  -  mainnet (once testnet works)
 
 ```bash
 source .env

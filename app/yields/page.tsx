@@ -8,9 +8,9 @@ import { YieldTable } from '../../components/yield-table'
 export const revalidate = 1800
 
 export const metadata: Metadata = {
-  title: 'Safest Onchain Yields Right Now — Safety-Graded',
+  title: 'Safest Onchain Yields Right Now  -  Safety-Graded',
   description:
-    'Live, safety-graded onchain yield pools across major chains. See the safest stablecoin, ETH, and SOL yields right now — research only, no wallet, no custody.',
+    'Live, safety-graded onchain yield pools across major chains. See the safest stablecoin, ETH, and SOL yields right now  -  research only, no wallet, no custody.',
   alternates: { canonical: '/yields' },
 }
 
@@ -34,7 +34,7 @@ export default async function YieldsIndexPage() {
             The safest onchain yields, <em style={{ color: 'var(--brand-green)', fontStyle: 'normal' }}>right now</em>.
           </h1>
           <p className="ql-lead">
-            Litmus scans {total.toLocaleString()}+ pools across major chains and grades each one A–F for safety —
+            Litmus scans {total.toLocaleString()}+ pools across major chains and grades each one A–F for safety  -
             liquidity, APY stability, reward quality, and data completeness. Here are the strongest safe yields today.
           </p>
           <div className="ql-cta-row">
@@ -70,7 +70,7 @@ export default async function YieldsIndexPage() {
             <div className="ql-trust-grid">
               <div className="ql-trust-item"><h4><ShieldCheck size={18} />Safety Grade</h4><p>Every pool gets an A–F grade from liquidity, APY stability, reward quality, and data completeness.</p></div>
               <div className="ql-trust-item"><h4><Database size={18} />Transparent data</h4><p>Sourced from public DeFiLlama feeds, refreshed regularly, merged with our scoring.</p></div>
-              <div className="ql-trust-item"><h4><Bell size={18} />Free alerts</h4><p>Create a rule and get a Telegram or email alert when a pool matches — or when one degrades.</p></div>
+              <div className="ql-trust-item"><h4><Bell size={18} />Free alerts</h4><p>Create a rule and get a Telegram or email alert when a pool matches  -  or when one degrades.</p></div>
             </div>
           </div>
         </div>

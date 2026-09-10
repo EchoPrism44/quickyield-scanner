@@ -1,5 +1,5 @@
 /**
- * On-chain anchor config (client-safe — no fs).
+ * On-chain anchor config (client-safe  -  no fs).
  *
  * The Base "public ledger" is the GradeLedger contract that anchors each
  * weekly snapshot's hash on-chain. It is NOT deployed yet: while

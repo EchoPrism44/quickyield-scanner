@@ -1,5 +1,5 @@
 /**
- * Blog chart generator — turns a weekly grade snapshot into theme-matched SVG
+ * Blog chart generator  -  turns a weekly grade snapshot into theme-matched SVG
  * charts you can embed straight into a post.
  *
  * Usage:
@@ -115,7 +115,7 @@ function apyDistribution(snap: Snapshot) {
   const above = all.filter((v) => v > MAXV).length
   const labels = counts.map((_, i) => `${Math.round(i * w)}–${Math.round((i + 1) * w)}%`)
   return bars(counts, labels, counts.map(() => C.signal), {
-    title: `APY distribution — ${snap.date}`,
+    title: `APY distribution  -  ${snap.date}`,
     subtitle: `${all.length.toLocaleString()} graded pools · 0–${MAXV}% shown · ${above.toLocaleString()} pools above ${MAXV}% not pictured`,
     xLabel: 'APY (%)',
     labelEvery: 10,
@@ -134,7 +134,7 @@ function tvlDistribution(snap: Snapshot) {
     return e >= 9 ? `$${10 ** (e - 9) < 10 ? Math.round(10 ** (e - 9)) : '10+'}B` : e >= 6 ? `$${Math.round(10 ** (e - 6))}M` : `$${Math.round(10 ** (e - 3))}K`
   })
   return bars(counts, labels, counts.map(() => C.grade.B), {
-    title: `TVL distribution — ${snap.date}`,
+    title: `TVL distribution  -  ${snap.date}`,
     subtitle: `${pos.length.toLocaleString()} pools with TVL > $0 · log scale (TVL is heavily skewed)`,
     xLabel: 'Pool TVL (log scale)',
     labelEvery: 4,
@@ -146,13 +146,13 @@ function gradeCounts(snap: Snapshot) {
   const total = counts.reduce((a, b) => a + b, 0) || 1
   const labels = GRADES.map((g, i) => `${g} (${Math.round((counts[i] / total) * 100)}%)`)
   return bars(counts, labels as string[], GRADES.map((g) => C.grade[g]), {
-    title: `Pools by Safety Grade — ${snap.date}`,
+    title: `Pools by Safety Grade  -  ${snap.date}`,
     subtitle: `${total.toLocaleString()} pools graded this week`,
     xLabel: 'Safety Grade',
   })
 }
 
-/** Median + interquartile range of APY within each grade — does the grade separate anything? */
+/** Median + interquartile range of APY within each grade  -  does the grade separate anything? */
 function apyByGrade(snap: Snapshot) {
   const stats = GRADES.map((g) => {
     const vals = snap.pools.filter((p) => p.grade === g).map((p) => p.apy).filter((v) => Number.isFinite(v) && v >= 0).sort((a, b) => a - b)
@@ -179,9 +179,9 @@ function apyByGrade(snap: Snapshot) {
     body += `<text x="${n2(cx)}" y="${M.top + PH + 34}" fill="${C.inkMute}" font-size="10" text-anchor="middle">n=${s.n.toLocaleString()}</text>`
   })
   body += `<line x1="${M.left}" y1="${M.top + PH}" x2="${M.left + PW}" y2="${M.top + PH}" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>`
-  body += `<text x="${M.left + PW / 2}" y="${H - 12}" fill="${C.inkDim}" font-size="12" text-anchor="middle">Safety Grade — box = 25th–75th percentile, bar = median, dashed = 90th</text>`
+  body += `<text x="${M.left + PW / 2}" y="${H - 12}" fill="${C.inkDim}" font-size="12" text-anchor="middle">Safety Grade  -  box = 25th–75th percentile, bar = median, dashed = 90th</text>`
 
-  return frame(`APY by Safety Grade — ${snap.date}`, 'Where each grade’s yields actually sit. Higher grades should cluster lower and tighter.', body)
+  return frame(`APY by Safety Grade  -  ${snap.date}`, 'Where each grade’s yields actually sit. Higher grades should cluster lower and tighter.', body)
 }
 
 // ---------- main ----------

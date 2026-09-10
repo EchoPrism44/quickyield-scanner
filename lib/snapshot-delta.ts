@@ -4,7 +4,7 @@ import path from 'node:path'
 /**
  * Week-over-week snapshot diff engine. Shared by scripts/analyze-snapshot.ts
  * (the CLI research tool behind weekly blog posts) and the terminal's Market
- * Pulse strip (lib/dashboard.ts). Node `fs` only — server-side use only.
+ * Pulse strip (lib/dashboard.ts). Node `fs` only  -  server-side use only.
  */
 
 export type SnapshotPool = {
@@ -145,7 +145,7 @@ export type WeekOverWeekDelta = {
 }
 
 /**
- * Aggregate-only week-over-week summary for UI (no per-pool arrays — keeps
+ * Aggregate-only week-over-week summary for UI (no per-pool arrays  -  keeps
  * the payload sent to the client small). Reads the last two snapshots in
  * `dir`. Returns null if fewer than two snapshots exist yet (soft-fail, same
  * convention as lib/ledger.ts's getLedgerSummary).
