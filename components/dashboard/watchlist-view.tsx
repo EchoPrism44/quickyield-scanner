@@ -69,7 +69,7 @@ export function WatchlistView({
         <div className="qy-empty">
           <Bookmark className="qy-empty-icon" />
           <h3>Your watchlist is empty</h3>
-          <p>Save pools from Discover to track their APY, Safety Grade, and movement here — then set an alert when one drifts.</p>
+          <p>Save pools from Discover to track their APY, Safety Grade, and movement here  -  then set an alert when one drifts.</p>
           <button type="button" className="qy-btn qy-btn-primary qy-empty-action" onClick={onGoDiscover}>
             <Radar size={14} />
             Browse pools

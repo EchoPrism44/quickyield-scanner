@@ -6,7 +6,7 @@ import './globals.css'
 /**
  * Fonts are loaded through next/font (self-hosted, preloaded, no layout shift).
  * A plain CSS `@import url(fonts.googleapis...)` does NOT survive the Turbopack
- * build — it gets stripped, and every family silently falls back.
+ * build  -  it gets stripped, and every family silently falls back.
  *
  * Newsreader (serif) = editorial surfaces: marketing headlines + articles.
  * Instrument Sans = UI/data surfaces. JetBrains Mono = tickers and figures.
@@ -42,7 +42,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Litmus — Yield research you can audit, not just trust',
+    default: 'Litmus  -  Yield research you can audit, not just trust',
     template: '%s | Litmus',
   },
   description:
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     apple: '/apple-icon',
   },
   openGraph: {
-    title: 'Litmus — Yield research you can audit, not just trust',
+    title: 'Litmus  -  Yield research you can audit, not just trust',
     description:
       'Every pool graded A–F under a published methodology. Every grade committed to a public, timestamped ledger before the outcome is known.',
     type: 'website',
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Litmus — Yield research you can audit, not just trust',
+    title: 'Litmus  -  Yield research you can audit, not just trust',
     description:
       'Every pool graded A–F under a published methodology. Every grade committed to a public, timestamped ledger before the outcome is known.',
   },

@@ -6,7 +6,7 @@ import { WeightBars } from '../../components/marketing/weight-bars'
 import { BANDS } from '../../lib/grade'
 
 export const metadata: Metadata = {
-  title: 'Methodology — how Safety Grades work',
+  title: 'Methodology  -  how Safety Grades work',
   description:
     'The published methodology behind Litmus Safety Grades: the four signals, their exact weights, the A–F thresholds, data sources and limitations, and the public grade ledger.',
   alternates: { canonical: '/docs' },
@@ -22,12 +22,12 @@ export default function DocsPage() {
         </h1>
         <p className="ql-lead">
           When we say &ldquo;yield research you can audit,&rdquo; this page is the thing you audit.
-          The signals, the weights, and the thresholds below are the model&apos;s real constants —
+          The signals, the weights, and the thresholds below are the model&apos;s real constants  -
           the same code that grades every pool renders this page.
         </p>
         <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-5)' }}>
           <span>
-            Safety Grades are our opinion under this published methodology. Informational only —
+            Safety Grades are our opinion under this published methodology. Informational only  -
             not investment advice, not an audit, and not a guarantee. Verify with the underlying
             protocol before moving funds.
           </span>
@@ -38,7 +38,7 @@ export default function DocsPage() {
         <span className="ql-eyebrow"><Database size={12} /> The four signals</span>
         <h2>What a grade is made of</h2>
         <p>
-          Every pool earns a 0–100 score — a weighted blend of four transparent signals. The grade
+          Every pool earns a 0–100 score  -  a weighted blend of four transparent signals. The grade
           also names its <em>weakest</em> signal, so an A-grade pool that is strong everywhere
           except reward quality tells you exactly where to look first.
         </p>
@@ -54,7 +54,7 @@ export default function DocsPage() {
               ))}
             </div>
             <p style={{ marginTop: 'var(--sp-4)', color: 'var(--ink-dim)', fontSize: 'var(--fs-sm)', lineHeight: 1.65 }}>
-              Thresholds are fixed, not curved — a pool is never graded on its neighbors. When the
+              Thresholds are fixed, not curved  -  a pool is never graded on its neighbors. When the
               model changes, that change is published like every snapshot, so the methodology&apos;s
               own history is auditable too.
             </p>
@@ -64,7 +64,7 @@ export default function DocsPage() {
 
       <AnimatedSection className="ql-docs-section" id="data" as="div">
         <span className="ql-eyebrow"><Database size={12} /> Data &amp; limitations</span>
-        <h2>Where the data comes from — and where it stops</h2>
+        <h2>Where the data comes from  -  and where it stops</h2>
         <p>
           Pool data is sourced from public <strong>DeFiLlama</strong> feeds and refreshed on a live
           scan. Each scan is snapshotted, so Litmus accumulates its own APY and TVL history over
@@ -74,7 +74,7 @@ export default function DocsPage() {
         <p>
           Just as important is what a grade is <em>not</em>: it does not review smart-contract code,
           audit a protocol&apos;s team, or see anything the public market feed can&apos;t.{' '}
-          <strong>A grade is not an audit.</strong> Data can be delayed or incomplete — always
+          <strong>A grade is not an audit.</strong> Data can be delayed or incomplete  -  always
           confirm on the protocol itself.
         </p>
       </AnimatedSection>
@@ -85,9 +85,9 @@ export default function DocsPage() {
         <p>
           Every Monday, an automated job grades every live pool and publishes the full list as a
           dated, timestamped snapshot. Each snapshot is append-only and written <em>before</em> anyone
-          knows how those pools perform — the opposite of a cherry-picked backtest. To make that
+          knows how those pools perform  -  the opposite of a cherry-picked backtest. To make that
           tamper-proof rather than just &ldquo;trust us,&rdquo; each snapshot&apos;s hash is anchored
-          on the <strong>Base blockchain</strong> — an immutable public ledger (launching soon). Every
+          on the <strong>Base blockchain</strong>  -  an immutable public ledger (launching soon). Every
           snapshot records, for every pool:
         </p>
         <div className="ql-docs-fields">
@@ -114,10 +114,10 @@ export default function DocsPage() {
         <span className="ql-eyebrow"><Bell size={12} /> Alerts &amp; digest</span>
         <h2>Alerts in plain language</h2>
         <p>
-          Alerts are built in plain language — pick what should trigger one and Litmus watches
+          Alerts are built in plain language  -  pick what should trigger one and Litmus watches
           for it on every scan: APY rising above or dropping below your threshold, a sudden APY
           fall, TVL draining, or rewards making up too much of the yield. Alerts fire only on a
-          real match — never spam — by email or Telegram. Separately, the weekly digest emails you
+          real match  -  never spam  -  by email or Telegram. Separately, the weekly digest emails you
           every Sunday with your watchlist&apos;s APY and grade moves; one toggle turns it off.
         </p>
       </AnimatedSection>

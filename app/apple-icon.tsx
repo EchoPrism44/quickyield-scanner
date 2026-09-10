@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 /**
- * Apple touch icon — used when someone adds the site to a phone home screen.
+ * Apple touch icon  -  used when someone adds the site to a phone home screen.
  * Same geometry as public/brand/litmus-mark.svg.
  */
 export const size = { width: 180, height: 180 }

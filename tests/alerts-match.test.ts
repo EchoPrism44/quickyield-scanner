@@ -42,7 +42,7 @@ describe('alertMatchesOpportunity', () => {
     it('does not fire when 24h change is missing', () => {
       expect(alertMatchesOpportunity(alert({ condition: 'apy-drop', minApy: 5 }), pool({ apyPct1D: undefined }))).toBe(false)
     })
-    it('still fires for a low-confidence pool — degradation must not be masked', () => {
+    it('still fires for a low-confidence pool  -  degradation must not be masked', () => {
       expect(alertMatchesOpportunity(alert({ condition: 'apy-drop', minApy: 5, minConfidence: 95 }), pool({ apyPct1D: -9, confidence: 40 }))).toBe(true)
     })
   })

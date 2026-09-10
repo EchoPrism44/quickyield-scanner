@@ -109,7 +109,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   height: 100%;
   display: block;
 }
-/* Wordmark: Cinzel, wide-tracked, cream — matched to the layered-L mark.
+/* Wordmark: Cinzel, wide-tracked, cream  -  matched to the layered-L mark.
    Tracking is on the right side only (letter-spacing adds trailing space),
    so the negative margin keeps it optically centred against the mark. */
 .qy-logo-text {
@@ -194,7 +194,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 /* ============== Dashboard layout ============== */
 .qy-app { display: flex; min-height: 100vh; background: var(--bg-page); }
 /* 240px was a lot of permanent furniture for 4 links on a data-dense screen.
-   208px by default, and collapsing to icons hands ~144px back to the table —
+   208px by default, and collapsing to icons hands ~144px back to the table  -
    which is what the Grade and Actions columns were short of. */
 .qy-aside {
   display: none; width: 208px; flex-shrink: 0;
@@ -204,7 +204,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 }
 @media (min-width: 768px) { .qy-aside { display: flex; } }
 
-/* Collapsed means gone, not narrow — a 64px rail is still furniture. The
+/* Collapsed means gone, not narrow  -  a 64px rail is still furniture. The
    floating button below brings it back, the way editors and docs apps do it. */
 .qy-aside--collapsed { width: 0; border-right: 0; overflow: hidden; }
 
@@ -603,7 +603,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .qy-terminal-kpi strong { display: block; margin-top: 8px; font-family: var(--font-display); font-size: 22px; color: var(--ink); }
 .qy-kpi-delta { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 11px; }
 
-/* Market pulse — week-over-week grade snapshot diff, above the Discover KPIs */
+/* Market pulse  -  week-over-week grade snapshot diff, above the Discover KPIs */
 .qy-market-pulse {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px;
   padding: 10px 16px; margin-bottom: 16px;
@@ -651,7 +651,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 /* The rail only earns its 320px once the table already fits beside it.
    At 1366-1440 (ordinary laptops) sidebar + rail left the table ~800px
    against ~980px of columns, so it was permanently scrolling. Below 1600px
-   the heatmap and signal stream stack under the table instead — still there,
+   the heatmap and signal stream stack under the table instead  -  still there,
    just not competing with the thing people came for. */
 @media (min-width: 1600px) {
   .qy-discover-layout { grid-template-columns: minmax(0, 1fr) 320px; }
@@ -827,12 +827,12 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 }
 /* overflow-x must be auto at every width: with `overflow: hidden` the Grade and
    Actions columns were silently clipped whenever the row was wider than the
-   viewport, with no scrollbar to reach them — hiding the single thing the
+   viewport, with no scrollbar to reach them  -  hiding the single thing the
    product exists to show. */
 /* The table scrolls inside its own viewport-height box rather than growing
    down the page. Otherwise the horizontal scrollbar sits below all 50 rows,
    and you have to scroll to the bottom of the page before you can scroll
-   sideways — which is no better than the columns being clipped. */
+   sideways  -  which is no better than the columns being clipped. */
 .qy-terminal-table-wrap {
   border: 1px solid var(--line); border-radius: 14px;
   overflow: auto;
@@ -860,7 +860,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   /* An explicit min-width is what actually produces the scrollbar: with only
      `fr` units the grid shrinks to its container instead of overflowing, so
      overflow-x had nothing to scroll and Actions stayed unreachable.
-     TVL trimmed again (it only ever holds "$17.7B"); Grade widened — it was
+     TVL trimmed again (it only ever holds "$17.7B"); Grade widened  -  it was
      the narrowest column while carrying the most text. */
   min-width: 980px;
   grid-template-columns: minmax(180px, 1.7fr) minmax(74px, 0.7fr) minmax(80px, 0.7fr) minmax(68px, 0.55fr) minmax(68px, 0.55fr) minmax(78px, 0.6fr) minmax(74px, 0.55fr) minmax(120px, 0.9fr) minmax(112px, 0.7fr);
@@ -868,7 +868,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   align-items: center;
   padding: 14px 18px;
 }
-/* Opaque, not translucent — a sticky header has rows sliding underneath it. */
+/* Opaque, not translucent  -  a sticky header has rows sliding underneath it. */
 .qy-terminal-table-head { border-bottom: 1px solid var(--line); background: #14171c; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-mute); }
 .qy-sort-link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-align: left; }
 .qy-sort-link.active { color: var(--ink); }
@@ -884,7 +884,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
    on desktop, so showing them there would just repeat it. */
 .qy-label-mobile { display: none; }
 .qy-terminal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
-/* Compact icon actions — same three actions, ~130px less per row. */
+/* Compact icon actions  -  same three actions, ~130px less per row. */
 .qy-icon-action {
   display: inline-flex; align-items: center; justify-content: center;
   width: 30px; height: 30px; flex-shrink: 0;
@@ -1044,7 +1044,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 
   /* Below 720px the same rows become cards, rather than shipping a second
      copy of every pool as a separate mobile list. That duplicate markup was
-     ~76KB of the terminal's HTML — a fifth of the page — for rows that were
+     ~76KB of the terminal's HTML  -  a fifth of the page  -  for rows that were
      display:none on whichever breakpoint you were not on. */
   .qy-terminal-table-wrap {
     /* No longer a scrolling table: drop the min-width that forced horizontal

@@ -1,11 +1,11 @@
 /**
  * Data-quality validator for the public grade ledger.
  * -----------------------------------------------------
- * Flags DATA GLITCHES in data/grades/<date>.json — transient, physically
+ * Flags DATA GLITCHES in data/grades/<date>.json  -  transient, physically
  * implausible TVL readings from the upstream feed that wrongly move a grade.
  *
  * DESIGN PRINCIPLE (important): a glitch is NOT a bad outcome. A real TVL
- * collapse — a pool that drops and STAYS down — is the harm signal we exist to
+ * collapse  -  a pool that drops and STAYS down  -  is the harm signal we exist to
  * study, so we must never mark it ineligible. We only flag readings that are
  * physically impossible or that spike and immediately revert. Concretely, a
  * pool-observation at snapshot t is a glitch if EITHER:
@@ -19,8 +19,8 @@
  *
  * This is a RETROSPECTIVE validator: the transient-peak test needs the *next*
  * snapshot, which does not exist at write time. The live pipeline
- * (snapshot-grades.ts) can only run the single-snapshot tripwire — the ceiling
- * check, plus an optional jump-vs-previous flag — and mark a pool for review.
+ * (snapshot-grades.ts) can only run the single-snapshot tripwire  -  the ceiling
+ * check, plus an optional jump-vs-previous flag  -  and mark a pool for review.
  * Final classification happens here, one week later, once the neighbour exists.
  *
  * We do NOT rewrite historical snapshots. The ledger stays append-only; this
@@ -98,7 +98,7 @@ export function tripwire(p: Pool, prev?: Snapshot): string | null {
   if (p.tvlUsd > CEILING) return `over-ceiling ($${(p.tvlUsd / 1e9).toFixed(1)}B)`
   if (prev && p.tvlUsd >= PEAK_ABS_FLOOR) {
     const prevTvl = prev.map.get(p.poolId)?.tvlUsd ?? 0
-    if (p.tvlUsd >= 10 * Math.max(prevTvl, 1)) return `suspected spike (prev=$${(prevTvl / 1e6).toFixed(1)}M -> $${(p.tvlUsd / 1e6).toFixed(1)}M) — confirm next week`
+    if (p.tvlUsd >= 10 * Math.max(prevTvl, 1)) return `suspected spike (prev=$${(prevTvl / 1e6).toFixed(1)}M -> $${(p.tvlUsd / 1e6).toFixed(1)}M)  -  confirm next week`
   }
   return null
 }

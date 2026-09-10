@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — Litmus',
+  title: 'Terms of Service  -  Litmus',
   description: 'The terms governing your use of Litmus, an informational DeFi yield research and alerting product.',
 }
 

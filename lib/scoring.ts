@@ -2,7 +2,7 @@ import { getProtocolMeta, llamaProtocolIcon, normalizeProtocolSlug } from './pro
 import { computeSafetyGrade } from './grade'
 import type { LlamaPool, Opportunity, LitmusScoreBreakdown, RiskLevel } from './types'
 
-/** Inputs to the four Safety-Grade dimensions — shared by the live scan and the backtest. */
+/** Inputs to the four Safety-Grade dimensions  -  shared by the live scan and the backtest. */
 export type ScoreInputs = {
   apy: number
   apyBase?: number
@@ -77,7 +77,7 @@ export function poolToOpportunity(pool: LlamaPool, index: number): Opportunity {
   const protocol = getProtocolMeta(project)
   const platform = protocol.name || project
   const symbol = normalizeSymbol(pool.symbol)
-  // Raw DeFiLlama slug — matches the icon CDN and /protocols directory exactly
+  // Raw DeFiLlama slug  -  matches the icon CDN and /protocols directory exactly
   // (incl. dotted slugs like "ether.fi-stake"), unlike our normalized form.
   const rawSlug = pool.project
   const internalUrl = `/terminal/pools/${encodeURIComponent(`live-${pool.pool}`)}`

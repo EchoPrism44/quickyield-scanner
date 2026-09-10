@@ -21,14 +21,14 @@ const presetItems: { key: OpportunityPreset | 'all'; label: string }[] = [
 
 /**
  * Mirrors STABLE_ASSETS in lib/opportunities.ts. Duplicated rather than
- * imported because that module is server-only — importing from it would drag
+ * imported because that module is server-only  -  importing from it would drag
  * the scanner and store into the client bundle.
  */
 const STABLE_ASSETS = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'USDE', 'FRAX', 'LUSD', 'PYUSD'])
 
 /** Signed APY change, colored like CMC (green up / red down). */
 function Delta({ value }: { value?: number }) {
-  if (value === undefined || Number.isNaN(value)) return <span className="qy-terminal-submetric">—</span>
+  if (value === undefined || Number.isNaN(value)) return <span className="qy-terminal-submetric"> - </span>
   const cls = value > 0.01 ? 'qy-wl-up' : value < -0.01 ? 'qy-wl-down' : 'qy-wl-flat'
   return <strong className={cls}>{value > 0 ? '+' : ''}{value.toFixed(2)}%</strong>
 }
@@ -97,7 +97,7 @@ export function DiscoverView({
   // the current filters. Deriving them from data.opportunities would describe
   // only the page that happens to be loaded.
   const { avgApy, totalTvlUsd, saferCount, bestStablecoinApy, highestApy, apyBands } = data.stats
-  // These two name a specific pool, so they can only come from loaded rows —
+  // These two name a specific pool, so they can only come from loaded rows  -
   // the wording below says "loaded" rather than implying a market-wide best.
   const stablecoinBestLoaded = data.opportunities
     .filter((item) => item.category.toLowerCase().includes('stable') || STABLE_ASSETS.has(item.asset.toUpperCase()))
@@ -120,7 +120,7 @@ export function DiscoverView({
       <div className="qy-page-header qy-terminal-header">
         <div>
           <span className="qy-overline qy-overline-signal">Yield radar</span>
-          <h1>Discover</h1>
+          <h1>Explore live grades</h1>
           <p>Scan live pools, understand why they rank, save candidates, and set target alerts.</p>
         </div>
         <div className="qy-terminal-kpis">

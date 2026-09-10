@@ -49,7 +49,7 @@ export function PoolHistoryChart({ data, source }: { data: PoolChartPoint[]; sou
     return (
       <div className="qy-empty">
         <h3>History is still building</h3>
-        <p>This pool doesn&apos;t have enough history yet — it fills in as data accumulates.</p>
+        <p>This pool doesn&apos;t have enough history yet  -  it fills in as data accumulates.</p>
       </div>
     )
   }

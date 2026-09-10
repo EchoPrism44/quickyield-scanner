@@ -21,7 +21,7 @@ export type BlogPost = {
   body: string
 }
 
-/** Site default byline — used when a post has no `author:` in its frontmatter. */
+/** Site default byline  -  used when a post has no `author:` in its frontmatter. */
 export const DEFAULT_AUTHOR = 'Litmus Research'
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog')

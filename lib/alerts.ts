@@ -50,7 +50,7 @@ function matchesTargeting(alert: AlertRule, item: Opportunity): boolean {
  * - reward-spike: reward share of APY is >= threshold% (incentive-dependent / trap)
  *
  * Upside (apy-above) and apy-below keep the risk + safety gates so discovery stays
- * high-quality. The other downside conditions skip the safety gate on purpose —
+ * high-quality. The other downside conditions skip the safety gate on purpose  -
  * degradation usually drags a pool's safety score down, and masking that would
  * defeat the whole point of the alert.
  */

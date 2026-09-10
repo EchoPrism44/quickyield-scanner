@@ -5,7 +5,7 @@ import type { Opportunity } from '../lib/types'
 
 export function YieldTable({ items }: { items: Opportunity[] }) {
   if (items.length === 0) {
-    return <p className="ql-lead">No pools match right now — the scanner refreshes regularly, check back soon.</p>
+    return <p className="ql-lead">No pools match right now  -  the scanner refreshes regularly, check back soon.</p>
   }
   return (
     <div className="ql-yield-table">
@@ -27,7 +27,7 @@ export function YieldTable({ items }: { items: Opportunity[] }) {
             </div>
             <span className="hide-sm">{o.chain}</span>
             <span className="num">{o.apy.toFixed(2)}%</span>
-            <span><span className={`ql-grade-chip ql-grade-${g.letter.toLowerCase()}`} title={`Safety Grade ${g.letter} — ${g.label}`}>{g.letter}</span></span>
+            <span><span className={`ql-grade-chip ql-grade-${g.letter.toLowerCase()}`} title={`Safety Grade ${g.letter}  -  ${g.label}`}>{g.letter}</span></span>
             <span className="num hide-sm">{o.tvl}</span>
             <Link href="/terminal" className="ql-btn ql-btn--ghost ql-btn--sm" aria-label={`Open ${o.platform} in the terminal`}>
               Open <ArrowRight size={13} />

@@ -6,7 +6,7 @@ import { GradeDistributionBars } from './grade-distribution-bars'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
-/** Full snapshot history — newest first, one visual card per weekly record. */
+/** Full snapshot history  -  newest first, one visual card per weekly record. */
 export function SnapshotTimeline({ snapshots }: { snapshots: LedgerSnapshotSummary[] }) {
   const reduce = useReducedMotion()
   const newestFirst = [...snapshots].reverse()

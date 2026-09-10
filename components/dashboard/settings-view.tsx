@@ -106,7 +106,7 @@ export function SettingsView({
 
         <section className="qy-set-section">
           <h3><Mail size={16} /> Weekly digest</h3>
-          <p>Every Sunday morning — your watchlist APYs, grade changes, and the top 3 safe picks of the week.</p>
+          <p>Every Sunday morning  -  your watchlist APYs, grade changes, and the top 3 safe picks of the week.</p>
           <div className="qy-set-row">
             <div className="qy-set-row-info">
               <strong>Safe Yield digest</strong>

@@ -31,11 +31,11 @@ function thresholdMeta(condition: AlertCondition): { label: string; help: string
     case 'apy-below':
       return { label: 'APY threshold (%)', help: 'Notify when a matching pool falls to or below this APY (downside watch).' }
     case 'apy-drop':
-      return { label: 'Drop in 24h (pts)', help: 'Notify when APY falls by at least this many points in a day — a sudden yield collapse.' }
+      return { label: 'Drop in 24h (pts)', help: 'Notify when APY falls by at least this many points in a day  -  a sudden yield collapse.' }
     case 'tvl-drop':
-      return { label: 'TVL drop (%)', help: 'Notify when the pool loses at least this share of TVL since the last scan — a liquidity exit.' }
+      return { label: 'TVL drop (%)', help: 'Notify when the pool loses at least this share of TVL since the last scan  -  a liquidity exit.' }
     case 'reward-spike':
-      return { label: 'Reward share (%)', help: 'Notify when incentive tokens make up at least this share of APY — often an unsustainable trap.' }
+      return { label: 'Reward share (%)', help: 'Notify when incentive tokens make up at least this share of APY  -  often an unsustainable trap.' }
     case 'apy-above':
     default:
       return { label: 'APY threshold (%)', help: 'Notify when a matching pool is at or above this APY.' }

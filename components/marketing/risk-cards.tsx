@@ -5,7 +5,7 @@ import { StatCounter } from './stat-counter'
 import { OnChainBadge } from './onchain-badge'
 
 /**
- * Layer-3 "Risk Cards" — a polished summary of the latest weekly snapshot:
+ * Layer-3 "Risk Cards"  -  a polished summary of the latest weekly snapshot:
  * the grade mix, pools graded, chains covered, and the safe share, each
  * carrying the on-chain trust badge. No raw data, no letter-soup.
  */

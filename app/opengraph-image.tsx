@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'nodejs'
-export const alt = 'Litmus — yield research you can audit, not just trust'
+export const alt = 'Litmus  -  yield research you can audit, not just trust'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -19,7 +19,7 @@ const ledgerRows = [
   { date: '·', label: 'graded in the open', detail: 'the record builds in public' },
 ]
 
-// Minimal Litmus mark — flat, no gradients, no base64
+// Minimal Litmus mark  -  flat, no gradients, no base64
 const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="#0a0a0c"/><g transform="translate(50 50) scale(0.45) translate(-256 -169)" fill="#f5f2eb"><path d="M 211,136 L 219,128 L 219,230 L 273,230 L 265,238 L 211,238 Z"/><path d="M 225,122 L 233,114 L 233,216 L 287,216 L 279,224 L 225,224 Z"/><path d="M 239,108 L 247,100 L 247,202 L 301,202 L 293,210 L 239,210 Z"/></g></svg>`
 const markDataUri = `data:image/svg+xml;base64,${btoa(markSvg)}`
 
@@ -70,7 +70,7 @@ export default function OpengraphImage() {
             <span style={{ color: text }}>, not just trust.</span>
           </div>
           <div style={{ display: 'flex', fontSize: 27, color: muted, marginTop: 24, maxWidth: 880 }}>
-            Every pool graded A–F under a published methodology — every grade on a public, timestamped ledger.
+            Every pool graded A–F under a published methodology  -  every grade on a public, timestamped ledger.
           </div>
         </div>
 

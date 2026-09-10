@@ -6,7 +6,7 @@ export default function TerminalError({ reset }: { error: Error; reset: () => vo
   return (
     <div className="qy-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 16, textAlign: 'center' }}>
       <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: 'var(--signal)' }}>Terminal error</div>
-      <p style={{ color: 'var(--ink-dim)', maxWidth: 360 }}>The scanner data couldn&apos;t load. This is usually temporary — not a rug pull.</p>
+      <p style={{ color: 'var(--ink-dim)', maxWidth: 360 }}>The scanner data couldn&apos;t load. This is usually temporary  -  not a rug pull.</p>
       <div style={{ display: 'flex', gap: 12 }}>
         <button onClick={() => reset()} className="qy-btn qy-btn-primary">
           Retry

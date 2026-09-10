@@ -126,7 +126,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-7)' }}>
             <span>
-              Safety Grades are our opinion under a published methodology. Informational only —
+              Safety Grades are our opinion under a published methodology. Informational only  -
               not investment advice, not an audit, and not a guarantee.
             </span>
           </div>

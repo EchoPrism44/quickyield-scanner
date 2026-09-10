@@ -2,7 +2,7 @@ import { computeSafetyGrade } from '../../lib/grade'
 import type { Opportunity } from '../../lib/types'
 
 /**
- * Horizontal ticker of live pools (CSS marquee — no JS animation).
+ * Horizontal ticker of live pools (CSS marquee  -  no JS animation).
  * Rows are doubled for a seamless loop. Server-renderable.
  */
 export function TickerTape({ rows }: { rows: Opportunity[] }) {

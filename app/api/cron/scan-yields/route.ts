@@ -105,8 +105,8 @@ export async function GET(request: NextRequest) {
     status: scan.dataStatus,
     // Surfaced so the cron job can fail on it. A failed cache write still
     // returns dataStatus 'live' (the pools were fetched, they just weren't
-    // persisted), so without this the most damaging outcome — the scan
-    // "succeeding" while the cache everyone reads goes stale — looks
+    // persisted), so without this the most damaging outcome  -  the scan
+    // "succeeding" while the cache everyone reads goes stale  -  looks
     // identical to a healthy run.
     fallbackReason: scan.fallbackReason ?? null,
     matched,

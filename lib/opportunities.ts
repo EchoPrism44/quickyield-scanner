@@ -75,7 +75,7 @@ const APY_BANDS: { band: string; min: number; max: number }[] = [
  * These are computed here, over the full filtered set, because the client only
  * receives one page. Deriving them from that page instead produced figures
  * labelled "Total TVL tracked" and "Market map" that actually described 50
- * rows — the same defect that was fixed for chainCount.
+ * rows  -  the same defect that was fixed for chainCount.
  */
 function summarize(opportunities: Opportunity[]): OpportunityStats {
   const count = opportunities.length
@@ -220,7 +220,7 @@ const CACHE_FRESH_MS = 90 * 60 * 1000
  * unconditionally (6-8s per page), then whenever the cache looked stale (which
  * was half of every hour, costing up to the 15s fetch timeout plus cache and
  * snapshot writes). A page render now only scans when there is nothing cached
- * at all — a cold database, not a routine request.
+ * at all  -  a cold database, not a routine request.
  *
  * Refreshing the cache is the cron's job (/api/cron/scan-yields), not the
  * visitor's. Stale-but-present data is still served, and labelled 'fallback'
@@ -234,7 +234,7 @@ const CACHE_FRESH_MS = 90 * 60 * 1000
  * force-dynamic, so without this each visitor pays that round trip and parse
  * again. A warm serverless instance now does it at most once a minute.
  *
- * The TTL only needs to be short relative to the hourly scan — a request may
+ * The TTL only needs to be short relative to the hourly scan  -  a request may
  * serve data up to a minute behind the table, which is far inside the window
  * the data itself is refreshed on.
  */
@@ -268,7 +268,7 @@ async function readOpportunities() {
       }
     }
   } catch {
-    // Cache unreadable — fall through to a live scan rather than failing.
+    // Cache unreadable  -  fall through to a live scan rather than failing.
   }
   return scanAndCacheYields()
 }

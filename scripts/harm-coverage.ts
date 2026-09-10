@@ -1,17 +1,17 @@
 /**
- * Harm-coverage — the Phase 1 feasibility slice for the safety-signal rebuild.
+ * Harm-coverage  -  the Phase 1 feasibility slice for the safety-signal rebuild.
  * ---------------------------------------------------------------------------
  * The lift-test showed the grade doesn't beat raw TVL at predicting TVL-collapse.
  * But TVL-collapse is a size proxy, not harm. The real question (handoff §7) is
- * whether the grade predicts REAL harm — exploits, rugs, oracle manipulation.
+ * whether the grade predicts REAL harm  -  exploits, rugs, oracle manipulation.
  *
  * Before anyone builds the contract-risk feature engine, this script answers the
  * prerequisite nobody has measured: do enough real harm events even intersect the
  * graded pool universe over the existing ~11-week ledger to validate anything?
  *
  * It (1) loads the grade ledger, (2) fetches DeFiLlama harm events + the protocol
- * bridge, (3) joins them — a snapshot observation is a POSITIVE if that protocol
- * suffers a harm event within H days after the snapshot date — and (4) reports
+ * bridge, (3) joins them  -  a snapshot observation is a POSITIVE if that protocol
+ * suffers a harm event within H days after the snapshot date  -  and (4) reports
  * coverage at pool and protocol-snapshot level. Only IF a preregistered minimum
  * of positives is met does it report a grade-vs-TVL-vs-random AUC (with a
  * label-permutation null and a D/F-vs-A/B 2x2), so we never over-read noise.
@@ -90,7 +90,7 @@ function harmWithin(obs: Obs, events: HarmEvent[], idx: ProtocolIndex, horizonDa
 }
 
 function pct(n: number, d: number): string {
-  return d === 0 ? '—' : `${((n / d) * 100).toFixed(2)}%`
+  return d === 0 ? ' - ' : `${((n / d) * 100).toFixed(2)}%`
 }
 
 /** Mann-Whitney permutation p-value: P(null AUC >= observed) under shuffled labels. */
@@ -143,7 +143,7 @@ async function run() {
   const idx = await fetchProtocolIndex()
   console.log(`\nharm feed: ${events.length} DeFiLlama events | protocol directory: ${idx.knownSlugs.size} slugs`)
   if (events.length === 0 || idx.knownSlugs.size === 0) {
-    console.log('!! harm feed or protocol directory empty (network?) — cannot assess coverage. Aborting.')
+    console.log('!! harm feed or protocol directory empty (network?)  -  cannot assess coverage. Aborting.')
     return
   }
 
@@ -239,8 +239,8 @@ async function run() {
     const aucTvl = auc(tvlPred, y)
 
     console.log(`\nHARM-SIGNAL TEST (H=${H}, protocol-snapshot level, N=${reps.length}, positives=${y.reduce((a, b) => a + b, 0)}):`)
-    console.log(`  AUC — grade score (low=risky): ${aucScore.toFixed(3)}`)
-    console.log(`  AUC — log(TVL) (small=risky):  ${aucTvl.toFixed(3)}`)
+    console.log(`  AUC  -  grade score (low=risky): ${aucScore.toFixed(3)}`)
+    console.log(`  AUC  -  log(TVL) (small=risky):  ${aucTvl.toFixed(3)}`)
     console.log(`  baseline (random):             0.500`)
     const p = permutationP(scorePred, y, aucScore, PERMUTATIONS)
     console.log(`  grade-score AUC permutation p-value: ${p.toFixed(4)}`)
@@ -265,7 +265,7 @@ async function run() {
     console.log(`\nVERDICT (H=${H}): sufficient positives; see AUC + p-value above. Grade beats TVL? ${aucScore > aucTvl ? 'YES' : 'NO'}.`)
   }
 
-  // Reproducibility snapshot of the fetched hacks — a NEW path, never data/grades/.
+  // Reproducibility snapshot of the fetched hacks  -  a NEW path, never data/grades/.
   try {
     const dir = join(process.cwd(), 'data', 'harm')
     mkdirSync(dir, { recursive: true })

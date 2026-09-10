@@ -23,13 +23,13 @@ const steps: Step[] = [
     icon: Bookmark,
     overline: 'Step 2 · Save',
     title: 'Track what matters to you',
-    body: 'Save pools to your Watchlist to follow their APY, grade, and how they move over time — your shortlist, not the whole noisy market.',
+    body: 'Save pools to your Watchlist to follow their APY, grade, and how they move over time  -  your shortlist, not the whole noisy market.',
   },
   {
     icon: Bell,
     overline: 'Step 3 · Get alerted',
     title: 'Know before yields turn',
-    body: 'Set plain-language alerts — APY rises or drops, TVL drains, rewards spike — delivered by email or Telegram. Set it once, stay ahead.',
+    body: 'Set plain-language alerts  -  APY rises or drops, TVL drains, rewards spike  -  delivered by email or Telegram. Set it once, stay ahead.',
   },
 ]
 
@@ -128,7 +128,7 @@ export function Onboarding() {
           </div>
 
           <p className="qy-asset-meta" style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '4px 0 0' }}>
-            <ShieldCheck size={13} /> Research-only — Litmus never touches your funds or wallet.
+            <ShieldCheck size={13} /> Research-only  -  Litmus never touches your funds or wallet.
           </p>
         </div>
 

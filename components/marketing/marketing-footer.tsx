@@ -12,7 +12,7 @@ export function MarketingFooter() {
           <div>
             <strong style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>Litmus</strong>
             <p className="ql-footer-blurb">
-              Onchain yield research with a public track record. Research only — not investment
+              Onchain yield research with a public track record. Research only  -  not investment
               advice, not an audit, and never custody. Always verify with the protocol before
               moving funds.
             </p>
@@ -24,7 +24,8 @@ export function MarketingFooter() {
               <li><Link href="/docs">Methodology</Link></li>
               <li><Link href="/yields">Best yields</Link></li>
               <li><Link href="/blog">Research</Link></li>
-              <li><Link href="/roadmap">Roadmap</Link></li>
+              <li><Link href="/assessments">Assessments</Link></li>
+              <li><Link href="/reports">Public reports</Link></li>
               <li><Link href="/terminal">Launch terminal</Link></li>
             </ul>
           </div>

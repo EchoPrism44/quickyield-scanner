@@ -1,5 +1,5 @@
 import { defaultSettings } from './constants'
-import type { AlertActivity, AlertRule, NotificationChannel, Opportunity, OpportunitySnapshot, Position, UserSettings } from './types'
+import type { AlertActivity, AlertRule, AssessmentLead, NotificationChannel, Opportunity, OpportunitySnapshot, Position, PublishedAssessment, UserSettings } from './types'
 
 export const memory = {
   opportunities: [] as Opportunity[],
@@ -51,4 +51,6 @@ export const memory = {
   ]),
   deliveries: new Set<string>(),
   deliveryRecords: [] as AlertActivity[],
+  assessmentLeads: [] as AssessmentLead[],
+  assessments: [] as PublishedAssessment[],
 }

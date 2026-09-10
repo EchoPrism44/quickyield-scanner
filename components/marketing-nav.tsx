@@ -6,7 +6,7 @@ import { UserButton, useUser } from '@clerk/nextjs'
 import { BrandLogo } from './brand-logo'
 
 // Clerk is only mounted when a real key exists (see app/layout.tsx), and its
-// hooks throw outside a provider — so the hook lives in a child that is only
+// hooks throw outside a provider  -  so the hook lives in a child that is only
 // rendered when Clerk is configured.
 const clerkEnabled =
   typeof process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === 'string' &&
@@ -15,7 +15,7 @@ const clerkEnabled =
 function NavAuth() {
   const { isLoaded, isSignedIn } = useUser()
   // Render nothing until Clerk knows, so a signed-in visitor never sees a
-  // "Sign in" link flash — which reads as the app being broken.
+  // "Sign in" link flash  -  which reads as the app being broken.
   if (!isLoaded) return null
   return isSignedIn
     ? <UserButton />
@@ -41,16 +41,17 @@ export function MarketingNav() {
           <a href="/#how" className="ql-nav-link">How it works</a>
           <Link href="/docs" className="ql-nav-link">Methodology</Link>
           <Link href="/proof" className="ql-nav-link">Track record</Link>
+          <Link href="/assessments" className="ql-nav-link">Assessments</Link>
+          <Link href="/reports" className="ql-nav-link">Reports</Link>
           <Link href="/yields" className="ql-nav-link">Yields</Link>
-          <Link href="/blog" className="ql-nav-link">Research</Link>
-          <Link href="/roadmap" className="ql-nav-link">Roadmap</Link>
+          <Link href="/blog" className="ql-nav-link">Field Notes</Link>
         </div>
         <div className="ql-nav-actions">
           {clerkEnabled
             ? <NavAuth />
             : <Link href="/sign-in" className="ql-nav-signin" data-testid="nav-signin">Sign in</Link>}
-          {/* Terminal is public (CMC model) — the primary CTA opens it directly, no signup wall. */}
-          <Link href="/terminal" className="ql-btn ql-btn--primary ql-btn--sm" data-testid="nav-getstarted">Open terminal</Link>
+          {/* Terminal is public (CMC model)  -  the primary CTA opens it directly, no signup wall. */}
+          <Link href="/assessments#contact" className="ql-btn ql-btn--primary ql-btn--sm" data-testid="nav-getstarted">Request assessment</Link>
         </div>
       </div>
     </nav>

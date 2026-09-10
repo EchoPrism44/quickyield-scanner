@@ -9,7 +9,7 @@ export type GradeDistribution = Record<GradeLetter, number>
 
 /**
  * Machine-readable raw JSON for a snapshot (served by app/api/ledger/[date]).
- * Layer 1 (developer/machine access) — intentionally NOT linked in the UI.
+ * Layer 1 (developer/machine access)  -  intentionally NOT linked in the UI.
  * Users see charts + the on-chain (Base) verification, never raw JSON.
  */
 export function snapshotDataUrl(date: string): string {

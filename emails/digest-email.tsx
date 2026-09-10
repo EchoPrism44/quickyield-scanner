@@ -30,7 +30,7 @@ export function DigestEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your weekly Safe Yield digest — {weekLabel}</Preview>
+      <Preview>Your weekly Safe Yield digest  -  {weekLabel}</Preview>
       <Body style={{ backgroundColor: bg, color: text, fontFamily: 'Arial, sans-serif', margin: 0, padding: 0 }}>
         <Container style={{ maxWidth: 560, margin: '0 auto', padding: '32px 24px' }}>
 

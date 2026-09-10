@@ -46,13 +46,13 @@ jobs:
           ok=1
 
           # 'fallback' means the upstream feed failed and cached pools were
-          # served instead — nothing new was persisted this hour.
+          # served instead  -  nothing new was persisted this hour.
           if [ "$status" != "live" ]; then
             echo "::error::Scan degraded: status=$status (expected 'live')"
             ok=0
           fi
 
-          # Set even when status is 'live', e.g. "Storage unavailable" — the
+          # Set even when status is 'live', e.g. "Storage unavailable"  -  the
           # pools were fetched but never cached, so readers keep going stale.
           if [ -n "$fallback" ]; then
             echo "::error::Scan reported a problem: $fallback"
@@ -70,7 +70,7 @@ jobs:
           # Alert-delivery and prune problems. Non-fatal to the cache, but they
           # mean someone's alert did not go out.
           if [ "$failures" -gt 0 ]; then
-            echo "::error::Scan reported $failures failure(s) — see the body above"
+            echo "::error::Scan reported $failures failure(s)  -  see the body above"
             ok=0
           fi
 
@@ -78,3 +78,12 @@ jobs:
             exit 1
           fi
           echo "Scan healthy: $scanned pools, status=$status"
+
+  publish-assessments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish assessments whose review window expired
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: curl --fail-with-body --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "${APP_URL:-https://quickyield-scanner.vercel.app}/api/cron/publish-assessments"

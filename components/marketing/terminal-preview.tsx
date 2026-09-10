@@ -7,7 +7,7 @@ import type { Opportunity } from '../../lib/types'
 const EASE = [0.16, 1, 0.3, 1] as const
 
 /**
- * Live terminal panel — real rows from the live feed, staggered in with
+ * Live terminal panel  -  real rows from the live feed, staggered in with
  * motion. Copy stays honest: no invented counts.
  */
 export function TerminalPreview({ rows }: { rows: Opportunity[] }) {

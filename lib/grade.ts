@@ -1,7 +1,7 @@
 import type { LitmusScoreBreakdown, SafetyGrade, SafetyGradeLetter } from './types'
 
 /**
- * Litmus Safety Grade — the product's core, transparent IP.
+ * Litmus Safety Grade  -  the product's core, transparent IP.
  *
  * Distills the four scoring dimensions into a single A–F letter so a pool can be
  * judged at a glance. Pure and dependency-free so it can run on both the server

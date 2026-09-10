@@ -5,7 +5,7 @@ import { useCountUp } from '../../hooks/use-count-up'
 
 /**
  * Count-up stat that starts when it scrolls into view.
- * `value` must be a real, computed number — never a marketing guess.
+ * `value` must be a real, computed number  -  never a marketing guess.
  */
 export function StatCounter({
   value,

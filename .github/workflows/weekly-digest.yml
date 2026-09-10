@@ -3,7 +3,7 @@ name: Weekly digest
 # Fallback trigger for the Sunday digest email. The primary trigger is the
 # Vercel cron in vercel.json; this Action makes the digest independent of
 # Vercel plan/cron behavior. The route is idempotent per run, so if both
-# fire the same morning users may get at most one duplicate email — set
+# fire the same morning users may get at most one duplicate email  -  set
 # only one of the two if that matters.
 #
 # Required repo secrets:
@@ -28,7 +28,7 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           if [ -z "$DIGEST_URL" ] || [ -z "$CRON_SECRET" ]; then
-            echo "DIGEST_URL / CRON_SECRET secrets not set — skipping."
+            echo "DIGEST_URL / CRON_SECRET secrets not set  -  skipping."
             exit 0
           fi
           status=$(curl -s -o /tmp/digest.json -w "%{http_code}" -H "Authorization: Bearer $CRON_SECRET" "$DIGEST_URL")

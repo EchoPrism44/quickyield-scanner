@@ -1,5 +1,5 @@
 // scripts/audit-grades.js
-// Corrected audit script — Phase A (snapshot integrity) + temporal analysis only.
+// Corrected audit script  -  Phase A (snapshot integrity) + temporal analysis only.
 // This script intentionally does NOT attempt model reproduction from live Llama data.
 
 const fs = require('fs')

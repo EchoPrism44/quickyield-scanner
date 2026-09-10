@@ -106,4 +106,4 @@ Litmus continuously grades live onchain yield pools and preserves historical rec
 
 Start with the [current yield research](/yields), then inspect the [published methodology](/docs) and [historical proof records](/proof).
 
-Research is informational only — not investment advice, an audit, or a guarantee. Always verify the underlying protocol before moving funds.
+Research is informational only  -  not investment advice, an audit, or a guarantee. Always verify the underlying protocol before moving funds.

@@ -2,7 +2,7 @@ name: Weekly grade snapshot
 
 # Public grade ledger: every Monday, grade all live pools and commit a dated
 # JSON to the repo. The git history is a tamper-proof, survivorship-bias-free
-# record — each grade is timestamped before its outcome is known. No DB, no cost.
+# record  -  each grade is timestamped before its outcome is known. No DB, no cost.
 
 on:
   schedule:

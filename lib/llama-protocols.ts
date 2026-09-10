@@ -1,5 +1,5 @@
 /**
- * DeFiLlama protocol directory — used to enrich pools with official site URLs
+ * DeFiLlama protocol directory  -  used to enrich pools with official site URLs
  * that the /pools feed doesn't include. Free, public, heavily cached.
  */
 export async function getProtocolUrlIndex(): Promise<Map<string, string>> {

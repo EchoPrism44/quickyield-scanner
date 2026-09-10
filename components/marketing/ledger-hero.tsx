@@ -21,7 +21,7 @@ function nextMonday(): string {
 
 /**
  * Hero centerpiece: the weekly grade record rendered as a rail of snapshots.
- * Every block is a real weekly snapshot — dates, counts, and distributions
+ * Every block is a real weekly snapshot  -  dates, counts, and distributions
  * all come from published data, never invented. The on-chain badge reflects
  * the Base anchor (or its "launching soon" state).
  */
@@ -52,7 +52,7 @@ export function LedgerHero({ ledger }: { ledger: LedgerSummary | null }) {
   const latestDate = ledger.latest.date
 
   return (
-    <div className="ql-ledger" aria-label="Weekly grade record — snapshots">
+    <div className="ql-ledger" aria-label="Weekly grade record  -  snapshots">
       <div className="ql-ledger-bar">
         <Layers size={13} />
         <span>weekly grade record</span>

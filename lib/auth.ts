@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 
 export const LOCAL_USER_ID = 'local-beta-user'
@@ -25,7 +25,7 @@ export async function requireUserId() {
 
 /**
  * Signed-in user id, or null for anonymous visitors (public CMC-style pages).
- * Never throws — a Clerk misconfiguration degrades to anonymous instead of a 500.
+ * Never throws  -  a Clerk misconfiguration degrades to anonymous instead of a 500.
  */
 export async function optionalUserId(): Promise<string | null> {
   if (canUseLocalUser()) return LOCAL_USER_ID
@@ -44,4 +44,16 @@ export async function requireDashboardUserId(returnBackUrl = '/terminal'): Promi
     redirect(`/sign-in?redirect_url=${encodeURIComponent(returnBackUrl)}`)
   }
   return session.userId as string
+}
+
+export async function isAssessmentAdmin() {
+  if (canUseLocalUser()) return true
+  const allowlist = (process.env.ASSESSMENT_ADMIN_EMAILS ?? '').split(',').map((value) => value.trim().toLowerCase()).filter(Boolean)
+  if (!allowlist.length) return false
+  try {
+    const user = await currentUser()
+    return Boolean(user?.emailAddresses.some((email) => allowlist.includes(email.emailAddress.toLowerCase())))
+  } catch {
+    return false
+  }
 }

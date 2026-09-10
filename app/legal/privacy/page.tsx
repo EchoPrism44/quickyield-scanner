@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Litmus',
+  title: 'Privacy Policy  -  Litmus',
   description: 'How Litmus handles your data: account info, alert rules, and notification channels.',
 }
 

@@ -5,10 +5,11 @@ import { MarketingNav } from '../../components/marketing-nav'
 import { MarketingFooter } from '../../components/marketing/marketing-footer'
 import { AnimatedSection } from '../../components/marketing/animated-section'
 import { AnimatedItem } from '../../components/marketing/animated-item'
+import { AssessmentRequestForm } from '../../components/assessment-request-form'
 
 export const metadata: Metadata = {
   title: 'Independent DeFi Yield Pool Assessments | Litmus',
-  description: 'Quantitative A–F assessments for DeFi yield pools. Independent methodology, transparent signals, public verification. $200 per pool.',
+  description: 'Independent Yield Pool Assessments for live DeFi pools. Fixed methodology, public publication, and factual review. Founding cohort from $500.',
   openGraph: {
     title: 'Independent DeFi Yield Pool Assessments | Litmus',
     description: 'Quantitative A–F assessments for DeFi yield pools with public verification.',
@@ -28,8 +29,8 @@ export const metadata: Metadata = {
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'Service',
-  name: 'Litmus Independent Protocol Assessment',
-  description: 'Independent quantitative A–F assessments for DeFi yield pools using published methodology.',
+  name: 'Litmus Yield Pool Assessment',
+  description: 'Independent quantitative assessments for live DeFi yield pools using a published methodology.',
   url: 'https://www.getlitmus.xyz/assessments',
   serviceType: 'DeFi yield pool assessment',
   provider: {
@@ -43,7 +44,7 @@ const structuredData = {
     {
       '@type': 'Offer',
       name: 'One Pool Assessment',
-      price: '200',
+      price: '500',
       priceCurrency: 'USD',
       description: 'A–F grade, signal breakdown, historical analysis, public page, badge',
       url: 'https://www.getlitmus.xyz/assessments#contact',
@@ -51,7 +52,7 @@ const structuredData = {
     {
       '@type': 'Offer',
       name: 'Three Pool Assessment',
-      price: '500',
+      price: '1200',
       priceCurrency: 'USD',
       description: 'Up to 3 pools, individual reports, shared analysis, bulk badges',
       url: 'https://www.getlitmus.xyz/assessments#contact',
@@ -62,16 +63,16 @@ const structuredData = {
 const benefits = [
   'A–F grade with quantitative signal breakdown',
   'Historical analysis of TVL, APY, and signal trends',
-  'Public assessment page at getlitmus.xyz/assessments/[pool]',
-  'Litmus Assessed badge for your UI/website',
-  'Permanent record in our weekly snapshot',
+  'Public report after a seven-day factual review',
+  'Evidence-linked methodology summary',
+  'Permanent public record on Litmus',
 ]
 
 const threePoolBenefits = [
   'Assess up to 3 pools at once',
   'Individual grade reports for each',
   'Shared historical analysis section',
-  'Bulk badge codes',
+  'Shared report context and comparison',
 ]
 
 export default function AssessmentsPage() {
@@ -91,14 +92,13 @@ export default function AssessmentsPage() {
           <div>
             <span className="ql-badge">
               <span className="ql-dot" />
-              Independent DeFi Pool Assessments
+              Independent Yield Pool Assessments
             </span>
             <h1 className="ql-h1">
-              Quantitative A–F grading for protocols
+              A clear public read on your live yield pool
             </h1>
             <p className="ql-hero-sub">
-              Litmus provides independent quantitative assessments of DeFi yield pools using a published A–F methodology. 
-              Every assessment is deterministic: the same inputs always produce the same output, regardless of payment.
+              Litmus evaluates live DeFi yield pools with enough history to measure liquidity, APY stability, reward quality, and data completeness. The grade is computed independently and published after factual review.
             </p>
             <Link href="#contact" className="ql-btn ql-btn--primary">
               Request an Assessment
@@ -107,8 +107,8 @@ export default function AssessmentsPage() {
           <div className="ql-assessment-preview">
             <div className="ql-grade-badge">B</div>
             <div className="ql-preview-text">
-              <strong>Example Protocol — USDC Pool</strong>
-              <span>Assessed Sep 7, 2026 · Litmus v1.0</span>
+              <strong>Example Protocol · USDC Pool</strong>
+              <span>Public report · Litmus v1.0</span>
               <span className="ql-meta">Liquidity 84 · Stability 72 · Sustainability 81 · Completeness 91</span>
             </div>
           </div>
@@ -119,22 +119,22 @@ export default function AssessmentsPage() {
         <div className="ql-wrap ql-intel">
           <div>
             <span className="ql-eyebrow">What you receive</span>
-            <h2 className="ql-h2">Two assessment tiers</h2>
+            <h2 className="ql-h2">Founding cohort pricing</h2>
             <p className="ql-lead">
-              Transparent pricing. No hidden fees. The grade is always computed from the same published methodology.
+              Payment covers research time and report depth. It never buys a grade, approval, or removal from the public record.
             </p>
           </div>
           <div className="ql-assessments-grid">
             <AnimatedItem className="ql-assessment-card" hoverLift>
               <h3>One Pool</h3>
-              <p className="ql-price">$200</p>
+              <p className="ql-price">$500</p>
               <ul>
                 {benefits.map((b) => <li key={b}><Check size={16} strokeWidth={3} />{b}</li>)}
               </ul>
             </AnimatedItem>
             <AnimatedItem className="ql-assessment-card" hoverLift>
               <h3>Three Pools</h3>
-              <p className="ql-price">$500</p>
+              <p className="ql-price">$1,200</p>
               <ul>
                 {threePoolBenefits.map((b) => <li key={b}><Check size={16} strokeWidth={3} />{b}</li>)}
               </ul>
@@ -151,18 +151,18 @@ export default function AssessmentsPage() {
         <div className="ql-wrap ql-intel">
           <div>
             <span className="ql-eyebrow">Methodology</span>
-            <h2 className="ql-h2">Published, deterministic, defensible</h2>
+              <h2 className="ql-h2">Built for live pools with real history</h2>
             <p className="ql-lead">
-              Every assessment uses Litmus's published A–F methodology with four defined signals:
+              We currently accept DeFiLlama-listed pools with at least $1M TVL and 30 days of available history:
             </p>
             <ul className="ql-intel-list">
-              <li><strong>Liquidity</strong> — pool depth and depth stability</li>
-              <li><strong>APY Stability</strong> — yield variance over time</li>
-              <li><strong>Reward Quality</strong> — token emission sustainability</li>
-              <li><strong>Data Completeness</strong> — data source reliability and coverage</li>
+              <li><strong>Liquidity</strong>  -  pool depth and depth stability</li>
+              <li><strong>APY Stability</strong>  -  yield variance over time</li>
+              <li><strong>Reward Quality</strong>  -  token emission sustainability</li>
+              <li><strong>Data Completeness</strong>  -  data source reliability and coverage</li>
             </ul>
             <p className="ql-lead" style={{marginTop: '1rem'}}>
-              Each signal is scored 0–100, weighted exactly as published, distilled into one letter grade with a weakest-factor summary.
+              Each signal is scored 0–100, weighted exactly as published, and distilled into one letter grade. Every completed report is published after a seven-day factual-correction window.
               <Link href="/docs" className="ql-link">View full methodology →</Link>
             </p>
           </div>
@@ -182,12 +182,7 @@ export default function AssessmentsPage() {
             <span className="ql-eyebrow">Get assessed</span>
             <h2 className="ql-h2">Request an independent assessment</h2>
           </div>
-          <div className="ql-contact-card">
-            <p>We'll need your pool address/ID and chain. Assessment delivery: 3–5 business days.</p>
-            <Link href="mailto:echo@litmus.xyz?subject=Assessment%20Request">
-              Request an Assessment
-            </Link>
-          </div>
+          <AssessmentRequestForm />
         </div>
       </AnimatedSection>
 
