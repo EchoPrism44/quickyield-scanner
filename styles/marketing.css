@@ -25,6 +25,26 @@
 .ql-ops-editor { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
 .ql-ops-editor summary { cursor: pointer; color: var(--accent); font-weight: 700; }
 .ql-form-span { grid-column: 1 / -1; }
+.ql-ops-hub { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.ql-ops-hub-card { display: grid; gap: 8px; min-height: 132px; padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg-surface); color: var(--ink); text-decoration: none; }
+.ql-ops-hub-card strong { color: var(--signal); font-size: var(--fs-lg); }
+.ql-ops-hub-card span { color: var(--ink-dim); line-height: 1.5; }
+.ql-ops-hub-card--muted { opacity: .7; }
+.ql-ops-methodology { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; max-width: 780px; }
+.ql-ops-methodology section { border-top: 1px solid var(--line); padding-top: 16px; }
+.ql-ops-methodology h2 { margin-bottom: 12px; }
+.ql-ops-method-row { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.ql-ops-audit-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; max-width: 960px; }
+.ql-ops-audit-status, .ql-ops-audit-note { grid-column: 1 / -1; display: grid; gap: 8px; padding: 18px; border: 1px solid var(--line); border-radius: 8px; }
+.ql-ops-audit-status--healthy { border-color: rgba(44, 188, 126, .5); }
+.ql-ops-audit-status--needs_review { border-color: rgba(238, 157, 68, .6); }
+.ql-ops-audit-card { display: grid; gap: 8px; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg-surface); }
+.ql-ops-audit-card span { color: var(--ink-dim); }
+.ql-ops-audit-card strong { font-size: 1.45rem; }
+.ql-ops-audit-note p { margin: 0; color: var(--ink-dim); line-height: 1.6; }
+@media (max-width: 760px) { .ql-ops-hub, .ql-ops-methodology, .ql-ops-audit-grid { grid-template-columns: 1fr 1fr; } .ql-ops-audit-status, .ql-ops-audit-note { grid-column: 1 / -1; } }
+@media (max-width: 480px) { .ql-ops-hub, .ql-ops-methodology, .ql-ops-audit-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .ql-ops-hub, .ql-ops-methodology { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .ql-form-grid { grid-template-columns: 1fr; } .ql-report-item, .ql-ops-item { align-items: flex-start; flex-direction: column; } }
 
 /* ---- shared section primitives ---- */
