@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   robots: { index: false },
 }
 
-export default function SignInPage() {
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ redirect_url?: string | string[] }> }) {
+  const params = await searchParams
+  const requestedRedirect = Array.isArray(params.redirect_url) ? params.redirect_url[0] : params.redirect_url
+  const redirectUrl = requestedRedirect?.startsWith('/') ? requestedRedirect : '/terminal'
+
   if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
     return (
       <main className="qy-auth">
@@ -31,7 +35,7 @@ export default function SignInPage() {
 
   return (
     <main className="qy-auth">
-      <SignIn fallbackRedirectUrl="/terminal" forceRedirectUrl="/terminal" />
+    <SignIn fallbackRedirectUrl={redirectUrl} forceRedirectUrl={redirectUrl} />
     </main>
   )
 }
