@@ -1,5 +1,8 @@
 name: Hourly yield scan
 
+# Keep this workflow as the canonical hourly pool refresh job.
+# The schedule is intentionally unchanged: top-of-hour, every hour.
+
 on:
   schedule:
     - cron: '0 * * * *'
