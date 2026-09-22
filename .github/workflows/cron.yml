@@ -2,8 +2,8 @@ name: Hourly yield scan
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '17 * * * *'
+  workflow_dispatch: {}
 
 jobs:
   scan:
@@ -11,33 +11,23 @@ jobs:
     steps:
       - name: Trigger scan-yields endpoint
         env:
-          # Set the APP_URL repo secret (e.g. https://getlitmus.xyz) to decouple this
-          # job from the Vercel-generated hostname. Falls back to the current
-          # deployment URL so nothing breaks before that secret exists.
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           set -uo pipefail
           BASE="${APP_URL:-https://quickyield-scanner.vercel.app}"
           echo "Using base: $BASE"
-
-          # The scan fetches and persists ~2,600 pools; 60s was tight enough to
-          # abort a healthy-but-slow run.
           response=$(curl -sS -X GET "$BASE/api/cron/scan-yields" \
             --header "Authorization: Bearer $CRON_SECRET" \
             --max-time 120 --write-out "\n%{http_code}")
           body=$(printf "%s" "$response" | sed '$d')
           code=$(printf "%s" "$response" | tail -n 1)
-
           echo "HTTP $code"
           printf "%s\n" "$body"
-
           if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
             echo "::error::Scan endpoint returned HTTP $code"
             exit 1
           fi
-
-          # A 2xx alone does not mean the scan worked. Check what it reported.
           status=$(printf "%s" "$body" | jq -r '.status // "missing"')
           scanned=$(printf "%s" "$body" | jq -r '.scanned // 0')
           fallback=$(printf "%s" "$body" | jq -r '.fallbackReason // ""')
@@ -70,3 +60,12 @@ jobs:
             exit 1
           fi
           echo "Scan healthy: $scanned pools, status=$status"
+
+  publish-assessments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish assessments whose review window expired
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: curl --fail-with-body --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "${APP_URL:-https://quickyield-scanner.vercel.app}/api/cron/publish-assessments"
