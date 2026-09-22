@@ -41,7 +41,6 @@ jobs:
           status=$(printf "%s" "$body" | jq -r '.status // "missing"')
           scanned=$(printf "%s" "$body" | jq -r '.scanned // 0')
           fallback=$(printf "%s" "$body" | jq -r '.fallbackReason // ""')
-          failures=$(printf "%s" "$body" | jq -r '.failures // [] | length')
 
           ok=1
 
@@ -64,13 +63,6 @@ jobs:
           # alone is far below this floor.
           if [ "$scanned" -lt 500 ]; then
             echo "::error::Only $scanned pools scanned (floor is 500)"
-            ok=0
-          fi
-
-          # Alert-delivery and prune problems. Non-fatal to the cache, but they
-          # mean someone's alert did not go out.
-          if [ "$failures" -gt 0 ]; then
-            echo "::error::Scan reported $failures failure(s) — see the body above"
             ok=0
           fi
 

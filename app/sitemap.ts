@@ -7,6 +7,9 @@ const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 const assets = ['usdc', 'usdt', 'dai', 'eth', 'steth', 'sol']
 const assessmentPools = ['example-usdc']
 
+export const revalidate = 3600
+export const dynamic = 'force-dynamic'
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
   return [
