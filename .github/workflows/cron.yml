@@ -36,7 +36,17 @@ jobs:
           # abort a healthy-but-slow run.
           response=$(curl -sS -X GET "$BASE/api/cron/scan-yields" \
             --header "Authorization: Bearer $CRON_SECRET" \
-            --max-time 120 --write-out "\n%{http_code}")
+            --max-time 120 --write-out "\n%{http_code}") || {
+            echo "::error::Failed to execute curl request"
+            exit 1
+          }
+
+          # Check if we got any response at all
+          if [ -z "$response" ]; then
+            echo "::error::Empty response from curl"
+            exit 1
+          fi
+
           body=$(printf "%s" "$response" | sed '$d')
           code=$(printf "%s" "$response" | tail -n 1)
 
@@ -103,4 +113,26 @@ jobs:
             echo "APP_URL / CRON_SECRET secrets not set — skipping."
             exit 0
           fi
-          curl --fail-with-body --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "${APP_URL:-https://quickyield-scanner.vercel.app}/api/cron/publish-assessments"
+
+          # Make the request and check for curl execution errors
+          response=$(curl -sS -w "\n%{http_code}" -H "Authorization: Bearer $CRON_SECRET" "${APP_URL:-https://quickyield-scanner.vercel.app}/api/cron/publish-assessments") || {
+            echo "::error::Failed to execute curl request for publish-assessments"
+            exit 1
+          }
+
+          # Check if we got any response at all
+          if [ -z "$response" ]; then
+            echo "::error::Empty response from publish-assessments curl"
+            exit 1
+          fi
+
+          body=$(printf "%s" "$response" | sed '$d')
+          code=$(printf "%s" "$response" | tail -n 1)
+
+          echo "HTTP $code"
+          printf "%s\n" "$body"
+
+          if [ "$code" -ne 200 ]; then
+            echo "::error::Publish-assessments endpoint returned HTTP $code"
+            exit 1
+          fi
