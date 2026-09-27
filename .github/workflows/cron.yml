@@ -9,11 +9,21 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.APP_URL }}" ]; then
+            echo "Error: APP_URL secret is not set"
+            echo "Please set APP_URL in repository settings (e.g., https://getlitmus.xyz)"
+            exit 1
+          fi
+          if [ -z "${{ secrets.CRON_SECRET }}" ]; then
+            echo "Error: CRON_SECRET secret is not set"
+            echo "Please set CRON_SECRET in repository settings (a secure random string)"
+            exit 1
+          fi
+
       - name: Trigger scan-yields endpoint
         env:
-          # Set the APP_URL repo secret (e.g. https://getlitmus.xyz) to decouple this
-          # job from the Vercel-generated hostname. Falls back to the current
-          # deployment URL so nothing breaks before that secret exists.
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |

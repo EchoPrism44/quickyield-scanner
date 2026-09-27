@@ -1,14 +1,5 @@
 name: Scan staleness watchdog
 
-# The hourly scan job can only report on runs that actually happen. This checks
-# the opposite direction — how old the data the site is serving actually is —
-# so a scan that silently stops running, or succeeds without persisting, still
-# surfaces instead of quietly ageing out.
-#
-# Limitation: this is another GitHub Actions schedule, so it cannot catch
-# Actions being disabled wholesale (GitHub deactivates scheduled workflows
-# after 60 days of repository inactivity, with an email warning first).
-
 on:
   schedule:
     - cron: '30 */3 * * *' # every 3 hours, offset from the scan on the hour
@@ -18,6 +9,14 @@ jobs:
   check-freshness:
     runs-on: ubuntu-latest
     steps:
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.APP_URL }}" ]; then
+            echo "Error: APP_URL secret is not set"
+            echo "Please set APP_URL in repository settings (e.g., https://getlitmus.xyz)"
+            exit 1
+          fi
+
       - name: Check how old the served pool data is
         env:
           APP_URL: ${{ secrets.APP_URL }}
