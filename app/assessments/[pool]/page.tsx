@@ -174,31 +174,35 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Liquidity</h3>
-                <span className={`ql-signal-score ql-grade-${gradeClass(signals.liquidity)}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.liquidity)}`}>
+                  {signals.liquidity}
+                </span>
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.liquidity}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>APY Stability</h3>
-                <span className={`ql-signal-score ql-grade-${gradeClass(signals.stability)}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.stability)}`}>
+                  {signals.stability}
+                </span>
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.stability}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Reward Quality</h3>
-                <span className={`ql-signal-score ql-grade-${gradeClass(signals.sustainability)}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.sustainability)}`}>
+                  {signals.sustainability}
+                </span>
               </div>
-              <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.sustainability}%`}} /></div>
-            </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Data Completeness</h3>
-                <span className={`ql-signal-score ql-grade-${gradeClass(signals.completeness)}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.completeness)}`}>
+                  {signals.completeness}
+                </span>
               </div>
-              <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.completeness}%`}} /></div>
-            </AnimatedItem>
           </div>
         </div>
       </AnimatedSection>
