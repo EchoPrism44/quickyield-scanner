@@ -107,13 +107,6 @@ const gradeClass = (score: number) => {
   return 'f'
 }
 
-const gradeClass = (score: number) => {
-  if (score >= 85) return 'a'
-  if (score >= 72) return 'b'
-  if (score >= 60) return 'c'
-  if (score >= 45) return 'd'
-  return 'f'
-}
 
 export default async function AssessmentPage({ params }: { params: Promise<{ pool: string }> }) {
   const { pool } = await params
