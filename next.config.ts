@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     return [
       { source: '/dashboard', destination: '/terminal', permanent: true },
       { source: '/dashboard/:path*', destination: '/terminal/:path*', permanent: true },
+      { source: '/:path*', has: [{ type: 'host', value: 'getlitmus.xyz' }], destination: 'https://www.getlitmus.xyz/:path*', permanent: true }
     ]
   },
 

@@ -1,23 +1,42 @@
 import type { MetadataRoute } from 'next'
 import { getAllPosts } from '../lib/blog'
+import { getPublishedAssessments } from '../lib/store'
 
-const base = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://getlitmus.xyz')
+// Keep the sitemap on Litmus's single canonical public origin.
+const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
+
+export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 const assets = ['usdc', 'usdt', 'dai', 'eth', 'steth', 'sol']
+async function loadPublishedReports() {
+  try {
+    return await Promise.race([
+      getPublishedAssessments(),
+      new Promise<Awaited<ReturnType<typeof getPublishedAssessments>>>((resolve) => setTimeout(() => resolve([]), 2500)),
+    ])
+  } catch {
+    return []
+  }
+}
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date()
-  return [
-    { url: `${base}/`, lastModified: now, changeFrequency: 'weekly', priority: 1 },
-    { url: `${base}/yields`, lastModified: now, changeFrequency: 'hourly', priority: 0.9 },
-    { url: `${base}/yields/rwa`, lastModified: now, changeFrequency: 'hourly', priority: 0.8 },
-    ...assets.map((a) => ({ url: `${base}/yields/${a}`, lastModified: now, changeFrequency: 'hourly' as const, priority: 0.7 })),
-    { url: `${base}/blog`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${base}/roadmap`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    ...getAllPosts().map((p) => ({ url: `${base}/blog/${p.slug}`, lastModified: new Date(p.date), changeFrequency: 'monthly' as const, priority: 0.6 })),
-    { url: `${base}/legal/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
-    { url: `${base}/legal/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
-    { url: `${base}/legal/disclaimer`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const reports = await loadPublishedReports()
+  const urls = [
+    `${base}/`,
+    `${base}/yields`,
+    `${base}/yields/rwa`,
+    ...assets.map((a) => `${base}/yields/${a}`),
+    `${base}/blog`,
+    `${base}/assessments`,
+    `${base}/reports`,
+    ...reports.map((report) => `${base}/assessments/${report.slug}`),
+    ...getAllPosts()
+      .filter((p) => !p.noindex)
+      .map((p) => p.canonical || `${base}/blog/${p.slug}`),
+    `${base}/legal/terms`,
+    `${base}/legal/privacy`,
+    `${base}/legal/disclaimer`,
   ]
+  return urls.map((url) => ({ url }))
 }

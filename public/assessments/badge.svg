@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="46" viewBox="0 0 200 46">
+  <style>
+    .litmus-badge { font-family: system-ui, -apple-system, sans-serif; display: inline-flex; align-items: center; justify-content: center; height: 46px; }
+    .litmus-text { fill: #0a0f1a; }
+    .litmus-grade { fill: #00E676; font-weight: bold; font-size: 1.5rem; }
+    .litmus-subtext { fill: #88a0b8; font-size: 0.75rem; }
+  </style>
+  <rect width="200" height="46" rx="6" ry="6" fill="#00E676"/>
+  <text x="100" y="30" text-anchor="middle" class="litmus-text">Litmus Assessed</text>
+  <text x="100" y="44" text-anchor="middle" class="litmus-grade">Grade B</text>
+  <text x="100" y="44" text-anchor="middle"><text class="litmus-subtext" x="100" y="44" text-anchor="middle">Safe</text></text>
+</svg>

@@ -1,0 +1,30 @@
+poolId: "example-usdc"
+protocol: "Example Protocol"
+chain: "Ethereum"
+assessmentDate: "2026-09-07"
+methodologyVersion: "v1.0"
+
+grade:
+  letter: "B"
+  score: 78
+  label: "Safe"
+  summary: "Weighted blend of liquidity, APY stability, reward quality, and data completeness. Weakest factor: APY stability (72/100)."
+
+signals:
+  liquidity: 84/100
+  stability: 72/100
+  sustainability: 81/100
+  completeness: 91/100
+
+historicalObservations:
+  strengths:
+    - Strong liquidity base
+    - Good data availability
+  watchpoints:
+    - APY volatility observed
+    - Reward dependence noted
+
+disclaimer: |
+  This assessment reflects the pool's performance against Litmus's published methodology. 
+  It is not investment advice, an endorsement, safety certification, or a guarantee of future performance.
+  An A-F grade represents methodology performance, not an absolute judgment of whether a protocol is safe or legitimate.

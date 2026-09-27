@@ -1,0 +1,34 @@
+name: Audit grades snapshot (manual)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'audit/fix-grades-workflow'
+
+permissions:
+  contents: read
+
+jobs:
+  run-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Run audit
+        run: node scripts/audit-grades.js
+      - name: Verify audit output
+        if: always()
+        run: |
+          test -d audit-reports
+          find audit-reports -maxdepth 1 -type f -print
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grade-audit-reports
+          path: audit-reports/
+          if-no-files-found: error

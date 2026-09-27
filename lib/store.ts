@@ -564,6 +564,11 @@ export async function getAlertActivity(userId: string, limit = 12): Promise<Aler
   })
 }
 
+export async function getPublishedAssessments() {
+  if (!hasDatabase()) return []
+  return []
+}
+
 export async function recordAlertDelivery(userId: string, alertId: string, opportunityId: string, deliveryKey: string, activity?: Omit<AlertActivity, 'id' | 'createdAt'>) {
   if (!hasDatabase()) {
     memory.deliveries.add(deliveryKey)

@@ -2,8 +2,9 @@ name: Hourly yield scan
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
+    {}
 
 jobs:
   scan:
@@ -88,3 +89,18 @@ jobs:
             exit 1
           fi
           echo "Scan healthy: $scanned pools, status=$status"
+
+  publish-assessments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish assessments whose review window expired
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -uo pipefail
+          if [ -z "$APP_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "APP_URL / CRON_SECRET secrets not set — skipping."
+            exit 0
+          fi
+          curl --fail-with-body --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "${APP_URL:-https://quickyield-scanner.vercel.app}/api/cron/publish-assessments"

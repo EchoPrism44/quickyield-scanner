@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+<title id="title">Litmus A–F grading bands</title>
+<desc id="desc">Five score bands mapping numerical scores from zero to one hundred to A through F grades.</desc>
+<rect width="1200" height="360" rx="24" fill="#0b0f14"/>
+<text x="60" y="60" fill="#f5f7fa" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="700">Litmus A–F grading bands</text>
+<text x="60" y="91" fill="#8f9baa" font-family="Inter,Arial,sans-serif" font-size="16">Fixed score thresholds convert the 0–100 model output into an interpretable grade.</text>
+<g font-family="Inter,Arial,sans-serif" text-anchor="middle">
+<rect x="60" y="140" width="216" height="115" rx="16" fill="#d9e1e8"/><rect x="291" y="140" width="216" height="115" rx="16" fill="#b8c4cf"/><rect x="522" y="140" width="216" height="115" rx="16" fill="#97a5b3"/><rect x="753" y="140" width="160" height="115" rx="16" fill="#758494"/><rect x="928" y="140" width="212" height="115" rx="16" fill="#526171"/>
+<text x="168" y="184" fill="#0b0f14" font-size="30" font-weight="800">A</text><text x="168" y="215" fill="#0b0f14" font-size="16">85–100</text>
+<text x="399" y="184" fill="#0b0f14" font-size="30" font-weight="800">B</text><text x="399" y="215" fill="#0b0f14" font-size="16">72–84</text>
+<text x="630" y="184" fill="#0b0f14" font-size="30" font-weight="800">C</text><text x="630" y="215" fill="#0b0f14" font-size="16">60–71</text>
+<text x="833" y="184" fill="#fff" font-size="30" font-weight="800">D</text><text x="833" y="215" fill="#fff" font-size="16">45–59</text>
+<text x="1034" y="184" fill="#fff" font-size="30" font-weight="800">F</text><text x="1034" y="215" fill="#fff" font-size="16">0–44</text>
+</g>
+<text x="60" y="305" fill="#687585" font-family="Inter,Arial,sans-serif" font-size="13">Grades describe the model output under the published methodology; they are not guarantees of safety.</text>
+</svg>

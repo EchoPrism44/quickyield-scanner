@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
-const base = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://getlitmus.xyz')
+// Keep robots.txt and the sitemap on Litmus's single canonical public origin.
+const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -2,9 +2,12 @@
   "name": "litmus",
   "private": true,
   "version": "0.0.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "lint": "eslint .",
     "start": "next start",
     "type-check": "tsc --noEmit",
@@ -13,7 +16,12 @@
     "db:push": "drizzle-kit push",
     "blog:data": "tsx scripts/analyze-snapshot.ts",
     "blog:draft": "tsx scripts/analyze-snapshot.ts --draft",
-    "blog:charts": "tsx scripts/chart-snapshot.ts"
+    "blog:charts": "tsx scripts/chart-snapshot.ts",
+    "backtest:risk": "tsx scripts/backtest-risk.ts",
+    "backtest:components": "tsx scripts/backtest-components.ts",
+    "validate:snapshots": "tsx scripts/validate-snapshots.ts",
+    "lift-test": "tsx scripts/lift-test.ts",
+    "harm-coverage": "tsx scripts/harm-coverage.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.0",

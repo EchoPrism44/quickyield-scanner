@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+<title id="title">Largest pools by TVL in the August 17, 2026 Litmus snapshot</title>
+<desc id="desc">Horizontal bar chart showing the ten largest pools by TVL from the published snapshot.</desc>
+<rect width="1200" height="620" rx="24" fill="#0b0f14"/>
+<text x="60" y="62" fill="#f5f7fa" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="700">Largest pools by TVL</text>
+<text x="60" y="94" fill="#8f9baa" font-family="Inter,Arial,sans-serif" font-size="16">August 17, 2026 snapshot · USD billions</text>
+<g font-family="Inter,Arial,sans-serif" font-size="15" fill="#dce2e8">
+<text x="60" y="145">Lido · STETH</text><text x="60" y="190">Binance Staked ETH · WBETH</text><text x="60" y="235">Sky · SUSDS</text><text x="60" y="280">ether.fi · WEETH</text><text x="60" y="325">Circle · USYC</text><text x="60" y="370">Rocket Pool · RETH</text><text x="60" y="415">Maple · USDC</text><text x="60" y="460">Aave V3 · WEETH</text><text x="60" y="505">Aave V3 · WSTETH</text><text x="60" y="550">Aave V3 · WBTC</text>
+</g>
+<g fill="#b7c2ce">
+<rect x="310" y="130" width="720" height="22" rx="11"/><rect x="310" y="175" width="266" height="22" rx="11"/><rect x="310" y="220" width="190" height="22" rx="11"/><rect x="310" y="265" width="150" height="22" rx="11"/><rect x="310" y="310" width="117" height="22" rx="11"/><rect x="310" y="355" width="104" height="22" rx="11"/><rect x="310" y="400" width="104" height="22" rx="11"/><rect x="310" y="445" width="98" height="22" rx="11"/><rect x="310" y="490" width="89" height="22" rx="11"/><rect x="310" y="535" width="83" height="22" rx="11"/>
+</g>
+<g fill="#f5f7fa" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="600">
+<text x="1045" y="146">$18.07B</text><text x="590" y="191">$6.66B</text><text x="514" y="236">$4.74B</text><text x="474" y="281">$3.74B</text><text x="441" y="326">$2.91B</text><text x="428" y="371">$2.57B</text><text x="428" y="416">$2.57B</text><text x="422" y="461">$2.46B</text><text x="413" y="506">$2.23B</text><text x="407" y="551">$2.07B</text>
+</g>
+<text x="60" y="598" fill="#687585" font-family="Inter,Arial,sans-serif" font-size="13">Source: Litmus historical yield snapshot · Values rounded</text>
+</svg>
