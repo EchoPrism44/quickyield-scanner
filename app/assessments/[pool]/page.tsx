@@ -99,6 +99,22 @@ export async function generateMetadata({ params }: { params: Promise<{ pool: str
   }
 }
 
+const gradeClass = (score: number) => {
+  if (score >= 85) return 'a'
+  if (score >= 72) return 'b'
+  if (score >= 60) return 'c'
+  if (score >= 45) return 'd'
+  return 'f'
+}
+
+const gradeClass = (score: number) => {
+  if (score >= 85) return 'a'
+  if (score >= 72) return 'b'
+  if (score >= 60) return 'c'
+  if (score >= 45) return 'd'
+  return 'f'
+}
+
 export default async function AssessmentPage({ params }: { params: Promise<{ pool: string }> }) {
   const { pool } = await params
   const assessment = ASSESSMENTS[pool]
@@ -158,28 +174,28 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Liquidity</h3>
-                <span className={`ql-signal-score ql-grade-${signals.liquidity >= 85 ? 'a' : signals.liquidity >= 72 ? 'b' : signals.liquidity >= 60 ? 'c' : signals.liquidity >= 45 ? 'd' : 'f'}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.liquidity)}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.liquidity}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>APY Stability</h3>
-                <span className={`ql-signal-score ql-grade-${signals.stability >= 85 ? 'a' : signals.stability >= 72 ? 'b' : signals.stability >= 60 ? 'c' : signals.stability >= 45 ? 'd' : 'f'}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.stability)}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.stability}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Reward Quality</h3>
-                <span className={`ql-signal-score ql-grade-${signals.sustainability >= 85 ? 'a' : signals.sustainability >= 72 ? 'b' : signals.sustainability >= 60 ? 'c' : signals.sustainability >= 45 ? 'd' : 'f'}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.sustainability)}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.sustainability}%`}} /></div>
             </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Data Completeness</h3>
-                <span className={`ql-signal-score ql-grade-${signals.completeness >= 85 ? 'a' : signals.completeness >= 72 ? 'b' : signals.completeness >= 60 ? 'c' : signals.completeness >= 45 ? 'd' : 'f'}`}[...]
+                <span className={`ql-signal-score ql-grade-${gradeClass(signals.completeness)}`}[...]
               </div>
               <div className="ql-signal-bar"><div className="ql-signal-fill" style={{width: `${signals.completeness}%`}} /></div>
             </AnimatedItem>

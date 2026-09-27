@@ -65,6 +65,15 @@ const threePoolBenefits = [
   'Bulk badge codes',
 ]
 
+const assessmentEmail =
+  'mailto:echo@litmus.xyz' +
+  '?subject=Assessment%20Request%20-%20%5BProtocol%20Name%5D' +
+  '&body=Protocol%20Name%3A%20%0D%0A' +
+  'Pool%20Address%2FID%3A%20%0D%0A' +
+  'Chain%3A%20%0D%0A' +
+  'Contact%20Name%3A%20%0D%0A' +
+  'Additional%20Notes%3A%20%0D%0A'
+
 export default function AssessmentsPage() {
   return (
     <main className="ql">
@@ -169,8 +178,11 @@ export default function AssessmentsPage() {
             <h2 className="ql-h2">Request an independent assessment</h2>
           </div>
           <div className="ql-contact-card">
-            <p>We'll need your pool address/ID and chain. Assessment delivery: 3–5 business days.</p>
-            <Link href="mailto:echo@litmus.xyz?subject=Assessment%20Request%20-%20%5BProtocol%20Name%5D&body=Protocol%20Name%3A%20%0D%0APool%20Address%2FID%3A%20%0D%0AChain%3A%20%0D%0AContact%20N[...]"
+            <p>
+              We'll need your pool address/ID and chain. Assessment delivery: 3–5
+              business days.
+            </p>
+            <Link href={assessmentEmail} className="ql-btn ql-btn--primary">
               Request an Assessment
             </Link>
           </div>
