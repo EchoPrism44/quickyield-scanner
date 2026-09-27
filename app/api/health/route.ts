@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { hasDatabase, getDb } from '@/lib/db'
 import { getCachedOpportunities } from '@/lib/store'
-import type { Opportunity } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +30,7 @@ export async function GET() {
       healthStatus.status = 'error'
     } else {
       // Try to execute a simple query
-      const db = getDb()
+      getDb()
       // We'll do a simple check - just see if we can get the db object
       // In a real app, you might do SELECT 1 or similar
       healthStatus.checks.database = {
