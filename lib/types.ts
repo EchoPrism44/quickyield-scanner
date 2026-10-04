@@ -8,6 +8,45 @@ export type AlertFrequency = 'instant' | 'daily' | 'weekly'
 export type AlertCondition = 'apy-above' | 'apy-below' | 'apy-drop' | 'tvl-drop' | 'reward-spike'
 export type NotificationChannelType = 'email' | 'telegram'
 
+export type AssessmentLeadStatus = 'submitted' | 'qualified' | 'scoped' | 'invoiced' | 'paid' | 'in_review' | 'factual_review' | 'published' | 'declined'
+export type AssessmentTier = 'one_pool' | 'three_pools'
+
+export type AssessmentLead = {
+  id: string
+  protocol: string
+  pool: string
+  chain: string
+  poolId?: string
+  llamaUrl?: string
+  tvlUsd?: number
+  requesterName: string
+  workEmail: string
+  role?: string
+  tier: AssessmentTier
+  timing?: string
+  notes?: string
+  status: AssessmentLeadStatus
+  createdAt: string
+}
+
+export type PublishedAssessment = {
+  id: string
+  leadId: string
+  slug: string
+  protocol: string
+  pool: string
+  chain: string
+  assessedAt: string
+  methodologyVersion: string
+  grade: SafetyGrade
+  signals: LitmusScoreBreakdown
+  strengths: string[]
+  watchpoints: string[]
+  summary: string
+  status: 'factual_review' | 'published'
+  factualReviewDeadline?: string
+  publishedAt?: string
+}
 export type LitmusScoreBreakdown = {
   liquidity: number
   stability: number

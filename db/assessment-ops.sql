@@ -1,0 +1,41 @@
+create table if not exists assessment_leads (
+  id text primary key,
+  protocol text not null,
+  pool text not null,
+  chain text not null,
+  pool_id text,
+  llama_url text,
+  tvl_usd numeric,
+  requester_name text not null,
+  work_email text not null,
+  role text,
+  tier text not null,
+  timing text,
+  notes text,
+  status text not null default 'submitted',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists assessments (
+  id text primary key,
+  lead_id text not null references assessment_leads(id),
+  slug text not null unique,
+  protocol text not null,
+  pool text not null,
+  chain text not null,
+  assessed_at timestamptz not null,
+  methodology_version text not null,
+  grade_letter text not null,
+  grade_score integer not null,
+  grade_label text not null,
+  grade_summary text not null,
+  weakest_signal text not null,
+  signals_json text not null,
+  strengths_json text not null,
+  watchpoints_json text not null,
+  summary text not null,
+  status text not null default 'factual_review',
+  factual_review_deadline timestamptz,
+  published_at timestamptz,
+  created_at timestamptz not null default now()
+);
