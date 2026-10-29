@@ -10,6 +10,7 @@ tags:
   - Security
   - Infrastructure
 type: "news"
+featured: true
 readMinutes: 4
 ---
 
