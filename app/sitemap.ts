@@ -1,41 +1,23 @@
 import type { MetadataRoute } from 'next'
 import { getAllPosts } from '../lib/blog'
-import { getPublishedAssessments } from '../lib/store'
 
-// Keep the sitemap on Litmus's single canonical public origin.
+// Public sitemap contains editorial pages only; legacy product surfaces redirect to newsroom routes.
 const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 
 export const revalidate = 3600
 export const dynamic = 'force-dynamic'
 
-const assets = ['usdc', 'usdt', 'dai', 'eth', 'steth', 'sol']
-async function loadPublishedReports() {
-  try {
-    return await Promise.race([
-      getPublishedAssessments(),
-      new Promise<Awaited<ReturnType<typeof getPublishedAssessments>>>((resolve) => setTimeout(() => resolve([]), 2500)),
-    ])
-  } catch {
-    return []
-  }
-}
+const categories = ['defi', 'markets', 'security', 'regulation', 'research']
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const reports = await loadPublishedReports()
   const urls = [
     `${base}/`,
-    `${base}/yields`,
-    `${base}/yields/rwa`,
-    ...assets.map((a) => `${base}/yields/${a}`),
     `${base}/blog`,
-    ...['defi', 'markets', 'security', 'regulation', 'research'].map((category) => `${base}/blog/category/${category}`),
     `${base}/about`,
-    `${base}/assessments`,
-    `${base}/reports`,
-    ...reports.map((report) => `${base}/assessments/${report.slug}`),
+    ...categories.map((category) => `${base}/blog/category/${category}`),
     ...getAllPosts()
-      .filter((p) => !p.noindex)
-      .map((p) => p.canonical || `${base}/blog/${p.slug}`),
+      .filter((post) => !post.noindex)
+      .map((post) => post.canonical || `${base}/blog/${post.slug}`),
     `${base}/legal/terms`,
     `${base}/legal/privacy`,
     `${base}/legal/disclaimer`,
