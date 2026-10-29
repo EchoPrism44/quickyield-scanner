@@ -11,19 +11,19 @@ const coverage = [
     icon: ChartNoAxesCombined,
     title: 'Markets',
     description: 'Bitcoin, Ethereum, digital assets, and the forces moving crypto markets.',
-    href: '/blog?category=markets',
+    href: '/blog/category/markets',
   },
   {
     icon: ShieldAlert,
     title: 'DeFi',
     description: 'Protocol developments, exploits, liquidity, stablecoins, and onchain risk.',
-    href: '/blog?category=defi',
+    href: '/blog/category/defi',
   },
   {
     icon: Landmark,
     title: 'Policy & Regulation',
     description: 'The laws, institutions, and policy decisions shaping digital assets.',
-    href: '/blog?category=regulation',
+    href: '/blog/category/regulation',
   },
 ]
 
