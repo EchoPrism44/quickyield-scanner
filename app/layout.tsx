@@ -42,11 +42,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.getlitmus.xyz'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Litmus — Yield research you can audit, not just trust',
+    default: 'Litmus — Independent Crypto News & DeFi Research',
     template: '%s | Litmus',
   },
   description:
-    'Litmus grades every live onchain yield pool A–F under a published methodology and commits every grade to a public, timestamped ledger. Non-custodial research and alerts.',
+    'Independent crypto news and research covering DeFi, digital asset markets, regulation, protocol risk, and onchain developments. Facts first, hype questioned.',
   alternates: {
     canonical: '/',
   },
@@ -59,9 +59,9 @@ export const metadata: Metadata = {
     apple: '/apple-icon',
   },
   openGraph: {
-    title: 'Litmus — Yield research you can audit, not just trust',
+    title: 'Litmus — Independent Crypto News & DeFi Research',
     description:
-      'Every pool graded A–F under a published methodology. Every grade committed to a public, timestamped ledger before the outcome is known.',
+      'Independent reporting and research on digital assets, DeFi, markets, regulation, and onchain risk.',
     type: 'website',
     siteName: 'Litmus',
     url: siteUrl,
@@ -119,7 +119,7 @@ const structuredData = {
         height: 180,
       },
       description:
-        'Litmus grades every live onchain yield pool A–F under a published methodology and publishes the record every week.',
+        'Litmus is an independent crypto news and research publication covering digital assets, DeFi, markets, regulation, and onchain developments.',
     },
     {
       '@type': 'WebSite',
