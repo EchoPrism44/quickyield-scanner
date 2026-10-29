@@ -1,9 +1,5 @@
 import Link from 'next/link'
 
-/**
- * Shared footer for every public marketing surface
- * (landing, /docs, /proof, /yields, legal, auth shells).
- */
 export function MarketingFooter() {
   return (
     <footer className="ql-footer">
@@ -12,28 +8,25 @@ export function MarketingFooter() {
           <div>
             <strong style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>Litmus</strong>
             <p className="ql-footer-blurb">
-              Onchain yield research with a public track record. Research only — not investment
-              advice, not an audit, and never custody. Always verify with the protocol before
-              moving funds.
+              Independent crypto news and research. We cover digital assets, DeFi, markets,
+              regulation, and onchain risk with evidence over hype.
             </p>
           </div>
           <div>
-            <h5>Product</h5>
+            <h5>Coverage</h5>
             <ul>
-              <li><Link href="/proof">Track record</Link></li>
-              <li><Link href="/docs">Methodology</Link></li>
-              <li><Link href="/yields">Best yields</Link></li>
-              <li><Link href="/blog">Research</Link></li>
-              <li><Link href="/roadmap">Roadmap</Link></li>
-              <li><Link href="/terminal">Launch terminal</Link></li>
+              <li><Link href="/blog">Latest stories</Link></li>
+              <li><Link href="/blog?category=defi">DeFi</Link></li>
+              <li><Link href="/blog?category=markets">Markets</Link></li>
+              <li><Link href="/blog?category=regulation">Policy & regulation</Link></li>
             </ul>
           </div>
           <div>
-            <h5>Transparency</h5>
+            <h5>About Litmus</h5>
             <ul>
-              <li><Link href="/proof">Public track record</Link></li>
-              <li><Link href="/docs#ledger">The on-chain ledger</Link></li>
-              <li><Link href="/docs#signals">Grading signals</Link></li>
+              <li><Link href="/about">Editorial standards</Link></li>
+              <li><Link href="/about#corrections">Corrections policy</Link></li>
+              <li><Link href="/about#independence">Independence</Link></li>
             </ul>
           </div>
           <div>
@@ -47,7 +40,7 @@ export function MarketingFooter() {
         </div>
         <div className="ql-footer-base">
           <span>© 2026 Litmus</span>
-          <span>Graded in the open</span>
+          <span>Facts first. Hype questioned.</span>
         </div>
       </div>
     </footer>
