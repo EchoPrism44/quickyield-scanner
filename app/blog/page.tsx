@@ -5,9 +5,9 @@ import { MarketingFooter } from '../../components/marketing/marketing-footer'
 import { getAllPosts } from '../../lib/blog'
 
 export const metadata: Metadata = {
-  title: 'Research — the weekly grade record, analyzed',
+  title: 'Crypto News & DeFi Research',
   description:
-    'Weekly analysis of the Litmus grade record: which pools upgraded, which downgraded, and what it says about onchain yield right now.',
+    'Crypto news, DeFi reporting, digital asset markets, regulation, and independent onchain research from Litmus.',
   alternates: { canonical: '/blog' },
 }
 
@@ -24,8 +24,8 @@ export default function BlogIndexPage() {
 
       <div className="ql-wrap">
         <header className="ql-blog-masthead">
-          <span className="ql-eyebrow">Research</span>
-          <h1>The record, analyzed.</h1>
+          <span className="ql-eyebrow">News & analysis</span>
+          <h1>Crypto, explained.</h1>
           <p>
             Every Monday we grade every live pool and publish the record. Here we read it —
             upgrades, downgrades, and what moved in onchain yield this week.
@@ -33,7 +33,7 @@ export default function BlogIndexPage() {
         </header>
 
         {posts.length === 0 ? (
-          <p className="ql-lead" style={{ paddingBlock: 'var(--sp-7)' }}>First report coming soon.</p>
+          <p className="ql-lead" style={{ paddingBlock: 'var(--sp-7)' }}>New reporting coming soon.</p>
         ) : (
           <div className="ql-blog-list">
             {lead && (
