@@ -189,6 +189,8 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
                   {signals.sustainability}
                 </span>
               </div>
+              <div className="ql-signal-bar"><div className="ql-signal-fill" style={{ width: `${signals.sustainability}%` }} /></div>
+            </AnimatedItem>
             <AnimatedItem className="ql-signal-card">
               <div className="ql-signal-header">
                 <h3>Data Completeness</h3>
@@ -196,6 +198,8 @@ export default async function AssessmentPage({ params }: { params: Promise<{ poo
                   {signals.completeness}
                 </span>
               </div>
+              <div className="ql-signal-bar"><div className="ql-signal-fill" style={{ width: `${signals.completeness}%` }} /></div>
+            </AnimatedItem>
           </div>
         </div>
       </AnimatedSection>
