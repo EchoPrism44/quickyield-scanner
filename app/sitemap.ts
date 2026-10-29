@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     `${base}/yields/rwa`,
     ...assets.map((a) => `${base}/yields/${a}`),
     `${base}/blog`,
+    ...['defi', 'markets', 'security', 'regulation', 'research'].map((category) => `${base}/blog/category/${category}`),
     `${base}/about`,
     `${base}/assessments`,
     `${base}/reports`,
