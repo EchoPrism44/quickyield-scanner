@@ -1221,3 +1221,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
   .ql-news-feature-art { min-height:160px; }
   .ql-nav-links { gap:12px; }
 }
+
+
+/* Editorial category navigation */
+.ql-news-category-nav { display:flex; gap:9px; flex-wrap:wrap; padding:0 0 22px; margin:0 0 12px; border-bottom:1px solid rgba(255,255,255,.1); }
+.ql-news-category-nav a { display:inline-flex; padding:8px 12px; border:1px solid rgba(255,255,255,.1); border-radius:999px; color:var(--text-secondary,#a6adba); font-size:12px; text-decoration:none; transition:background .15s ease,color .15s ease,border-color .15s ease; }
+.ql-news-category-nav a:hover,.ql-news-category-nav a.is-active { color:var(--text-primary,#f5f6f8); border-color:rgba(255,255,255,.28); background:rgba(255,255,255,.06); }
