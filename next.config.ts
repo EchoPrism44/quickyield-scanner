@@ -13,8 +13,15 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      { source: '/dashboard', destination: '/terminal', permanent: true },
-      { source: '/dashboard/:path*', destination: '/terminal/:path*', permanent: true },
+      { source: '/dashboard', destination: '/blog', permanent: true },
+      { source: '/dashboard/:path*', destination: '/blog', permanent: true },
+      { source: '/yields/:path*', destination: '/blog/category/defi', permanent: true },
+      { source: '/terminal/:path*', destination: '/blog', permanent: true },
+      { source: '/assessments/:path*', destination: '/blog/category/research', permanent: true },
+      { source: '/proof/:path*', destination: '/blog/category/research', permanent: true },
+      { source: '/docs/:path*', destination: '/about', permanent: true },
+      { source: '/roadmap/:path*', destination: '/about', permanent: true },
+      { source: '/reports', destination: '/blog/category/research', permanent: true },
       { source: '/:path*', has: [{ type: 'host', value: 'getlitmus.xyz' }], destination: 'https://www.getlitmus.xyz/:path*', permanent: true }
     ]
   },

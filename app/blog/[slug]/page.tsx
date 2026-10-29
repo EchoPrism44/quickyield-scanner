@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <article className="ql-article">
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleData) }} />
           <Link href="/blog" className="ql-article-back">
-            <ArrowLeft size={13} /> All research
+            <ArrowLeft size={13} /> All stories
           </Link>
 
           <div className="ql-article-kicker">
@@ -112,7 +112,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           {related.length > 0 ? (
             <section aria-labelledby="related-research" style={{ marginTop: 'var(--sp-7)' }}>
-              <h2 id="related-research">Related research</h2>
+              <h2 id="related-research">Related stories</h2>
               <div style={{ display: 'grid', gap: 12 }}>
                 {related.map((item) => (
                   <Link key={item.slug} href={`/blog/${item.slug}`}>

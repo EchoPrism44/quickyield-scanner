@@ -14,6 +14,7 @@ export type BlogPost = {
   canonical: string
   ogImage: string
   noindex: boolean
+  featured: boolean
   readMinutes: number
   snapshot: string
   related: string[]
@@ -133,6 +134,7 @@ function loadPost(file: string): BlogPost | null {
     canonical: scalar(meta, 'canonical'),
     ogImage: scalar(meta, 'ogImage'),
     noindex: bool(meta, 'noindex'),
+    featured: bool(meta, 'featured'),
     readMinutes,
     snapshot: scalar(meta, 'snapshot'),
     related: list(meta, 'related'),
@@ -146,7 +148,7 @@ export function getAllPosts(): BlogPost[] {
   return walkMarkdown(BLOG_DIR)
     .map(loadPost)
     .filter((p): p is BlogPost => p !== null)
-    .sort((a, b) => b.date.localeCompare(a.date))
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || b.date.localeCompare(a.date))
 }
 
 export function getPost(slug: string): BlogPost | null {
