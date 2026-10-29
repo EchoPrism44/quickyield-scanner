@@ -68,9 +68,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Litmus — Yield research you can audit, not just trust',
+    title: 'Litmus — Independent Crypto News & DeFi Research',
     description:
-      'Every pool graded A–F under a published methodology. Every grade committed to a public, timestamped ledger before the outcome is known.',
+      'Independent reporting and research on digital assets, DeFi, markets, regulation, and onchain risk.',
   },
 }
 
