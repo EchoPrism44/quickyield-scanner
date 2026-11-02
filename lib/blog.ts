@@ -19,6 +19,7 @@ export type BlogPost = {
   related: string[]
   contentType: string
   body: string
+  contentHtml?: string
 }
 
 /** Site default byline — used when a post has no `author:` in its frontmatter. */
