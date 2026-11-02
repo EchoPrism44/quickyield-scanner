@@ -6,17 +6,13 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { MarketingNav } from '../../../components/marketing-nav'
 import { MarketingFooter } from '../../../components/marketing/marketing-footer'
-import { getAllPosts, getRelatedPosts, getPost } from '../../../lib/blog'
+import { getPublishedPost, getRelatedPublishedPosts } from '../../../lib/wordpress'
 
-export const dynamic = 'force-static'
-
-export function generateStaticParams() {
-  return getAllPosts().filter((post) => !post.noindex).map((post) => ({ slug: post.slug }))
-}
+export const revalidate = 300
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const post = getPost(slug)
+  const post = await getPublishedPost(slug)
   if (!post) return {}
 
   const canonical = post.canonical || `/blog/${post.slug}`
@@ -49,7 +45,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const { slug } = await params
   const post = getPost(slug)
   if (!post) notFound()
-  const related = getRelatedPosts(post)
+  const related = await getRelatedPublishedPosts(post)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
     ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://getlitmus.xyz')
   const canonicalUrl = post.canonical || `${siteUrl}/blog/${post.slug}`
@@ -101,7 +97,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           ) : null}
 
           <div className="ql-article-body">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
+            {post.contentHtml ? <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} /> : <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>}
           </div>
 
           {post.snapshot ? (
@@ -124,12 +120,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </section>
           ) : null}
 
-          <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-7)' }}>
+          {post.contentType !== 'news' ? <div className="ql-disclaimer" style={{ marginTop: 'var(--sp-7)' }}>
             <span>
               Safety Grades are our opinion under a published methodology. Informational only —
               not investment advice, not an audit, and not a guarantee.
             </span>
-          </div>
+          </div> : null}
         </article>
       </div>
 
