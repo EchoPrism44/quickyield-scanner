@@ -1,4 +1,4 @@
-# How to publish a weekly blog post (solo, ~15 minutes)
+> **CMS note:** WordPress is now the primary editorial source when `WORDPRESS_SITE_URL` is configured. See [the headless CMS setup guide](../../docs/wordpress-cms.md). The Markdown workflow below remains available as a fallback and for local research drafts.\n\n# How to publish a weekly blog post (solo, ~15 minutes)
 
 Every Monday the grade snapshot Action commits a new `data/grades/<date>.json`.
 This guide turns that into a published post **written by you** — no CMS, no
