@@ -5,9 +5,9 @@ import { MarketingFooter } from '../../components/marketing/marketing-footer'
 import { getPublishedPosts } from '../../lib/wordpress'
 
 export const metadata: Metadata = {
-  title: 'Research — the weekly grade record, analyzed',
+  title: 'News & Research — Litmus',
   description:
-    'Weekly analysis of the Litmus grade record: which pools upgraded, which downgraded, and what it says about onchain yield right now.',
+    'Independent reporting, analysis and research on crypto markets, protocols and digital assets.',
   alternates: { canonical: '/blog' },
 }
 
@@ -24,11 +24,10 @@ export default async function BlogIndexPage() {
 
       <div className="ql-wrap">
         <header className="ql-blog-masthead">
-          <span className="ql-eyebrow">Research</span>
-          <h1>The record, analyzed.</h1>
+          <span className="ql-eyebrow">News &amp; Research</span>
+          <h1>The latest from digital assets.</h1>
           <p>
-            Every Monday we grade every live pool and publish the record. Here we read it —
-            upgrades, downgrades, and what moved in onchain yield this week.
+            Reporting, analysis and research on crypto markets, protocols and the technology shaping them.
           </p>
         </header>
 
