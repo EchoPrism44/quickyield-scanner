@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MarketingNav } from '../../components/marketing-nav'
 import { MarketingFooter } from '../../components/marketing/marketing-footer'
-import { getAllPosts } from '../../lib/blog'
+import { getPublishedPosts } from '../../lib/wordpress'
 
 export const metadata: Metadata = {
   title: 'Research — the weekly grade record, analyzed',
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-static'
 
-export default function BlogIndexPage() {
-  const posts = getAllPosts()
+export default async function BlogIndexPage() {
+  const posts = await getPublishedPosts()
   const [lead, ...rest] = posts
 
   return (
