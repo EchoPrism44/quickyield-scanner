@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = getPost(slug)
+  const post = await getPublishedPost(slug)
   if (!post) notFound()
   const related = await getRelatedPublishedPosts(post)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
